@@ -84,6 +84,7 @@ final class Install
         Module_Websocket::instance()->saveConfigVar('ws_processor', GDO_PATH . 'GDO/LinkUUp/LUP_Websocket.php');
         Module_Websocket::instance()->saveConfigVar('ws_timer', '100ms');
         Module_Register::instance()->saveConfigVar('captcha', '0');
+        Module_Register::instance()->saveConfigVar('email_activation', '0');
 
 		# Perms
 		GDO_Permission::create('lup_owner');
