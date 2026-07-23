@@ -1,0 +1,229 @@
+/** Page layout **/
+html, body {
+    height: 100%;
+}
+
+/* #gdo-pagewrap { */
+/* 	margin: 2em auto; */
+/* 	max-width: 1440px; */
+/* } */
+
+.login-container {
+    max-width: 580px;
+    margin: 170px auto;
+    width: 100%;
+}
+
+.login-container input {
+    width: 100%;
+    padding: 5px;
+}
+
+.login-container .login-button {
+    background-image: linear-gradient(to top, #b712ff 0%, #9c1cd1 100%);
+    border-radius: 5px;
+    color: #fff;
+    padding: 5px 15px;
+    float: right;
+    border: 0;
+    width: auto;
+    margin: 15px;
+}
+
+.or-container {
+    text-align: center;
+    line-height: 34px;
+}
+
+.button-forgot-pw {
+    color: #6741d0;
+    margin: 15px;
+    font-size: 1.2rem;
+}
+
+.login-form h2 {
+    font-size: 1.7em;
+    font-weight: normal;
+    text-align: left;
+    margin-bottom: 20px;
+    padding: 0 15px;
+}
+
+.top-menu {
+    float: right;
+}
+
+.top-menu li {
+    float: left;
+}
+
+.top-menu li:first-child:after {
+    content: '|';
+    padding: 0 5px;
+}
+
+.top-menu li a {
+    color: #6741d0;
+    font-size: 1.2rem;
+}
+
+/** Errors and Messages **/
+.gdo-error {
+    border: 1px solid red;
+    background: #fff;
+    margin: 15px;
+}
+
+.gdo-success {
+    border: 1px solid lime;
+    background: #fff;
+    margin: 15px;
+}
+
+.gdo-has-error {
+    border: 1px solid red;
+    background: #fff;
+    margin: 15px;
+}
+
+/** Panels **/
+.gdo-panel {
+    padding: 4px 8px;
+}
+
+
+/** Top Banner **/
+#lup-banner {
+    width: 100%;
+    background: red;
+}
+
+
+/** Top Menu **/
+#lup-topmenu {
+    background: #333;
+    border-bottom: 1px solid #444444;
+    background: rgb(76, 76, 76);
+    background: -moz-linear-gradient(top, rgba(76, 76, 76, 1) 0%, rgba(89, 89, 89, 1) 13%, rgba(102, 102, 102, 1) 22%, rgba(71, 71, 71, 1) 34%, rgba(44, 44, 44, 1) 46%, rgba(17, 17, 17, 1) 60%, rgba(0, 0, 0, 1) 66%, rgba(43, 43, 43, 1) 85%, rgba(28, 28, 28, 1) 91%, rgba(19, 19, 19, 1) 92%);
+    background: -webkit-linear-gradient(top, rgba(76, 76, 76, 1) 0%, rgba(89, 89, 89, 1) 13%, rgba(102, 102, 102, 1) 22%, rgba(71, 71, 71, 1) 34%, rgba(44, 44, 44, 1) 46%, rgba(17, 17, 17, 1) 60%, rgba(0, 0, 0, 1) 66%, rgba(43, 43, 43, 1) 85%, rgba(28, 28, 28, 1) 91%, rgba(19, 19, 19, 1) 92%);
+    background: linear-gradient(to bottom, rgba(76, 76, 76, 1) 0%, rgba(89, 89, 89, 1) 13%, rgba(102, 102, 102, 1) 22%, rgba(71, 71, 71, 1) 34%, rgba(44, 44, 44, 1) 46%, rgba(17, 17, 17, 1) 60%, rgba(0, 0, 0, 1) 66%, rgba(43, 43, 43, 1) 85%, rgba(28, 28, 28, 1) 91%, rgba(19, 19, 19, 1) 92%);
+    filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#4c4c4c', endColorstr='#131313', GradientType=0);
+}
+
+#lup-topmenu ul {
+    display: block;
+}
+
+#lup-topmenu li {
+    display: inline-block;
+}
+
+#lup-topmenu li a {
+    display: inline-block;
+    padding: 14px;
+    color: #fff;
+}
+
+.lup-logo {
+    max-width: 150px;
+    margin: 10px 0;
+}
+
+/** Tables **/
+.gdt-table thead {
+
+}
+
+.gdt-table thead .gdt-tblorder .sel span {
+    color: gold;
+}
+
+.gdt-table td {
+    padding: 5px;
+    border-bottom: 1px solid #dedede;
+}
+
+.gdo-jpgraph img {
+    width: 100%;
+}
+
+.statistics-room {
+    text-align: center;
+}
+
+.lup-room-statistics {
+    float: left;
+    width: 100%;
+    border-bottom: 1px solid #dedede;
+    padding-bottom: 15px;
+    margin-bottom: 40px;
+}
+
+/** Bars **/
+.gdo-bar {
+    border: 1px solid #aaa;
+    border-radius: 8px;
+    padding: 8px;
+}
+
+.gdo-bar .gdo-link {
+    padding: 0px 6px;
+}
+
+.gdo-bar-row {
+    margin-bottom: 8px;
+}
+
+
+/** Forms **/
+.gdo-form {
+    border: 1px solid #aaa;
+    border-radius: 8px;
+    padding: 8px;
+    margin: 4px 0px;
+}
+
+#gwfdt-gdo-1 {
+    width: 100%;
+}
+
+.gdt-editbutton a {
+    color: #6741d0;
+}
+
+.gdt-editbutton {
+    text-align: center;
+}
+
+.gdt-table thead {
+    background: #333;
+    border-bottom: 1px solid #444444;
+    background: rgb(76, 76, 76);
+    background: -moz-linear-gradient(top, rgba(76, 76, 76, 1) 0%, rgba(89, 89, 89, 1) 13%, rgba(102, 102, 102, 1) 22%, rgba(71, 71, 71, 1) 34%, rgba(44, 44, 44, 1) 46%, rgba(17, 17, 17, 1) 60%, rgba(0, 0, 0, 1) 66%, rgba(43, 43, 43, 1) 85%, rgba(28, 28, 28, 1) 91%, rgba(19, 19, 19, 1) 92%);
+    background: -webkit-linear-gradient(top, rgba(76, 76, 76, 1) 0%, rgba(89, 89, 89, 1) 13%, rgba(102, 102, 102, 1) 22%, rgba(71, 71, 71, 1) 34%, rgba(44, 44, 44, 1) 46%, rgba(17, 17, 17, 1) 60%, rgba(0, 0, 0, 1) 66%, rgba(43, 43, 43, 1) 85%, rgba(28, 28, 28, 1) 91%, rgba(19, 19, 19, 1) 92%);
+    background: linear-gradient(to bottom, rgba(76, 76, 76, 1) 0%, rgba(89, 89, 89, 1) 13%, rgba(102, 102, 102, 1) 22%, rgba(71, 71, 71, 1) 34%, rgba(44, 44, 44, 1) 46%, rgba(17, 17, 17, 1) 60%, rgba(0, 0, 0, 1) 66%, rgba(43, 43, 43, 1) 85%, rgba(28, 28, 28, 1) 91%, rgba(19, 19, 19, 1) 92%);
+    color: #fff;
+}
+
+.gdt-table thead th {
+    border-right: 1px solid #fff;
+    padding: 5px;
+}
+
+.gdt-table thead th input {
+    width: 100%;
+}
+
+.gdt-tblorder a {
+    color: #fff;
+}
+
+@media (max-width: 768px) {
+    .login-container input {
+        margin-bottom: 15px;
+    }
+
+    .login-container {
+        width: 95%;
+    }
+}
