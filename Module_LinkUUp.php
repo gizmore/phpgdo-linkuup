@@ -124,7 +124,8 @@ final class Module_LinkUUp extends GDO_Module
 			'lup_state' => [GDT_ACLRelation::MEMBERS, '0', null],
 			'lup_city' => [GDT_ACLRelation::MEMBERS, '0', null],
 
-			'lup_course_visible' => [GDT_ACLRelation::MEMBERS, '0', null],
+            'lup_course_visible' => [GDT_ACLRelation::MEMBERS, '0', null],
+            'lup_cuddles_visible' => [GDT_ACLRelation::FRIENDS, '0', null],
 			'lup_icq' => [GDT_ACLRelation::FRIEND_FRIENDS, '0', null],
 			'lup_whatsapp' => [GDT_ACLRelation::FRIENDS, '0', null],
 
@@ -151,7 +152,8 @@ final class Module_LinkUUp extends GDO_Module
 			GDT_String::make('lup_city'),
 
 			GDT_Divider::make('div_contact'),
-			GDT_ACLRelation::make('lup_course_visible'),
+            GDT_ACLRelation::make('lup_course_visible'),
+            GDT_ACLRelation::make('lup_cuddle_visible'),
 
 			GDT_Divider::make('div_sexy'),
 			GDT_EyeColor::make('lup_eyecolor'),
