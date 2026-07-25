@@ -6,9 +6,11 @@ use GDO\Address\GDO_Address;
 use GDO\Core\Module_Core;
 use GDO\CORS\Module_CORS;
 use GDO\Crypto\BCrypt;
+use GDO\CSS\Module_CSS;
 use GDO\File\GDO_File;
 use GDO\File\ImageResize;
 use GDO\File\Method\CronjobImageVariants;
+use GDO\Javascript\Module_Javascript;
 use GDO\Language\Module_Language;
 use GDO\Login\Module_Login;
 use GDO\Maps\Module_Maps;
@@ -96,6 +98,9 @@ final class Install
         if (GDO_ENV === 'pro')
         {
             Module_Core::instance()->saveConfigVar('module_assets', '0');
+            Module_CSS::instance()->saveConfigVar('minify_css', '1');
+            Module_Javascript::instance()->saveConfigVar('minify_js', 'concat');
+            Module_Javascript::instance()->saveConfigVar('compress_js', '1');
         }
 
 		# Perms
