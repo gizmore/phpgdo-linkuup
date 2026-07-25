@@ -89,6 +89,10 @@ final class Install
         Module_Websocket::instance()->saveConfigVar('ws_timer', '100ms');
         Module_Register::instance()->saveConfigVar('captcha', '0');
         Module_Register::instance()->saveConfigVar('email_activation', '0');
+        if (GDO_ENV === 'dev')
+        {
+            Module_LinkUUp::instance()->saveConfigVar('lup_app_url', 'app.lup.localhost');
+        }
 
 		# Perms
 		GDO_Permission::create('lup_owner');

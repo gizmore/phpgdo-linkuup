@@ -98,7 +98,7 @@ final class Module_LinkUUp extends GDO_Module
 	public function getConfig(): array
 	{
 		return [
-			GDT_Url::make('lup_app_url')->initial('https://linkuup.de/')->allowAll(),
+			GDT_Url::make('lup_app_url')->initial('https://app.linkuup.gizmore.org/')->allowAll(),
 			GDT_Checkbox::make('lup_guest_query')->initial('0'), # Allow guest querie messages
 			GDT_Checkbox::make('lup_open_query')->initial('1'), # No near check for queries
 			GDT_Checkbox::make('lup_only_one_chat')->initial('1'), # Auto part all channels before join another room?
