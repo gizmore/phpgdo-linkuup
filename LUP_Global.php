@@ -105,7 +105,22 @@ final class LUP_Global
 			self::trophyDataForUser($user);
 	}
 
-	public static function avatarFileForUser(GDO_User $user)
+    public static function trophyDataForUser(GDO_User $user)
+    {
+        $trophy = self::trophyForUser($user);
+        return
+            GWS_Message::wr32(GDO_Friendship::count($user)) .
+            GWS_Message::wrS($trophy->getStatus()) .
+            GWS_Message::wr8($trophy->isVIP() ? 1 : 0) .
+            GWS_Message::wr32($trophy->getLikeCount()) .
+            GWS_Message::wr32($trophy->getChatSent()) .
+            GWS_Message::wr32($trophy->getQuerySent()) .
+            GWS_Message::wr32($trophy->getQueryRecieved()) .
+            GWS_Message::wr32($trophy->getVisits()).
+            GWS_Message::wr32(Module_LinkUUp::instance()->cfgCuddles($user));
+    }
+
+    public static function avatarFileForUser(GDO_User $user)
 	{
 		return self::avatarForUser($user)->getFileID();
 	}
@@ -195,21 +210,6 @@ final class LUP_Global
 	####################
 	### Avatar Cache ###
 	####################
-
-	public static function trophyDataForUser(GDO_User $user)
-	{
-		$trophy = self::trophyForUser($user);
-		return
-			GWS_Message::wr32(GDO_Friendship::count($user)) .
-			GWS_Message::wrS($trophy->getStatus()) .
-			GWS_Message::wr16($trophy->isVIP() ? 1 : 0) .
-			GWS_Message::wr32($trophy->getLikeCount()) .
-			GWS_Message::wr32($trophy->getChatSent()) .
-			GWS_Message::wr32($trophy->getQuerySent()) .
-			GWS_Message::wr32($trophy->getQueryRecieved()) .
-            GWS_Message::wr32($trophy->getVisits()).
-            GWS_Message::wr32(Module_LinkUUp::instance()->cfgCuddles($user));
-	}
 
 	/**
 	 * @param GDO_User $user

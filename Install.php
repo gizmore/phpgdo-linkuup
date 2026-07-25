@@ -61,6 +61,8 @@ final class Install
         $passwords = require Module_LinkUUp::instance()->filePath('secret.php');
         $gizmore->saveSettingVar('Login', 'password', BCrypt::create($passwords['gizmore'])->__toString());
         $gizmore->saveSettingVar('User', 'gender', 'male');
+        $gizmore->saveSettingVar('Country', 'country_of_origin', 'DE');
+        $gizmore->saveSettingVar('Country', 'country_of_living', 'DE');
         GDO_UserPermission::grant($gizmore, 'admin');
         GDO_UserPermission::grant($gizmore, 'staff');
 
@@ -73,6 +75,8 @@ final class Install
         ])->softReplace();
         $squippi->saveSettingVar('Login', 'password', BCrypt::create($passwords['squiprim'])->__toString());
         $squippi->saveSettingVar('User', 'gender', 'male');
+        $squippi->saveSettingVar('Country', 'country_of_origin', 'DE');
+        $squippi->saveSettingVar('Country', 'country_of_living', 'DE');
         GDO_UserPermission::grant($squippi, 'admin');
         GDO_UserPermission::grant($squippi, 'staff');
 
