@@ -93,6 +93,10 @@ final class Install
         {
             Module_LinkUUp::instance()->saveConfigVar('lup_app_url', 'app.lup.localhost');
         }
+        if (GDO_ENV === 'pro')
+        {
+            Module_Core::instance()->saveConfigVar('module_assets', '0');
+        }
 
 		# Perms
 		GDO_Permission::create('lup_owner');
