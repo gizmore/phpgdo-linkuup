@@ -82,6 +82,20 @@ final class Install
         GDO_UserPermission::grant($squippi, 'admin');
         GDO_UserPermission::grant($squippi, 'staff');
 
+        # squippi
+        $alex = GDO_User::blank([
+            'user_id' => '4',
+            'user_type' => GDT_UserType::MEMBER,
+            'user_name' => 'alex',
+            'user_level' => '65535',
+        ])->softReplace();
+        $alex->saveSettingVar('Login', 'password', BCrypt::create($passwords['alex'])->__toString());
+        $alex->saveSettingVar('User', 'gender', 'male');
+        $alex->saveSettingVar('Country', 'country_of_origin', 'DE');
+        $alex->saveSettingVar('Country', 'country_of_living', 'DE');
+        GDO_UserPermission::grant($alex, 'admin');
+        GDO_UserPermission::grant($alex, 'staff');
+
         # Settings
 		Module_Core::instance()->saveConfigVar('allow_guests', '1');
 		Module_CORS::instance()->saveConfigVar('cors_allow_any', '1');
