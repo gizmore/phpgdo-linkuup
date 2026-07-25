@@ -84,7 +84,7 @@ final class Install
 		Module_Core::instance()->saveConfigVar('allow_guests', '1');
 		Module_CORS::instance()->saveConfigVar('cors_allow_any', '1');
 		Module_Language::instance()->saveConfigVar('languages', '["en","de","it","fr","es"]');
-		Module_Maps::instance()->saveConfigVar('maps_record_history', '6ßs');
+		Module_Maps::instance()->saveConfigVar('maps_record_history', '60s');
         Module_Websocket::instance()->saveConfigVar('ws_processor', GDO_PATH . 'GDO/LinkUUp/LUP_Websocket.php');
         Module_Websocket::instance()->saveConfigVar('ws_timer', '100ms');
         Module_Register::instance()->saveConfigVar('captcha', '0');
