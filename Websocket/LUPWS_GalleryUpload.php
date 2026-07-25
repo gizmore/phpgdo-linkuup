@@ -2,6 +2,7 @@
 namespace GDO\LinkUUp\Websocket;
 
 use GDO\Core\Method;
+use GDO\Form\MethodForm;
 use GDO\Gallery\GDO_Gallery;
 use GDO\Gallery\Method\Crud;
 use GDO\LinkUUp\Module_LinkUUp;
@@ -15,10 +16,15 @@ class LUPWS_GalleryUpload extends GWS_CommandForm
 
 	public function getMethod() { return Crud::make(); }
 
+    /**
+     * @param MethodForm $method
+     */
 	public function fillRequestVars(GWS_Message $msg, Method $method)
 	{
 		$this->gallery = $this->galleryFor($msg->user());
-		$method->getForm()->getField('id')->var($this->gallery->getID());
+        $method->addInput('create', '');
+        $method->addInput('edit', '1');
+		$method->gdoParameter('id')->var($this->gallery->getID());
 	}
 
 	private function galleryFor(GDO_User $user)
