@@ -20,6 +20,7 @@ use GDO\Core\GDT_Object;
 use GDO\Core\GDT_ObjectSelect;
 use GDO\Core\GDT_String;
 use GDO\Core\GDT_Template;
+use GDO\Core\Method;
 use GDO\File\GDO_File;
 use GDO\File\GDT_ImageFile;
 use GDO\Maps\GDT_Position;
@@ -92,7 +93,7 @@ final class LUP_Room extends GDO
 	#############
 	### Votes ###
 	#############
-	use WithVotes;
+    use WithVotes;
 
 	public function gdoCommentTable() { return LUP_RoomComments::table(); }
 
@@ -293,5 +294,10 @@ final class LUP_Room extends GDO
 
 		return false;
 	}
+
+    public function canDelete(GDO_User $user): bool
+    {
+        return $user->isStaff();
+    }
 
 }

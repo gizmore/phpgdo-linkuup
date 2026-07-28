@@ -36,6 +36,7 @@ final class Install
         'garage_image.jpg', # 2
         'peine.png', # 3
         'bs.webp', # 4
+        'vw.png', # 5
 	];
 
 
@@ -48,6 +49,11 @@ final class Install
 		'3' => ['Bars', null],
         '4' => ['Kneipen', null],
         '5' => ['Cafe', null],
+        '6' => ['Unternehmen', null],
+        '7' => ['Supermarkt', null],
+        '8' => ['Religion', null],
+        '9' => ['Friseur', null],
+        '10' => ['Ortschaften', null],
 	];
 
 
@@ -82,7 +88,7 @@ final class Install
         GDO_UserPermission::grant($squippi, 'admin');
         GDO_UserPermission::grant($squippi, 'staff');
 
-        # squippi
+        # alex
         $alex = GDO_User::blank([
             'user_id' => '4',
             'user_type' => GDT_UserType::MEMBER,
@@ -95,6 +101,20 @@ final class Install
         $alex->saveSettingVar('Country', 'country_of_living', 'DE');
         GDO_UserPermission::grant($alex, 'admin');
         GDO_UserPermission::grant($alex, 'staff');
+
+        # mira
+        $mira = GDO_User::blank([
+            'user_id' => '5',
+            'user_type' => GDT_UserType::MEMBER,
+            'user_name' => 'mira',
+            'user_level' => '65535',
+        ])->softReplace();
+        $mira->saveSettingVar('Login', 'password', BCrypt::create($passwords['gizmore'])->__toString());
+        $mira->saveSettingVar('User', 'gender', 'female');
+        $mira->saveSettingVar('Country', 'country_of_origin', 'US');
+        $mira->saveSettingVar('Country', 'country_of_living', 'US');
+        GDO_UserPermission::grant($mira, 'admin');
+        GDO_UserPermission::grant($mira, 'staff');
 
         # Settings
 		Module_Core::instance()->saveConfigVar('allow_guests', '1');
@@ -167,8 +187,10 @@ final class Install
 			'room_show_distance' => '0',
 		])->softReplace();
 
+        self::createCountries();
         self::createPeine();
         self::createBrunswick();
+        self::createWolfsburg();
 
 		self::createDefaultImageVariants($module);
 	}
@@ -231,6 +253,10 @@ final class Install
         self::$ICONS = $icons;
 		return $icons;
 	}
+
+    private static function createCountries(): void
+    {
+    }
 
     private static function createPeine(): void
     {
@@ -319,4 +345,30 @@ final class Install
             'room_show_distance' => '1',
         ])->softReplace();
     }
+
+    private static function createWolfsburg()
+    {
+        $squippi = GDO_User::getByName('squiprim');
+        $imageVW = self::$ICONS[5];
+        LUP_Room::blank([
+            'room_id' => '6',
+            'room_owner' => $squippi->getID(),
+            'room_name' => 'Volkswagen',
+            'room_info' => 'Nur innerhalb der Stadt Braunschweig. Hier kommt LinkUUp her.',
+            'room_color' => '#133742', # Gold
+            'room_category' => '2',
+            'room_pos_lat' => '52.247659326009185',
+            'room_pos_lng' => '10.523846179408098',
+            'room_view' => '32',
+            'room_radius' => '15',
+            'room_www' => 'https://www.volkswagen.de/',
+            'room_phone' => null,
+            'room_hours' => null,
+            'room_address' => null,
+            'room_icon' => $imageVW->getId(),
+            'room_image' => $imageVW->getId(),
+            'room_show_distance' => '1',
+        ])->softReplace();
+    }
+
 }

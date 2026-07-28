@@ -70,6 +70,7 @@ return [
 	'your_lup_coworkers' => 'Employees',
 
 	'mt_linkuup_editroom' => 'Edit room ´%s´',
+    'msg_lup_room_deleted' => 'The room %s got deleted successfully.',
 
 	'link_edit_room_comments' => 'Edit comments',
 

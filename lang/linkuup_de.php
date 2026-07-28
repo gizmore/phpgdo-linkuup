@@ -70,6 +70,7 @@ return [
 	'your_lup_coworkers' => 'Mitarbeiter',
 
 	'mt_linkuup_editroom' => 'Den Raum ´%s´ bearbeiten',
+    'msg_lup_room_deleted' => 'Der Raum %s wurde erfolgreich gelöscht.',
 
 	'link_edit_room_comments' => 'Kommentare bearbeiten',
 

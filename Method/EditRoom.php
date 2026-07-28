@@ -9,6 +9,7 @@ use GDO\Form\GDT_Form;
 use GDO\Form\GDT_Submit;
 use GDO\Form\MethodForm;
 use GDO\LinkUUp\LUP_Room;
+use GDO\UI\GDT_DeleteButton;
 use GDO\User\GDO_User;
 
 final class EditRoom extends MethodForm
@@ -44,16 +45,9 @@ final class EditRoom extends MethodForm
 	}
 
 
-	/**
-	 * @return LUP_Room
-	 */
 	public function getRoom(): LUP_Room
 	{
-        if (!isset($this->room))
-        {
-            $this->room = $this->gdoParameterValue('room');
-        }
-        return $this->room;
+        return LUP_Room::paramFrom($this, 'room');
 	}
 
 	public function getMethodTitle(): string
@@ -111,8 +105,21 @@ final class EditRoom extends MethodForm
 
 		$form->addField(GDT_AntiCSRF::make());
 
-		$form->actions()->addField(GDT_Submit::make());
+        $form->actions()->addField(GDT_Submit::make());
+        if ($room->canDelete($user))
+        {
+            $form->actions()->addField(GDT_DeleteButton::make()->onclick([$this, 'deleteRoom']));
+        }
 	}
+
+    public function deleteRoom(): GDT
+    {
+        $room = $this->getRoom();
+        $room->delete();
+        return $this->redirectMessage('msg_lup_room_deleted', [
+            $room->gdoDisplay('room_name').'#'.$room->getID()
+        ], $this->getModule()->href('Rooms'));
+    }
 
 	public function formValidated(GDT_Form $form): GDT
 	{

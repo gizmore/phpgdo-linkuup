@@ -32,7 +32,7 @@ final class EditMenu extends Method
 
 	public function getRoom(): LUP_Room
 	{
-		return $this->gdoParameterValue('room');
+		return LUP_Room::paramFrom($this, 'room');
 	}
 
 }
