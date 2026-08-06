@@ -67,7 +67,7 @@ final class Install
             'user_level' => '65535',
         ])->softReplace();
         $passwords = require Module_LinkUUp::instance()->filePath('secret.php');
-        $gizmore->saveSettingVar('Login', 'password', BCrypt::create($passwords['gizmore'])->__toString());
+        $gizmore->saveSettingVar('Login', 'password', BCrypt::create($passwords['gizmore'][0])->__toString());
         $gizmore->saveSettingVar('User', 'gender', 'male');
         $gizmore->saveSettingVar('Country', 'country_of_origin', 'DE');
         $gizmore->saveSettingVar('Country', 'country_of_living', 'DE');
@@ -81,7 +81,7 @@ final class Install
             'user_name' => 'squiprim',
             'user_level' => '65535',
         ])->softReplace();
-        $squippi->saveSettingVar('Login', 'password', BCrypt::create($passwords['squiprim'])->__toString());
+        $squippi->saveSettingVar('Login', 'password', BCrypt::create($passwords['squiprim'][0])->__toString());
         $squippi->saveSettingVar('User', 'gender', 'male');
         $squippi->saveSettingVar('Country', 'country_of_origin', 'DE');
         $squippi->saveSettingVar('Country', 'country_of_living', 'DE');
@@ -95,7 +95,7 @@ final class Install
             'user_name' => 'alex',
             'user_level' => '65535',
         ])->softReplace();
-        $alex->saveSettingVar('Login', 'password', BCrypt::create($passwords['alex'])->__toString());
+        $alex->saveSettingVar('Login', 'password', BCrypt::create($passwords['alex'][0])->__toString());
         $alex->saveSettingVar('User', 'gender', 'male');
         $alex->saveSettingVar('Country', 'country_of_origin', 'DE');
         $alex->saveSettingVar('Country', 'country_of_living', 'DE');
@@ -109,7 +109,7 @@ final class Install
             'user_name' => 'mira',
             'user_level' => '65535',
         ])->softReplace();
-        $mira->saveSettingVar('Login', 'password', BCrypt::create($passwords['gizmore'])->__toString());
+        $mira->saveSettingVar('Login', 'password', BCrypt::create($passwords['mira'][0])->__toString());
         $mira->saveSettingVar('User', 'gender', 'female');
         $mira->saveSettingVar('Country', 'country_of_origin', 'US');
         $mira->saveSettingVar('Country', 'country_of_living', 'US');
