@@ -15,6 +15,7 @@ use GDO\Core\Method;
 use GDO\Form\GDT_Form;
 use GDO\Gallery\GDO_Gallery;
 use GDO\Gallery\Module_Gallery;
+use GDO\LinkUUp\Method\Welcome;
 use GDO\Net\GDT_Url;
 use GDO\UI\GDT_Bar;
 use GDO\UI\GDT_Divider;
@@ -89,6 +90,8 @@ final class Module_LinkUUp extends GDO_Module
 	}
 
 	public function getTheme(): ?string { return 'lup'; }
+
+	public function defaultMethod(): Method { return Welcome::make(); }
 
 	public function onLoadLanguage(): void { $this->loadLanguage('lang/linkuup'); }
 
@@ -173,6 +176,7 @@ final class Module_LinkUUp extends GDO_Module
 
 	public function onIncludeScripts(): void
 	{
+		$this->addCSS('css/lup.css');
 	}
 
 	/**

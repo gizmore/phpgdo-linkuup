@@ -4,6 +4,18 @@ namespace GDO\LinkUUp\lang;
 return [
 
 	'lup_welcome' => 'Welcome!',
+	'lup_landing_kicker' => 'Local connection, on your terms',
+	'lup_landing_title' => 'Meet nearby. Make plans together.',
+	'lup_landing_lead' => 'LinkUUp helps people discover places, conversations and plans that are close to everyday life.',
+	'lup_landing_open_app' => 'Open LinkUUp',
+	'lup_landing_contact' => 'Get in touch',
+	'lup_landing_values_label' => 'What LinkUUp is about',
+	'lup_landing_nearby_title' => 'Places nearby',
+	'lup_landing_nearby_text' => 'Find rooms and local places that make sense for where you are.',
+	'lup_landing_together_title' => 'People together',
+	'lup_landing_together_text' => 'Chat, coordinate and turn a shared interest into a real plan.',
+	'lup_landing_control_title' => 'Your space',
+	'lup_landing_control_text' => 'Share deliberately and stay in control of your profile and connections.',
 	'lup_staff' => 'Staff Area',
 	'err_ws_auth' => 'The connection failed and you cannot login.',
 

@@ -129,6 +129,122 @@ html, body {
     margin: 10px 0;
 }
 
+/** Landing page **/
+.lup-landing {
+    max-width: 1080px;
+    margin: 2.5rem auto;
+    padding: 0 1.25rem 3rem;
+}
+
+.lup-landing-hero {
+    align-items: center;
+    background: radial-gradient(circle at 85% 15%, #f1e9ff 0, #fff 42%, #f8f4ff 100%);
+    border: 1px solid #e5d8ff;
+    border-radius: 24px;
+    display: grid;
+    gap: 2.5rem;
+    grid-template-columns: minmax(160px, 0.7fr) minmax(0, 1.3fr);
+    overflow: hidden;
+    padding: clamp(1.5rem, 5vw, 4rem);
+}
+
+.lup-landing-logo {
+    display: block;
+    height: auto;
+    margin: 0 auto;
+    max-width: 100%;
+}
+
+.lup-landing-kicker {
+    color: #7c3aed;
+    font-size: .85rem;
+    font-weight: 700;
+    letter-spacing: .08em;
+    margin: 0 0 .75rem;
+    text-transform: uppercase;
+}
+
+.lup-landing h1,
+.lup-landing h2 {
+    color: #271347;
+}
+
+.lup-landing h1 {
+    font-size: clamp(2.2rem, 5vw, 4.25rem);
+    letter-spacing: -.04em;
+    line-height: 1.02;
+    margin: 0;
+}
+
+.lup-landing-lead {
+    color: #584d68;
+    font-size: 1.2rem;
+    line-height: 1.55;
+    margin: 1.25rem 0 1.75rem;
+    max-width: 43rem;
+}
+
+.lup-landing-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: .75rem;
+}
+
+.lup-landing-actions a {
+    border-radius: 999px;
+    font-weight: 700;
+    padding: .8rem 1.2rem;
+    text-decoration: none;
+}
+
+.lup-landing-primary {
+    background: linear-gradient(135deg, #b712ff, #6741d0);
+    box-shadow: 0 8px 20px rgb(103 65 208 / 24%);
+    color: #fff;
+}
+
+.lup-landing-primary:hover,
+.lup-landing-primary:focus-visible {
+    color: #fff;
+    filter: brightness(1.06);
+}
+
+.lup-landing-secondary {
+    border: 1px solid #a78bfa;
+    color: #5b21b6;
+}
+
+.lup-landing-secondary:hover,
+.lup-landing-secondary:focus-visible {
+    background: #f3e8ff;
+    color: #4c1d95;
+}
+
+.lup-landing-values {
+    display: grid;
+    gap: 1rem;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    margin-top: 1rem;
+}
+
+.lup-landing-values article {
+    background: #fff;
+    border: 1px solid #ece7f5;
+    border-radius: 16px;
+    padding: 1.4rem;
+}
+
+.lup-landing-values h2 {
+    font-size: 1.15rem;
+    margin: 0 0 .5rem;
+}
+
+.lup-landing-values p {
+    color: #62596f;
+    line-height: 1.5;
+    margin: 0;
+}
+
 /** Tables **/
 .gdt-table thead {
 
@@ -225,5 +341,18 @@ html, body {
 
     .login-container {
         width: 95%;
+    }
+
+    .lup-landing {
+        margin-top: 1rem;
+    }
+
+    .lup-landing-hero,
+    .lup-landing-values {
+        grid-template-columns: 1fr;
+    }
+
+    .lup-landing-logo {
+        max-width: 200px;
     }
 }

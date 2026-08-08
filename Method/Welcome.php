@@ -9,4 +9,9 @@ use GDO\UI\MethodPage;
 final class Welcome extends MethodPage
 {
 
+	public function getMethodTitle(): string
+	{
+		return t('lup_landing_title');
+	}
+
 }

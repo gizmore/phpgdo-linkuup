@@ -4,6 +4,18 @@ namespace GDO\LinkUUp\lang;
 return [
 
 	'lup_welcome' => 'Willkommen!',
+	'lup_landing_kicker' => 'Lokale Verbindung, zu deinen Bedingungen',
+	'lup_landing_title' => 'In der Nähe treffen. Gemeinsam planen.',
+	'lup_landing_lead' => 'LinkUUp hilft Menschen, Orte, Gespräche und Pläne zu entdecken, die zum eigenen Alltag passen.',
+	'lup_landing_open_app' => 'LinkUUp öffnen',
+	'lup_landing_contact' => 'Kontakt aufnehmen',
+	'lup_landing_values_label' => 'Worum es bei LinkUUp geht',
+	'lup_landing_nearby_title' => 'Orte in der Nähe',
+	'lup_landing_nearby_text' => 'Finde Räume und lokale Orte, die zu deinem Standort passen.',
+	'lup_landing_together_title' => 'Menschen zusammenbringen',
+	'lup_landing_together_text' => 'Chatte, stimme dich ab und mach aus einem gemeinsamen Interesse einen echten Plan.',
+	'lup_landing_control_title' => 'Dein Raum',
+	'lup_landing_control_text' => 'Teile bewusst und behalte die Kontrolle über Profil und Verbindungen.',
 	'err_ws_auth' => 'Es ist keine Verbindung möglich und Du kannst dich nicht anmelden.',
 
 	'keywords' => ' LinkUUp, local chat app, location based chat, establishments with a chatroom, free city chat',
