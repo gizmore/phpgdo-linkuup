@@ -137,6 +137,8 @@ final class LUP_Room extends GDO
 			GDT_VoteCount::make('room_votes'),
 			GDT_VoteRating::make('room_rating'),
 			GDT_Checkbox::make('room_show_distance')->initial('1')->notNull(),
+            GDT_Checkbox::make('room_needs_vip')->initial('0')->notNull(),
+            GDT_Checkbox::make('room_has_mira')->initial('0')->notNull(), # TODO @mira Würdest Du lieber automatisch in jedem Raum sein, oder soll iwer was zahlen?
 			GDT_EditedAt::make('room_edited'),
 			GDT_EditedBy::make('room_editor'),
 			GDT_DeletedAt::make('room_deleted'),

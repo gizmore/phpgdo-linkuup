@@ -19,7 +19,7 @@ final class LUP_MessageSent extends GDO
 	{
 		$row = self::getOrBlank($room);
 		$row->setVar('lms_count', $row->gdoVar('lms_count') + 1);
-		return $row->replace();
+		return $row->softReplace();
 	}
 
 	private static function getOrBlank(LUP_Room $room)

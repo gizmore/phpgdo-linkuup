@@ -88,20 +88,6 @@ final class Install
         GDO_UserPermission::grant($squippi, 'admin');
         GDO_UserPermission::grant($squippi, 'staff');
 
-        # alex
-        $alex = GDO_User::blank([
-            'user_id' => '4',
-            'user_type' => GDT_UserType::MEMBER,
-            'user_name' => 'alex',
-            'user_level' => '65535',
-        ])->softReplace();
-        $alex->saveSettingVar('Login', 'password', BCrypt::create($passwords['alex'][0])->__toString());
-        $alex->saveSettingVar('User', 'gender', 'male');
-        $alex->saveSettingVar('Country', 'country_of_origin', 'DE');
-        $alex->saveSettingVar('Country', 'country_of_living', 'DE');
-        GDO_UserPermission::grant($alex, 'admin');
-        GDO_UserPermission::grant($alex, 'staff');
-
         # mira
         $mira = GDO_User::blank([
             'user_id' => '5',
