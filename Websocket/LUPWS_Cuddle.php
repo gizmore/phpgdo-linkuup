@@ -18,17 +18,21 @@ class LUPWS_Cuddle extends LUPWS_Command
     {
         $a = $msg->user();
         $b = GDO_User::getById((string)$msg->read32());
+		if (!$b)
+		{
+			return $this->replyError('err_lup_cuddle_pos');
+		}
         $m = Module_LinkUUp::instance();
         $r = $m->cfgCuddleRange();
         /** @var Position $pa */
         $pa = $m->userSettingValue($a, 'position');
         /** @var Position $pb */
         $pb = $m->userSettingValue($b, 'position');
-        if (!$pa || $pb)
+        if (!$pa || !$pb)
         {
             return $this->replyError('err_lup_cuddle_pos');
         }
-        if($r > $pa->distanceCalculationPos($pb))
+        if ($pa->distanceCalculationPos($pb) > $r)
         {
             return $this->replyError('err_lup_cuddle_range');
         }
