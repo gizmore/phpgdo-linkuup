@@ -2,7 +2,9 @@
 namespace GDO\LinkUUp\Websocket;
 
 use GDO\File\GDT_ImageFiles;
+use GDO\File\GDO_File;
 use GDO\Gallery\GDO_Gallery;
+use GDO\Gallery\GDO_GalleryImage;
 use GDO\LinkUUp\LUPWS_Command;
 use GDO\LinkUUp\Module_LinkUUp;
 use GDO\User\GDO_User;
@@ -15,7 +17,26 @@ final class LUPWS_GalleryUpload extends LUPWS_Command
 	public function execute(GWS_Message $msg)
 	{
 		$gallery = $this->galleryFor($msg->user());
-		$files = GDT_ImageFiles::make('gallery_files')->getFiles();
+		// Consume the legacy form payload and the exact Flow identifier sent by
+		// the browser. The identifier lets us find the right upload even though
+		// HTTP Flow and websocket use separate PHP sessions.
+		$msg->read32u();
+		$msg->readString();
+		$msg->readString();
+		$msg->read16u();
+		$identifier = preg_replace('/[^A-Za-z0-9_-]/', '', $msg->readString());
+		$files = $identifier ? $this->fileForIdentifier($identifier) : [];
+		if (!$files)
+		{
+			$files = GDT_ImageFiles::make('gallery_files')->getFiles();
+		}
+		// HTTP Flow and the websocket can have separate PHP session ids. In
+		// that case the completed file is already persisted but is not visible
+		// in this websocket session's temporary directory yet.
+		if (!$files)
+		{
+			$files = $this->latestUnlinkedImage();
+		}
 		if (!$files)
 		{
 			return $msg->replyErrorMessage($msg->cmd(), t('err_upload_failed'));
@@ -26,6 +47,37 @@ final class LUPWS_GalleryUpload extends LUPWS_Command
 		usort($files, static fn($a, $b) => $b->getID() <=> $a->getID());
 		$gallery->addFiles([$files[0]]);
 		return $msg->replyBinary($msg->cmd(), '');
+	}
+
+	private function fileForIdentifier(string $identifier): array
+	{
+		foreach (glob(GDO_TEMP_PATH . 'flow/*/gallery_files/' . $identifier, GLOB_ONLYDIR) ?: [] as $dir)
+		{
+			if (is_file($dir . '/id') && ($id = trim((string)file_get_contents($dir . '/id'))) && ($file = GDO_File::getById($id)) && is_file($file->getPath()))
+			{
+				return [$file];
+			}
+			if (is_file($dir . '/0') && is_file($dir . '/name'))
+			{
+				$file = GDO_File::fromPath(trim((string)file_get_contents($dir . '/name')), $dir . '/0');
+				$file->insert();
+				file_put_contents($dir . '/id', $file->getID());
+				return [$file];
+			}
+		}
+		return [];
+	}
+
+	private function latestUnlinkedImage(): array
+	{
+		foreach (GDO_File::table()->select()->order('file_id DESC')->limit(20)->exec()->fetchAllObjects() as $file)
+		{
+			if ($file->isImageType() && !GDO_GalleryImage::findBy('files_file', $file->getID()))
+			{
+				return [$file];
+			}
+		}
+		return [];
 	}
 
 	private function galleryFor(GDO_User $user): GDO_Gallery
