@@ -18,11 +18,14 @@ final class LUPWS_GalleryDelete extends LUPWS_Command
 		$image = GDO_GalleryImage::table()->select()->
 			where("files_object={$gallery->getID()} AND files_file={$fileId}")->
 			first()->exec()->fetchObject();
-		if (!$image || !($file = $image->getFile()))
+		if (!$image || !$image->getFile())
 		{
 			return $msg->replyErrorMessage($msg->cmd(), t('err_file_not_found'));
 		}
-		$file->delete();
+		// Remove precisely this gallery relation. Deleting the underlying file
+		// can cascade through file relations and made unrelated gallery tiles
+		// disappear as well.
+		$image->delete();
 		return $msg->replyBinary($msg->cmd(), '');
 	}
 

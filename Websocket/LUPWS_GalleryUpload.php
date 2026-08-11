@@ -20,7 +20,11 @@ final class LUPWS_GalleryUpload extends LUPWS_Command
 		{
 			return $msg->replyErrorMessage($msg->cmd(), t('err_upload_failed'));
 		}
-		$gallery->addFiles($files);
+		// Flow keeps markers for earlier completed uploads in its temporary
+		// directory. Attach only the newest file from this upload, otherwise a
+		// previously selected photo is added again with every new upload.
+		usort($files, static fn($a, $b) => $b->getID() <=> $a->getID());
+		$gallery->addFiles([$files[0]]);
 		return $msg->replyBinary($msg->cmd(), '');
 	}
 
