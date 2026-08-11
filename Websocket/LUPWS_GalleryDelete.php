@@ -1,41 +1,38 @@
 <?php
 namespace GDO\LinkUUp\Websocket;
 
-use GDO\Core\Method;
 use GDO\Gallery\GDO_Gallery;
-use GDO\Gallery\Method\Crud;
+use GDO\Gallery\GDO_GalleryImage;
+use GDO\LinkUUp\LUPWS_Command;
 use GDO\User\GDO_User;
-use GDO\Websocket\Server\GWS_CommandForm;
 use GDO\Websocket\Server\GWS_Commands;
 use GDO\Websocket\Server\GWS_Message;
 
-/**
- * Delete a gallery image.
- *
- * @version 7.0.1
- * @since 6.9.0
- * @author gizmore
- */
-class LUPWS_GalleryDelete extends GWS_CommandForm
+/** Delete one of the authenticated user's gallery images. */
+final class LUPWS_GalleryDelete extends LUPWS_Command
 {
-
-	private GDO_Gallery $gallery;
-
-	public function getMethod() { return Crud::make(); }
-
-	public function fillRequestVars(GWS_Message $msg, Method $method)
+	public function execute(GWS_Message $msg)
 	{
-		$this->gallery = $this->galleryFor($msg->user());
-		$form = $method->getForm();
-		$form->getField('id')->var($this->gallery->getID());
-		$form->getField('delete_gallery_files')->var([$msg->read32u() => 1]);
+		$fileId = $msg->read32u();
+		$gallery = $this->galleryFor($msg->user());
+		$image = GDO_GalleryImage::table()->select()->
+			where("files_object={$gallery->getID()} AND files_file={$fileId}")->
+			first()->exec()->fetchObject();
+		if (!$image || !($file = $image->getFile()))
+		{
+			return $msg->replyErrorMessage($msg->cmd(), t('err_file_not_found'));
+		}
+		$file->delete();
+		return $msg->replyBinary($msg->cmd(), '');
 	}
 
-	private function galleryFor(GDO_User $user)
+	private function galleryFor(GDO_User $user): GDO_Gallery
 	{
-		return GDO_Gallery::findBy('gallery_creator', $user->getID());
+		return GDO_Gallery::table()->select()->
+			where('gallery_creator=' . $user->getID())->
+			order('(SELECT COUNT(*) FROM gdo_galleryimage WHERE files_object=gallery_id) DESC, gallery_id ASC')->
+			first()->exec()->fetchObject();
 	}
-
 }
 
 GWS_Commands::register(0x1153, new LUPWS_GalleryDelete());

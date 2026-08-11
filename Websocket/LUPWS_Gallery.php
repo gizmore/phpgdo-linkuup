@@ -52,11 +52,18 @@ class LUPWS_Gallery extends LUPWS_Command
 	##############
 	protected function galleryForUser(GDO_User $user)
 	{
-		if ($gallery = GDO_Gallery::table()->getBy('gallery_creator', $user->getID()))
+		if ($gallery = GDO_Gallery::table()->select()->
+			where('gallery_creator=' . $user->getID())->
+			// Failed older uploads left empty gallery records behind. Prefer the
+			// gallery that actually contains the user's photos, then use the
+			// oldest empty gallery as the stable destination for a first upload.
+			order('(SELECT COUNT(*) FROM gdo_galleryimage WHERE files_object=gallery_id) DESC, gallery_id ASC')->
+			first()->exec()->fetchObject())
 		{
 			return $gallery;
 		}
-		return Module_LinkUUp::instance()->defaultGallery($user, false);
+		// A new user also needs a persisted gallery id before Flow can upload.
+		return Module_LinkUUp::instance()->defaultGallery($user);
 	}
 
 }

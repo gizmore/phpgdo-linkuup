@@ -1,43 +1,40 @@
 <?php
 namespace GDO\LinkUUp\Websocket;
 
-use GDO\Core\Method;
-use GDO\Form\MethodForm;
+use GDO\File\GDT_ImageFiles;
 use GDO\Gallery\GDO_Gallery;
-use GDO\Gallery\Method\Crud;
+use GDO\LinkUUp\LUPWS_Command;
 use GDO\LinkUUp\Module_LinkUUp;
 use GDO\User\GDO_User;
-use GDO\Websocket\Server\GWS_CommandForm;
 use GDO\Websocket\Server\GWS_Commands;
 use GDO\Websocket\Server\GWS_Message;
 
-class LUPWS_GalleryUpload extends GWS_CommandForm
+/** Attach the completed Flow upload to the current user's LinkUUp gallery. */
+final class LUPWS_GalleryUpload extends LUPWS_Command
 {
-
-	public function getMethod() { return Crud::make(); }
-
-    /**
-     * @param MethodForm $method
-     */
-	public function fillRequestVars(GWS_Message $msg, Method $method)
+	public function execute(GWS_Message $msg)
 	{
-		$this->gallery = $this->galleryFor($msg->user());
-        $method->addInput('create', '');
-        $method->addInput('edit', '1');
-		$method->gdoParameter('id')->var($this->gallery->getID());
-	}
-
-	private function galleryFor(GDO_User $user)
-	{
-		if (!($gallery = GDO_Gallery::table()->getBy('gallery_creator', $user->getID())))
+		$gallery = $this->galleryFor($msg->user());
+		$files = GDT_ImageFiles::make('gallery_files')->getFiles();
+		if (!$files)
 		{
-			$gallery = Module_LinkUUp::instance()->defaultGallery($user);
+			return $msg->replyErrorMessage($msg->cmd(), t('err_upload_failed'));
 		}
-		return $gallery;
+		$gallery->addFiles($files);
+		return $msg->replyBinary($msg->cmd(), '');
 	}
 
-	public function afterReplySuccess(GWS_Message $msg) {}
-
+	private function galleryFor(GDO_User $user): GDO_Gallery
+	{
+		if ($gallery = GDO_Gallery::table()->select()->
+			where('gallery_creator=' . $user->getID())->
+			order('(SELECT COUNT(*) FROM gdo_galleryimage WHERE files_object=gallery_id) DESC, gallery_id ASC')->
+			first()->exec()->fetchObject())
+		{
+			return $gallery;
+		}
+		return Module_LinkUUp::instance()->defaultGallery($user);
+	}
 }
 
 GWS_Commands::register(0x1152, new LUPWS_GalleryUpload());
