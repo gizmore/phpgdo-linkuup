@@ -85,8 +85,8 @@
 <p>Verantwortlicher im Sinne der Datenschutz-Grundverordnung, sonstiger in den Mitgliedstaaten der Europäischen Union geltenden Datenschutzgesetze und anderer
     Bestimmungen mit datenschutzrechtlichem Charakter ist die:</p>
 
-<p>Mehmeti Shqiprim </p>
-<p>Wilsedeweg 9</p>
+<p>Shqiprim Mehmeti</p>
+<p>Hauptstraße 25B</p>
 <p>38110 Braunschweig</p>
 <p>Deutschland</p>
 <p>E-Mail: info@linkuup.de</p>

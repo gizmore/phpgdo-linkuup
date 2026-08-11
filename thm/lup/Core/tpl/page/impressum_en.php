@@ -1,7 +1,7 @@
 <p>Angaben gemäß § 5 TMG</p>
 <p>
-    Mehmeti Shqiprim<br>
-    Wilsedeweg 9<br>
+    Shqiprim Mehmeti<br>
+    Hauptstraße 25B<br>
     38110 Braunschweig<br>
 </p>
 
