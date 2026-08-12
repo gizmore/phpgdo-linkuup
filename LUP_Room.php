@@ -79,6 +79,7 @@ final class LUP_Room extends GDO
 		{
 			$distanceWhere = Position::getDistanceQuery($lat, $lng, 'room_pos_lat', 'room_pos_lng');
 			$query->where($distanceWhere . ' <= room_view');
+			$query->order($distanceWhere . ' ASC');
 		}
 
 		# Limit

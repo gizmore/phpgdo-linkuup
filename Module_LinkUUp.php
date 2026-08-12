@@ -149,6 +149,8 @@ final class Module_LinkUUp extends GDO_Module
 		return [
 			GDT_Divider::make('div_general'),
 			GDT_String::make('lup_status'),
+			// Opt-in: profiles stay local to a shared live location by default.
+			GDT_Checkbox::make('lup_profile_outside_visible')->initial('0'),
 
 			GDT_Divider::make('div_location'),
 			GDT_String::make('lup_state'),
@@ -240,6 +242,7 @@ final class Module_LinkUUp extends GDO_Module
 				$allowed = [
 					"GDO\\Login\\Method\\Form",
 					"GDO\\Avatar\\Method\\Image",
+					"GDO\\Avatar\\Method\\ForUser",
 					"GDO\\Avatar\\Method\\ImageUser",
 					"GDO\\Captcha\\Method\\Image",
 					"GDO\\Country\\Method\\AjaxList",

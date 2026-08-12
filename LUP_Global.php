@@ -252,7 +252,12 @@ final class LUP_Global
 	{
 		if (!isset(self::$ROOMS[$id]))
 		{
-			if (!$room = LUP_Room::getById($id))
+			// The long-running websocket can retain a stale GDO table cache after
+			// installer changes. Fetch the room once from the database instead.
+			$room = LUP_Room::table()->select()
+				->where('lup_room.room_id=' . LUP_Room::quoteS((string)$id))
+				->first()->exec()->fetchObject();
+			if (!$room)
 			{
 				return false;
 			}

@@ -36,6 +36,9 @@ final class LUPWS_UserCourse extends GWS_Command
 		$query = LUP_RoomVisit::table()->
 		select('COUNT(*) visit_count, MAX(visit_at) visit_last, visit_room');
 		$query->where('visit_user=' . $user->getID());
+		// Deleted legacy rooms leave visit_room as NULL. They are not real
+		// locations anymore and must never become a phantom entry in a profile.
+		$query->where('visit_room IS NOT NULL');
 		$query->group('visit_room');
 		$query->order('visit_count DESC');
 
