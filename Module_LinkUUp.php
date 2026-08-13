@@ -6,6 +6,7 @@ use GDO\Address\GDT_Phone;
 use GDO\Core\Application;
 use GDO\Core\GDO_Exception;
 use GDO\Core\GDO_Module;
+use GDO\Core\CSS;
 use GDO\Core\GDO_RedirectError;
 use GDO\Core\GDT_Checkbox;
 use GDO\Core\GDT_Enum;
@@ -180,6 +181,9 @@ final class Module_LinkUUp extends GDO_Module
 	public function onIncludeScripts(): void
 	{
 		$this->addCSS('css/lup.css');
+		// A separate revision is used for the visual back-office polish so
+		// browsers do not keep an older stylesheet after a local cache clear.
+		CSS::addFile($this->wwwPath('css/lup.css?lup_skin=20260813_33'));
 	}
 
 	/**

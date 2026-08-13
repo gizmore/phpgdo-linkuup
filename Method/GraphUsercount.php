@@ -4,7 +4,6 @@ namespace GDO\LinkUUp\Method;
 
 use Amenadiel\JpGraph\Graph\Graph;
 use Amenadiel\JpGraph\Plot\LinePlot;
-use Amenadiel\JpGraph\Themes\UniversalTheme;
 use GDO\Core\Application;
 use GDO\Core\GDO_ArgError;
 use GDO\Core\GDT;
@@ -37,12 +36,20 @@ final class GraphUsercount extends MethodGraph
 		$params = [
 			GDT_Object::make('room')->table(LUP_Room::table())->notNull(),
 		];
-		return array_merge($params, parent::gdoParameters());
+		$graphParams = parent::gdoParameters();
+		foreach ($graphParams as $param)
+		{
+			if ($param->getName() === 'date')
+			{
+				$param->initial('this_year');
+			}
+		}
+		return array_merge($params, $graphParams);
 	}
 
 	public function hrefImage(): string
 	{
-		return parent::hrefImage() . "&room={$this->getRoom()->getID()}";
+		return parent::hrefImage() . "&room={$this->getRoom()->getID()}&skin=dark3";
 	}
 
 	/**
@@ -122,35 +129,49 @@ final class GraphUsercount extends MethodGraph
 		// Setup the graph
 		$graph = new Graph($this->getWidth(), $this->getHeight());
 		$graph->SetScale('textint');
+		// Graph creates UniversalTheme by default. Clear it after the scale is
+		// known; otherwise it repaints the entire margin white while stroking.
+		$graph->ClearTheme();
 
-		$theme_class = new UniversalTheme();
-
-		$graph->SetTheme($theme_class);
+		$graph->SetColor('#171a29');
+		$graph->SetMarginColor('#171a29');
+		// JPGraph fills the margins only while stroking a frame. Keep that
+		// technical frame, but make it indistinguishable from the dark canvas.
+		$graph->SetFrame(true, '#171a29', 1);
 		$graph->img->SetAntiAliasing(false);
-		$graph->title->Set($this->getMethodTitle());
+		$graph->title->Set('Besuchskalender');
+		$graph->title->SetColor('#f4f2ff');
 		$graph->SetBox(false);
 
-		$graph->SetMargin(40, 20, 36, 63);
+		// Leave a genuine, readable coordinate system: values on the left,
+		// dates at the bottom. The old full-frame grid made empty charts look
+		// like a white, unused panel.
+		$graph->SetMargin(56, 20, 36, 67);
 
 		$graph->img->SetAntiAliasing();
 
-		$graph->yaxis->HideZeroLabel();
-		$graph->yaxis->HideLine(false);
-		$graph->yaxis->HideTicks(false, false);
+		$graph->xaxis->SetColor('#68779b', '#e5eaff');
+		$graph->yaxis->SetColor('#68779b', '#e5eaff');
+		$graph->xaxis->HideTicks();
+		$graph->yaxis->HideTicks();
+		$graph->xaxis->SetLabelMargin(8);
+		$graph->yaxis->SetLabelMargin(8);
 
-		$graph->xgrid->Show();
-		$graph->xgrid->SetLineStyle('solid');
-		$graph->xaxis->SetTickLabels($this->filterXAxisDaily($datax));
+		$graph->xgrid->Show(false);
+		$graph->ygrid->Show(false);
+		$graph->xaxis->SetTickLabels($this->calendarLabels($datax));
 		$graph->xaxis->SetLabelAngle(45);
-		$graph->xgrid->SetColor('#E3E3E3');
 
 		// Create the first line
 		$p1 = new LinePlot(array_values($datay1));
 		$graph->Add($p1);
-		$p1->SetColor('#6495ED');
+		$p1->SetColor('#8ec9ff');
+		$p1->SetWeight(3);
+		$p1->SetFillColor('#203b5c');
 		$p1->SetLegend(t('graph_usercount'));
-
-		$graph->legend->SetFrameWeight(1);
+		$graph->legend->SetColor('#f1efff', '#20243a');
+		$graph->legend->SetFillColor('#20243a');
+		$graph->legend->SetFrameWeight(0);
 
 		if (!Application::$INSTANCE->isUnitTests())
 		{
@@ -158,6 +179,23 @@ final class GraphUsercount extends MethodGraph
 		}
 		Application::exit();
 		return GDT_Response::make();
+	}
+
+	/** Keep six useful calendar points instead of a wall of dates. */
+	private function calendarLabels(array &$datax): array
+	{
+		$days = array_keys($datax);
+		$labels = array_fill(0, count($days), '');
+		$last = count($labels) - 1;
+		$step = max(1, (int)ceil($last / 5));
+		foreach ($days as $i => $day)
+		{
+			if ($i === 0 || $i === $last || $i % $step === 0)
+			{
+				$labels[$i] = date('d.m.', strtotime($day));
+			}
+		}
+		return $labels;
 	}
 
 

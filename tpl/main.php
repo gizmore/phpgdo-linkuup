@@ -1,5 +1,2 @@
 <?php
-
-use GDO\UI\GDT_Panel;
-
-echo GDT_Panel::make()->text('box_content_lup_main')->render();
+require __DIR__ . '/page/admin.php';

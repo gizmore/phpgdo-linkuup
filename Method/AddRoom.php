@@ -3,6 +3,7 @@ namespace GDO\LinkUUp\Method;
 
 use GDO\Address\GDO_Address;
 use GDO\Core\GDO;
+use GDO\Core\GDT;
 use GDO\Core\GDT_Hook;
 use GDO\Form\GDT_Form;
 use GDO\Form\MethodCrud;
@@ -19,6 +20,13 @@ final class AddRoom extends MethodCrud
 	public function getPermission(): ?string { return 'staff'; }
 
 	public function hrefList(): string { return href('LinkUUp', 'Rooms'); }
+
+	public function renderPage(): GDT
+	{
+		return $this->templatePHP('page/add_room.php', [
+			'form' => $this->getForm(),
+		]);
+	}
 
 	public function gdoTable(): GDO { return LUP_Room::table(); }
 
