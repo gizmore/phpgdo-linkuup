@@ -137,6 +137,14 @@ return [
 	'enum_lup_drink_sometimes' => 'sometimes',
 	'enum_lup_drink_never' => 'never',
 
+	'enum_religion_none' => 'no religion',
+	'enum_religion_christian' => 'Christian',
+	'enum_religion_muslim' => 'Muslim',
+	'enum_religion_jewish' => 'Jewish',
+	'enum_religion_buddhist' => 'Buddhist',
+	'enum_religion_hindu' => 'Hindu',
+	'enum_religion_other' => 'other religion',
+
 	# Eye color
 	'enum_amber' => 'braun',
 	'enum_green' => 'grün',
@@ -175,6 +183,7 @@ return [
 
 	'person_height' => 'Height',
 	'lup_status' => 'Currently Doing',
+	'lup_religion' => 'Religion',
 	'lup_sexual_orientation' => 'Sexual Orientation',
 	'lup_icq' => 'ICQ Number',
 	'lup_eyecolor' => 'Eye Color',

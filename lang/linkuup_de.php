@@ -62,6 +62,7 @@ return [
 	'cfg_lup_smokes' => 'Rauchen Sie?',
 	'cfg_lup_sporty' => 'Treiben Sie Sport?',
 	'cfg_lup_religion' => 'Ihre Religion (optional)',
+	'lup_religion' => 'Religion',
 	'cfg_lup_occupation' => 'Ihre Tätigkeit',
 	'cfg_lup_drivers_license' => 'Haben Sie einen Führerschein?',
 	'cfg_lup_origin' => 'Woher stammen Sie?',

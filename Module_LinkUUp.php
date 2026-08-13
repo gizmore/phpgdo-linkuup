@@ -141,6 +141,7 @@ final class Module_LinkUUp extends GDO_Module
 			'lup_drinks' => [GDT_ACLRelation::MEMBERS, '0', null],
 			'lup_smokes' => [GDT_ACLRelation::MEMBERS, '0', null],
 			'lup_sporty' => [GDT_ACLRelation::MEMBERS, '0', null],
+			'lup_religion' => [GDT_ACLRelation::MEMBERS, '0', null],
 		];
 	}
 
@@ -171,6 +172,7 @@ final class Module_LinkUUp extends GDO_Module
 			GDT_Enum::make('lup_drinks')->enumValues('lup_drink_yes', 'lup_drink_sometimes', 'lup_drink_never')->emptyLabel('not_specified'),
 			GDT_Enum::make('lup_smokes')->enumValues('lup_smokes_yes', 'lup_smokes_no_care', 'lup_smokes_no', 'lup_smokes_no_way')->emptyLabel('not_specified'),
 			GDT_Enum::make('lup_sporty')->enumValues('lup_sporty', 'lup_unsporty')->emptyLabel('not_specified'),
+			GDT_Religion::make('lup_religion'),
 		];
 	}
 
