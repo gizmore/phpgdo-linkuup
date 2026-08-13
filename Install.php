@@ -147,6 +147,7 @@ final class Install
         }
         if (GDO_ENV === 'pro')
         {
+			Module_LinkUUp::instance()->saveConfigVar('lup_app_url', 'https://app.www.linkuup.de/');
             Module_Core::instance()->saveConfigVar('module_assets', '0');
             Module_CSS::instance()->saveConfigVar('minify_css', '1');
             Module_Javascript::instance()->saveConfigVar('minify_js', 'concat');
