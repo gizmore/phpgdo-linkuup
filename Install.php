@@ -7,6 +7,7 @@ use GDO\Core\Module_Core;
 use GDO\CORS\Module_CORS;
 use GDO\Crypto\BCrypt;
 use GDO\CSS\Module_CSS;
+use GDO\Date\Time;
 use GDO\File\GDO_File;
 use GDO\File\ImageResize;
 use GDO\File\Method\CronjobImageVariants;
@@ -44,7 +45,7 @@ final class Install
 	 * Name, IconID.
 	 */
 	private static array $CATS = [
-		'2' => ['Städte', null],
+		'2' => ['Orte', null],
 		'3' => ['Bars', null],
         '4' => ['Kneipen', null],
         '5' => ['Cafe', null],
@@ -75,28 +76,31 @@ final class Install
             'user_level' => '65535',
         ])->softReplace();
         $passwords = require Module_LinkUUp::instance()->filePath('secret.php');
+		$emails = $passwords['emails'];
         $gizmore->saveSettingVar('Login', 'password', BCrypt::create($passwords['gizmore'][0])->__toString());
+		$gizmore->saveSettingVar('Mail', 'email', $emails['gizmore']);
+		$gizmore->saveSettingVar('Mail', 'email_confirmed', Time::getDate());
         $gizmore->saveSettingVar('User', 'gender', 'male');
         $gizmore->saveSettingVar('Country', 'country_of_origin', 'DE');
         $gizmore->saveSettingVar('Country', 'country_of_living', 'DE');
         GDO_UserPermission::grant($gizmore, 'admin');
         GDO_UserPermission::grant($gizmore, 'staff');
 
-        # squiprim: retain the historical seed spelling. The real, newly
-        # registered Shqiprim account may coexist without the installer trying
-        # to rename this fixed-ID test account into a duplicate.
-        $squippi = GDO_User::blank([
+		$shqiprim = GDO_User::blank([
             'user_id' => '3',
             'user_type' => GDT_UserType::MEMBER,
-            'user_name' => 'squiprim',
+            'user_name' => 'shqiprim',
             'user_level' => '65535',
         ])->softReplace();
-        $squippi->saveSettingVar('Login', 'password', BCrypt::create($passwords['squiprim'][0])->__toString());
-        $squippi->saveSettingVar('User', 'gender', 'male');
-        $squippi->saveSettingVar('Country', 'country_of_origin', 'DE');
-        $squippi->saveSettingVar('Country', 'country_of_living', 'DE');
-        GDO_UserPermission::grant($squippi, 'admin');
-        GDO_UserPermission::grant($squippi, 'staff');
+        $shqiprimPassword = $passwords['shqiprim'][0] ?? $passwords['squiprim'][0];
+        $shqiprim->saveSettingVar('Login', 'password', BCrypt::create($shqiprimPassword)->__toString());
+		$shqiprim->saveSettingVar('Mail', 'email', $emails['shqiprim']);
+		$shqiprim->saveSettingVar('Mail', 'email_confirmed', Time::getDate());
+        $shqiprim->saveSettingVar('User', 'gender', 'male');
+        $shqiprim->saveSettingVar('Country', 'country_of_origin', 'DE');
+        $shqiprim->saveSettingVar('Country', 'country_of_living', 'DE');
+        GDO_UserPermission::grant($shqiprim, 'admin');
+        GDO_UserPermission::grant($shqiprim, 'staff');
 
         # mira
         $mira = GDO_User::blank([
@@ -106,6 +110,8 @@ final class Install
             'user_level' => '65535',
         ])->softReplace();
         $mira->saveSettingVar('Login', 'password', BCrypt::create($passwords['mira'][0])->__toString());
+		$mira->saveSettingVar('Mail', 'email', $emails['mira']);
+		$mira->saveSettingVar('Mail', 'email_confirmed', Time::getDate());
         $mira->saveSettingVar('User', 'gender', 'female');
         $mira->saveSettingVar('Country', 'country_of_origin', 'US');
         $mira->saveSettingVar('Country', 'country_of_living', 'US');
@@ -216,6 +222,26 @@ final class Install
 
     private static function createCountries(): void
     {
+        $gizmore = GDO_User::getByName('gizmore');
+        $image = self::$ICONS[0];
+        LUP_Room::blank([
+            'room_id' => '1',
+            'room_owner' => $gizmore->getID(),
+            'room_name' => 'Deutschland',
+            'room_info' => 'Deutschland-Chat für Menschen außerhalb eines lokalen Orts.',
+            'room_color' => '#FFD700',
+            'room_category' => '2',
+            'room_active' => '1',
+            'room_sort' => '40',
+            'room_pos_lat' => '51.1093728415025',
+            'room_pos_lng' => '10.398766823981518',
+            'room_view' => '42000.0',
+            'room_radius' => '800.0',
+            'room_www' => 'https://de.wikipedia.org/wiki/Deutschland',
+            'room_icon' => $image->getID(),
+            'room_image' => $image->getID(),
+            'room_show_distance' => '0',
+        ])->softReplace();
     }
 
     private static function createPeine(): void
@@ -267,6 +293,7 @@ final class Install
             'room_info' => 'Die Stadt Peine. Kennt man doch,',
             'room_color' => '#133742', # Gold
             'room_category' => '2',
+			'room_sort' => '20',
             'room_pos_lat' => '52.32399278721452',
             'room_pos_lng' => '10.2207358761131',
             // Keep city chat access local. Discovery is handled separately by room_view.
@@ -294,6 +321,7 @@ final class Install
 			'room_info' => 'Stadtchat für Wolfsburg.',
 			'room_color' => '#133742',
 			'room_category' => '2',
+			'room_sort' => '30',
 			// City centre, used solely for distance and the route pin.
 			'room_pos_lat' => '52.42265',
 			'room_pos_lng' => '10.78655',
@@ -311,15 +339,16 @@ final class Install
 
     private static function createBrunswick(): void
     {
-        $squippi = GDO_User::getByName('shqiprim');
+		$shqiprim = GDO_User::getByName('shqiprim');
         $imageBS = self::$ICONS[4];
         LUP_Room::blank([
             'room_id' => '4',
-            'room_owner' => $squippi->getID(),
+			'room_owner' => $shqiprim->getID(),
             'room_name' => 'Braunschweig Chat',
             'room_info' => 'Nur innerhalb der Stadt Braunschweig. Hier kommt LinkUUp her.',
             'room_color' => '#133742', # Gold
             'room_category' => '2',
+			'room_sort' => '10',
             'room_pos_lat' => '52.247659326009185',
             'room_pos_lng' => '10.523846179408098',
             // City cards stay discoverable across the region; chat access remains local.

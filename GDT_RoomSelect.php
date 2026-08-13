@@ -64,7 +64,7 @@ final class GDT_RoomSelect extends GDT_ObjectSelect
 		# Only enabled rooms?
 		if ($this->enabledRooms)
 		{
-			$where[] = '(room_enabled=1)';
+			$where[] = '(room_enabled=1 AND room_active=1)';
 		}
 
 		# Query rooms
