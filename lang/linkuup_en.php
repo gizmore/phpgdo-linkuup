@@ -137,12 +137,15 @@ return [
 	'enum_lup_drink_sometimes' => 'sometimes',
 	'enum_lup_drink_never' => 'never',
 
-	'enum_religion_none' => 'no religion',
 	'enum_religion_christian' => 'Christian',
 	'enum_religion_muslim' => 'Muslim',
 	'enum_religion_jewish' => 'Jewish',
-	'enum_religion_buddhist' => 'Buddhist',
-	'enum_religion_hindu' => 'Hindu',
+	'enum_religion_egyptian' => 'Egyptian',
+	'enum_religion_hindi' => 'Hindu',
+	'enum_religion_romanian' => 'Roman',
+	'enum_religion_vikings' => 'Vikings',
+	'enum_religion_buddhism' => 'Buddhism',
+	'enum_religion_atheist' => 'Atheist',
 	'enum_religion_other' => 'other religion',
 
 	# Eye color

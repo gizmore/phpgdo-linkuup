@@ -9,12 +9,15 @@ final class GDT_Religion extends GDT_Enum
 {
 
 	public const VALUES = [
-		'religion_none',
 		'religion_christian',
 		'religion_muslim',
 		'religion_jewish',
-		'religion_buddhist',
-		'religion_hindu',
+		'religion_egyptian',
+		'religion_hindi',
+		'religion_romanian',
+		'religion_vikings',
+		'religion_buddhism',
+		'religion_atheist',
 		'religion_other',
 	];
 

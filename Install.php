@@ -83,6 +83,7 @@ final class Install
         $gizmore->saveSettingVar('User', 'gender', 'male');
         $gizmore->saveSettingVar('Country', 'country_of_origin', 'DE');
         $gizmore->saveSettingVar('Country', 'country_of_living', 'DE');
+		$gizmore->saveSettingVar('Date', 'activity_accuracy', '5m');
         GDO_UserPermission::grant($gizmore, 'admin');
         GDO_UserPermission::grant($gizmore, 'staff');
 
@@ -99,6 +100,7 @@ final class Install
         $shqiprim->saveSettingVar('User', 'gender', 'male');
         $shqiprim->saveSettingVar('Country', 'country_of_origin', 'DE');
         $shqiprim->saveSettingVar('Country', 'country_of_living', 'DE');
+		$shqiprim->saveSettingVar('Date', 'activity_accuracy', '5m');
         GDO_UserPermission::grant($shqiprim, 'admin');
         GDO_UserPermission::grant($shqiprim, 'staff');
 
@@ -115,6 +117,7 @@ final class Install
         $mira->saveSettingVar('User', 'gender', 'female');
         $mira->saveSettingVar('Country', 'country_of_origin', 'US');
         $mira->saveSettingVar('Country', 'country_of_living', 'US');
+		$mira->saveSettingVar('Date', 'activity_accuracy', '5m');
         GDO_UserPermission::grant($mira, 'admin');
         GDO_UserPermission::grant($mira, 'staff');
 
