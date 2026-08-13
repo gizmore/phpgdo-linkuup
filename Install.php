@@ -81,11 +81,13 @@ final class Install
         GDO_UserPermission::grant($gizmore, 'admin');
         GDO_UserPermission::grant($gizmore, 'staff');
 
-        # shqiprim
+        # squiprim: retain the historical seed spelling. The real, newly
+        # registered Shqiprim account may coexist without the installer trying
+        # to rename this fixed-ID test account into a duplicate.
         $squippi = GDO_User::blank([
             'user_id' => '3',
             'user_type' => GDT_UserType::MEMBER,
-            'user_name' => 'shqiprim',
+            'user_name' => 'squiprim',
             'user_level' => '65535',
         ])->softReplace();
         $squippi->saveSettingVar('Login', 'password', BCrypt::create($passwords['squiprim'][0])->__toString());
