@@ -113,6 +113,7 @@ final class Install
 		$mira->saveSettingVar('Mail', 'email', $emails['mira']);
 		$mira->saveSettingVar('Mail', 'email_confirmed', Time::getDate());
         $mira->saveSettingVar('User', 'gender', 'female');
+        $mira->saveSettingVar('Birthday', 'birthday', '2026-07-23');
         $mira->saveSettingVar('Country', 'country_of_origin', 'US');
         $mira->saveSettingVar('Country', 'country_of_living', 'US');
         GDO_UserPermission::grant($mira, 'admin');
