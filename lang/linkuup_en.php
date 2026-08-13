@@ -147,6 +147,15 @@ return [
 	'enum_religion_buddhism' => 'Buddhism',
 	'enum_religion_atheist' => 'Atheist',
 	'enum_religion_other' => 'other religion',
+	'enum_pet_cat' => 'Cat',
+	'enum_pet_dog' => 'Dog',
+	'enum_pet_fish' => 'Fish',
+	'enum_pet_reptile' => 'Reptile',
+	'enum_pet_bird' => 'Bird',
+	'enum_pet_other_mammal' => 'Other mammal',
+	'enum_pet_other' => 'Other pet',
+	'enum_pet_none' => 'No pet',
+	'enum_pet_wished' => 'I wish I had one',
 
 	# Eye color
 	'enum_amber' => 'braun',

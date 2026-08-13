@@ -2,6 +2,7 @@
 declare(strict_types=1);
 namespace GDO\LinkUUp;
 
+use GDO\AboutMe\Module_AboutMe;
 use GDO\Address\GDO_Address;
 use GDO\Core\Module_Core;
 use GDO\CORS\Module_CORS;
@@ -129,6 +130,8 @@ final class Install
 		# LinkUUp profiles can therefore make a field stricter than the profile default.
 		Module_User::instance()->saveConfigVar('acl_relations', '1');
 		// UI order is intentionally separate from module priority/load order.
+		// Start profiles with the personal introduction, before generic account data.
+		Module_AboutMe::instance()->saveVar('module_sort', '1');
 		Module_User::instance()->saveVar('module_sort', '10');
 		$module->saveVar('module_sort', '20');
 		Module_CORS::instance()->saveConfigVar('cors_allow_any', '1');

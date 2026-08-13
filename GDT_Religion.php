@@ -26,8 +26,19 @@ final class GDT_Religion extends GDT_Enum
 		parent::__construct();
 		$this->icon('account_balance');
 		$this->label('lup_religion');
-		$this->enumValues(...self::VALUES);
+		$this->enumValues(...$this->valuesSortedForLanguage());
 		$this->emptyLabel('not_specified');
+	}
+
+	/** Sort labels for the active language while persisting the stable enum keys. */
+	private function valuesSortedForLanguage(): array
+	{
+		$values = self::VALUES;
+		$collator = new \Collator(GDO_LANGUAGE);
+		usort($values, static function(string $a, string $b) use ($collator): int {
+			return $collator->compare(t('enum_' . $a), t('enum_' . $b));
+		});
+		return $values;
 	}
 
 }

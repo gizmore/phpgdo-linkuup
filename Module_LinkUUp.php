@@ -167,7 +167,7 @@ final class Module_LinkUUp extends GDO_Module
 			GDT_SexualOrientation::make('lup_sexo'),
 
 			GDT_Divider::make('div_habits'),
-			GDT_Enum::make('lup_has_pet')->enumValues('yes', 'no')->emptyLabel('not_specified'),
+			GDT_Pet::make('lup_has_pet'),
 			GDT_Enum::make('lup_drinks')->enumValues('lup_drink_yes', 'lup_drink_sometimes', 'lup_drink_never')->emptyLabel('not_specified'),
 			GDT_Enum::make('lup_smokes')->enumValues('lup_smokes_yes', 'lup_smokes_no_care', 'lup_smokes_no', 'lup_smokes_no_way')->emptyLabel('not_specified'),
 			GDT_Enum::make('lup_sporty')->enumValues('lup_sporty', 'lup_unsporty')->emptyLabel('not_specified'),
