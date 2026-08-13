@@ -81,6 +81,9 @@ final class Install
 		$gizmore->saveSettingVar('Mail', 'email', $emails['gizmore']);
 		$gizmore->saveSettingVar('Mail', 'email_confirmed', Time::getDate());
         $gizmore->saveSettingVar('User', 'gender', 'male');
+        $gizmore->saveSettingVar('Birthday', 'birthday', '1980-11-09');
+        $gizmore->saveSettingVar('Birthday', 'age_visible', 'acl_all');
+        $gizmore->saveSettingVar('Birthday', 'announce_me_birthdays', '1');
         $gizmore->saveSettingVar('Country', 'country_of_origin', 'DE');
         $gizmore->saveSettingVar('Country', 'country_of_living', 'DE');
         GDO_UserPermission::grant($gizmore, 'admin');
