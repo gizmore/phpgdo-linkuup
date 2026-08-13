@@ -19,6 +19,7 @@ use GDO\User\GDO_Permission;
 use GDO\User\GDO_User;
 use GDO\User\GDO_UserPermission;
 use GDO\User\GDT_UserType;
+use GDO\User\Module_User;
 use GDO\Util\FileUtil;
 use GDO\Websocket\Module_Websocket;
 use phpDocumentor\Reflection\Types\Self_;
@@ -113,6 +114,9 @@ final class Install
 
         # Settings
 		Module_Core::instance()->saveConfigVar('allow_guests', '1');
+		# Let every ACL-capable user setting retain its own relation visibility.
+		# LinkUUp profiles can therefore make a field stricter than the profile default.
+		Module_User::instance()->saveConfigVar('acl_relations', '1');
 		Module_CORS::instance()->saveConfigVar('cors_allow_any', '1');
 		Module_Language::instance()->saveConfigVar('languages', '["en","de","it","fr","es"]');
 		Module_Maps::instance()->saveConfigVar('maps_record_history', '60s');
