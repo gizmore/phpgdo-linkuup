@@ -86,8 +86,8 @@ return [
 
 	'link_edit_room_comments' => 'Edit comments',
 
-	'graph_usercount' => 'User count',
-	'graph_messagecount' => 'Message count',
+	'graph_usercount' => 'Venue visits',
+	'graph_messagecount' => 'LinkUUp chat activity',
 
 	# 6.10.6
 	'lup_room' => 'Room',
@@ -98,6 +98,7 @@ return [
 	# 6.11.0
 	'box_content_lup_main' => 'LinkUUp Staff Area',
 	'link_rooms' => 'Rooms',
+	'link_statistics' => 'Statistics',
 	'link_add_room' => 'Add Room',
 	'link_cats' => 'Categories',
 	'link_add_cat' => 'Add Category',

@@ -91,8 +91,8 @@ return [
 
 	'link_edit_room_comments' => 'Kommentare bearbeiten',
 
-	'graph_usercount' => 'Anzahl Benutzer',
-	'graph_messagecount' => 'Anzahl Nachrichten',
+	'graph_usercount' => 'Barbesuche',
+	'graph_messagecount' => 'LinkUUp Chat-Nutzung',
 
 	# 6.10.6
 	'lup_room' => 'Room',
@@ -101,6 +101,7 @@ return [
 	# 6.11.0
 	'box_content_lup_main' => 'LinkUUp Mitarbeiter Bereich',
 	'link_rooms' => 'Räume',
+	'link_statistics' => 'Statistiken',
 	'link_add_room' => 'Neuer Raum',
 	'link_cats' => 'Kategorien',
 	'link_add_cat' => 'Neue Kategorie',
