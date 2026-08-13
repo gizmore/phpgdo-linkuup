@@ -123,6 +123,9 @@ final class Install
 		# Let every ACL-capable user setting retain its own relation visibility.
 		# LinkUUp profiles can therefore make a field stricter than the profile default.
 		Module_User::instance()->saveConfigVar('acl_relations', '1');
+		// UI order is intentionally separate from module priority/load order.
+		Module_User::instance()->saveVar('module_sort', '10');
+		$module->saveVar('module_sort', '20');
 		Module_CORS::instance()->saveConfigVar('cors_allow_any', '1');
 		Module_Language::instance()->saveConfigVar('languages', '["en","de","it","fr","es"]');
 		Module_Maps::instance()->saveConfigVar('maps_record_history', '60s');

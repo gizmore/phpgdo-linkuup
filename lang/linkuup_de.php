@@ -21,6 +21,7 @@ return [
 	'keywords' => ' LinkUUp, local chat app, location based chat, establishments with a chatroom, free city chat',
 
 	'module_LinkUUp' => 'LinkUUp',
+	'module_linkuup' => 'LinkUUp',
 	'lup_category' => 'Kategorie',
 	'lup_course_visible' => 'Besuchte Orte zeigen',
 
