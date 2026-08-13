@@ -101,7 +101,7 @@ final class Module_LinkUUp extends GDO_Module
 	public function getConfig(): array
 	{
 		return [
-			GDT_Url::make('lup_app_url')->initial('https://app.linkuup.gizmore.org/')->allowAll(),
+			GDT_Url::make('lup_app_url')->initial('https://app.www.linkuup.de/')->allowAll(),
 			GDT_Checkbox::make('lup_guest_query')->initial('0'), # Allow guest querie messages
 			GDT_Checkbox::make('lup_open_query')->initial('1'), # No near check for queries
 			GDT_Checkbox::make('lup_only_one_chat')->initial('1'), # Auto part all channels before join another room?
@@ -141,6 +141,7 @@ final class Module_LinkUUp extends GDO_Module
 			'lup_drinks' => [GDT_ACLRelation::MEMBERS, '0', null],
 			'lup_smokes' => [GDT_ACLRelation::MEMBERS, '0', null],
 			'lup_sporty' => [GDT_ACLRelation::MEMBERS, '0', null],
+			'lup_religion' => [GDT_ACLRelation::MEMBERS, '0', null],
 		];
 	}
 
@@ -149,8 +150,7 @@ final class Module_LinkUUp extends GDO_Module
 		return [
 			GDT_Divider::make('div_general'),
 			GDT_String::make('lup_status'),
-			// Opt-in: profiles stay local to a shared live location by default.
-			GDT_Checkbox::make('lup_profile_outside_visible')->initial('0'),
+			GDT_Checkbox::make('lup_profile_outside_visible')->initial('1'),
 
 			GDT_Divider::make('div_location'),
 			GDT_String::make('lup_state'),
@@ -167,10 +167,11 @@ final class Module_LinkUUp extends GDO_Module
 			GDT_SexualOrientation::make('lup_sexo'),
 
 			GDT_Divider::make('div_habits'),
-			GDT_Enum::make('lup_has_pet')->enumValues('yes', 'no')->emptyLabel('not_specified'),
+			GDT_Pet::make('lup_has_pet'),
 			GDT_Enum::make('lup_drinks')->enumValues('lup_drink_yes', 'lup_drink_sometimes', 'lup_drink_never')->emptyLabel('not_specified'),
 			GDT_Enum::make('lup_smokes')->enumValues('lup_smokes_yes', 'lup_smokes_no_care', 'lup_smokes_no', 'lup_smokes_no_way')->emptyLabel('not_specified'),
 			GDT_Enum::make('lup_sporty')->enumValues('lup_sporty', 'lup_unsporty')->emptyLabel('not_specified'),
+			GDT_Religion::make('lup_religion'),
 		];
 	}
 
