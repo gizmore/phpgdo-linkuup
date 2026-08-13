@@ -150,8 +150,7 @@ final class Module_LinkUUp extends GDO_Module
 		return [
 			GDT_Divider::make('div_general'),
 			GDT_String::make('lup_status'),
-			// Opt-in: profiles stay local to a shared live location by default.
-			GDT_Checkbox::make('lup_profile_outside_visible')->initial('0'),
+			GDT_Checkbox::make('lup_profile_outside_visible')->initial('1'),
 
 			GDT_Divider::make('div_location'),
 			GDT_String::make('lup_state'),
