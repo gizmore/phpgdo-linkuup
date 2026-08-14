@@ -320,7 +320,7 @@ final class Install
             'room_address' => null,
             'room_icon' => $imagePeine->getId(),
             'room_image' => $imagePeine->getId(),
-            'room_show_distance' => '0',
+            'room_show_distance' => '1',
         ])->softReplace();
     }
 
@@ -347,7 +347,7 @@ final class Install
 			'room_address' => null,
 			'room_icon' => $imageBS->getId(),
 			'room_image' => $imageBS->getId(),
-			'room_show_distance' => '0',
+			'room_show_distance' => '1',
 		])->softReplace();
 	}
 
@@ -374,7 +374,7 @@ final class Install
             'room_address' => null,
             'room_icon' => $imageBS->getId(),
             'room_image' => $imageBS->getId(),
-            'room_show_distance' => '0',
+            'room_show_distance' => '1',
         ])->softReplace();
     }
 
