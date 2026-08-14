@@ -29,7 +29,6 @@ class LUPWS_RoomVote extends GWS_CommandMethod
 		{
 			return $msg->replyErrorMessage($msg->cmd(), t('err_room'));
 		}
-        $msg->move(-4); // Reset cursor
 		if ($this->room->isDisabled())
 		{
 			return $msg->replyErrorMessage($msg->cmd(), t('err_room_disabled'));

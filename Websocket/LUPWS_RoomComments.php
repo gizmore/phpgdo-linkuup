@@ -26,6 +26,7 @@ class LUPWS_RoomComments extends LUPWS_RoomComment
 		{
 			return $msg->rplyError('err_room_disabled');
 		}
+		$this->commentRoom = $room;
 
 		# Query
 		$ipp = 10;

@@ -1,3 +1,5 @@
+<p class="lup-legal-return"><a href="<?=href('LinkUUp', 'Welcome')?>"><i class="fas fa-arrow-left"></i> Zurück zu LinkUUp</a></p>
+
 <p>Angaben gemäß § 5 DDG</p>
 <p>
     Shqiprim Mehmeti<br>

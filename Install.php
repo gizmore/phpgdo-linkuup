@@ -171,6 +171,7 @@ final class Install
         self::createBraunschweigEducation();
         self::createBraunschweigRefinedLocations();
         self::createBraunschweigAdditionalCafes();
+        self::createBraunschweigCafeExpansion();
 
 		self::createDefaultImageVariants($module);
 	}
@@ -656,6 +657,60 @@ final class Install
                 'room_pos_lng' => (string)$lng,
                 'room_view' => '32.0',
                 'room_radius' => '0.075',
+                'room_address' => $address->getID(),
+                'room_icon' => $image->getID(),
+                'room_image' => $image->getID(),
+                'room_show_distance' => '1',
+            ])->softReplace();
+        }
+    }
+
+    /**
+     * Second café expansion for the regional test catalogue.
+     * Pins are mapped to the venue itself (OpenStreetMap verification,
+     * August 2026); 75 m keeps adjacent Innenstadt venues separate.
+     */
+    private static function createBraunschweigCafeExpansion(): void
+    {
+        $owner = GDO_User::getByName('shqiprim');
+        $image = self::$ICONS[4];
+        $cafes = [
+            ['Mandrin', 52.2716758, 10.5412999, 'Waterloostraße 17', '38106', null],
+            ['Café Lit', 52.2652252, 10.5216875, 'Sack 15', '38100', 'https://www.graff.de/ueber-uns/cafe-lit.html'],
+            ['Café Krokus', 52.2644264, 10.5364909, 'Parkstraße 7', '38102', 'https://cafe-krokus.eatbu.com/?lang=de'],
+            ['Kaffeezeremonie', 52.2618481, 10.5309869, 'Am Magnitor 12', '38100', 'https://kaffeezeremonie.de/'],
+            ['NI Coffee', 52.2620773, 10.5202723, 'Kohlmarkt 7', '38100', 'https://www.nicoffee.de/'],
+            ['Coffee Fellows', 52.2622166, 10.5222776, 'Schuhstraße 2', '38100', 'https://www.coffee-fellows.com/locations/coffee-fellows-braunschweig/'],
+            ['Die Apotheke', 52.2637208, 10.5220708, 'Schuhstraße 4', '38100', 'http://www.apotheke-bar.com/'],
+            ['Nesly', 52.2724510, 10.5368760, 'Hagenring 27a', '38106', 'https://nessly-bistro-cafe-braunschweig.eatbu.com/'],
+            ['Café Limonella', 52.2619874, 10.5282013, 'Langedammstraße 12', '38100', 'https://www.magniviertel.de/cafe-limonella/'],
+            ['Das kleine Cafe', 52.2618874, 10.5302217, 'Ölschlägern 17', '38100', 'https://das-kleine-cafe.metro.biz/'],
+        ];
+
+        foreach ($cafes as $index => [$name, $lat, $lng, $street, $zip, $website])
+        {
+            $id = 170 + $index;
+            $address = GDO_Address::blank([
+                'address_id' => (string)$id,
+                'address_name' => $name,
+                'address_street' => $street,
+                'address_zip' => $zip,
+                'address_city' => 'Braunschweig',
+                'address_country' => 'DE',
+            ])->softReplace();
+
+            LUP_Room::blank([
+                'room_id' => (string)$id,
+                'room_owner' => $owner->getID(),
+                'room_name' => $name,
+                'room_info' => 'Café in Braunschweig. Der Chat ist nur direkt am Standort verfügbar.',
+                'room_color' => '#6F42D7',
+                'room_category' => '5',
+                'room_pos_lat' => (string)$lat,
+                'room_pos_lng' => (string)$lng,
+                'room_view' => '32.0',
+                'room_radius' => '0.075',
+                'room_www' => $website,
                 'room_address' => $address->getID(),
                 'room_icon' => $image->getID(),
                 'room_image' => $image->getID(),

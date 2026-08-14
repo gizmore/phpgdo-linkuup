@@ -5,6 +5,7 @@ use GDO\Comments\GDO_Comment;
 use GDO\Date\Time;
 use GDO\LinkUUp\LUP_Global;
 use GDO\LinkUUp\LUP_Room;
+use GDO\LinkUUp\LUP_RoomVote;
 use GDO\LinkUUp\LUPWS_Command;
 use GDO\Websocket\Server\GWS_Commands;
 use GDO\Websocket\Server\GWS_Message;
@@ -16,6 +17,8 @@ use GDO\Websocket\Server\GWS_Message;
  */
 class LUPWS_RoomComment extends LUPWS_Command
 {
+	/** The room belongs to the request, not to the generic comment DTO. */
+	protected ?LUP_Room $commentRoom = null;
 
 	public function execute(GWS_Message $msg)
 	{
@@ -27,6 +30,7 @@ class LUPWS_RoomComment extends LUPWS_Command
 		{
 			return $msg->rplyError('err_room_disabled');
 		}
+		$this->commentRoom = $room;
 
 		# Only the newest comment.
 		$comments = [];
@@ -56,12 +60,15 @@ class LUPWS_RoomComment extends LUPWS_Command
 
 	public function payloadComment(GDO_Comment $comment)
 	{
+		$vote = $this->commentRoom ? LUP_RoomVote::table()->getVote($comment->getCreator(), $this->commentRoom) : null;
+		$rating = $vote ? $vote->getScore() : 0;
 		return
 			GWS_Message::wr32($comment->getID()) .
 			GWS_Message::wr32($comment->getCreatorID()) .
 			// 		GWS_Message::wrS($comment->displayInput()).
 			GWS_Message::wrS($comment->displayMessage()) .
-			GWS_Message::wr32(Time::getTimestamp($comment->getCreateDate()));
+			GWS_Message::wr32(Time::getTimestamp($comment->getCreateDate())) .
+			GWS_Message::wr8($rating);
 	}
 
 }

@@ -181,9 +181,11 @@ final class Module_LinkUUp extends GDO_Module
 	public function onIncludeScripts(): void
 	{
 		$this->addCSS('css/lup.css');
+		// Bootstrap5 owns the current sidebar. The legacy drawer helper targets
+		// an older theme and can create a competing toggle on mixed backend pages.
 		// A separate revision is used for the visual back-office polish so
 		// browsers do not keep an older stylesheet after a local cache clear.
-		CSS::addFile($this->wwwPath('css/lup.css?lup_skin=20260813_33'));
+		CSS::addFile($this->wwwPath('css/lup.css?lup_skin=20260814_123'));
 	}
 
 	/**
@@ -361,6 +363,16 @@ final class Module_LinkUUp extends GDO_Module
 		$a->removeFieldNamed('link_instagram_auth');
 		$a->removeFieldNamed('link_register');
 		$a->removeFieldNamed('link_register_guest');
+		// The stripped-down backend sign-in screen still needs an obvious exit.
+		$a->addField(GDT_Link::make('lup_back_to_backend')
+			->href(href('LinkUUp', 'Welcome'))->text('lup_back_to_backend'));
+	}
+
+	/** Keep registration from becoming a dead-end in the back office as well. */
+	public function hookRegisterForm(GDT_Form $form)
+	{
+		$form->actions()->addField(GDT_Link::make('lup_back_to_backend')
+			->href(href('LinkUUp', 'Welcome'))->text('lup_back_to_backend'));
 	}
 
 	public function hookRecoveryForm(GDT_Form $form)
