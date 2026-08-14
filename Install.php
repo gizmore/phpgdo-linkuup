@@ -170,6 +170,7 @@ final class Install
         self::createBraunschweigTestBars();
         self::createBraunschweigEducation();
         self::createBraunschweigRefinedLocations();
+        self::createBraunschweigAdditionalCafes();
 
 		self::createDefaultImageVariants($module);
 	}
@@ -601,6 +602,60 @@ final class Install
                 'room_pos_lng' => (string)$lng,
                 'room_view' => '32.0',
                 'room_radius' => (string)$radius,
+                'room_address' => $address->getID(),
+                'room_icon' => $image->getID(),
+                'room_image' => $image->getID(),
+                'room_show_distance' => '1',
+            ])->softReplace();
+        }
+    }
+
+    /**
+     * A second, independently numbered café set for the location catalogue.
+     * Every pin is placed on the venue itself and deliberately uses a 75 m
+     * geofence, so nearby cafés never become one shared room.
+     */
+    private static function createBraunschweigAdditionalCafes(): void
+    {
+        $owner = GDO_User::getByName('shqiprim');
+        $image = self::$ICONS[4];
+        $cafes = [
+            ['Café Zeit', 52.2642962, 10.5218784, 'Sack 24', '38100'],
+            ['Café Zeit Piccolo', 52.2876766, 10.5275435, 'Siegfriedstraße 42', '38106'],
+            ['Café Mamio', 52.2869242, 10.4986368, 'Dorfstraße 6', '38114'],
+            ['Cinnful', 52.2640173, 10.5205852, 'Neue Straße 8', '38100'],
+            ['fiets kaffee.bar', 52.2674509, 10.5408346, 'Altewiekring 29', '38102'],
+            ['Kaffeehaus', 52.2574348, 10.5046552, 'Cyriaksring 35', '38118'],
+            ['Second Home Café', 52.2632320, 10.5456928, 'Kastanienallee 60', '38102'],
+            ['Makery', 52.2613395, 10.5268753, 'Kuhstraße', '38100'],
+            ['Juan & Jane', 52.2637570, 10.5174601, 'Handelsweg 11', '38100'],
+            ['Buchcafé Sisu Lou', 52.2683709, 10.5375977, 'Wiesenstraße 11', '38102'],
+        ];
+
+        foreach ($cafes as $index => [$name, $lat, $lng, $street, $zip])
+        {
+            // Keep these IDs isolated from the original seed catalogue.
+            $id = 160 + $index;
+            $address = GDO_Address::blank([
+                'address_id' => (string)$id,
+                'address_name' => $name,
+                'address_street' => $street,
+                'address_zip' => $zip,
+                'address_city' => 'Braunschweig',
+                'address_country' => 'DE',
+            ])->softReplace();
+
+            LUP_Room::blank([
+                'room_id' => (string)$id,
+                'room_owner' => $owner->getID(),
+                'room_name' => $name,
+                'room_info' => 'Café in Braunschweig. Der Chat ist nur direkt am Standort verfügbar.',
+                'room_color' => '#6F42D7',
+                'room_category' => '5',
+                'room_pos_lat' => (string)$lat,
+                'room_pos_lng' => (string)$lng,
+                'room_view' => '32.0',
+                'room_radius' => '0.075',
                 'room_address' => $address->getID(),
                 'room_icon' => $image->getID(),
                 'room_image' => $image->getID(),
