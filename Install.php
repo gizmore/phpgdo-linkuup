@@ -166,6 +166,7 @@ final class Install
         self::createPeine();
 		self::createWolfsburg();
         self::createBrunswick();
+		self::createRegionalCityChats();
         self::createBraunschweigTestBars();
         self::createBraunschweigEducation();
         self::createBraunschweigRefinedLocations();
@@ -375,6 +376,56 @@ final class Install
             'room_show_distance' => '0',
         ])->softReplace();
     }
+
+	/**
+	 * Regional city chats for the first live GPS test area.
+	 *
+	 * Coordinates are administrative-city centroids verified against OpenStreetMap
+	 * boundary relations. LinkUUp currently authorises a room with one circular
+	 * geofence, so each radius is sized to cover the complete municipal extent
+	 * rather than an arbitrary tiny downtown circle. A future multi-polygon
+	 * geofence can replace these circles without changing the room records.
+	 */
+	private static function createRegionalCityChats(): void
+	{
+		$image = self::$ICONS[4];
+		$cities = [
+			// name, latitude, longitude, radius in km, official city URL
+			['Hannover Chat', 52.3744779, 9.7385532, 15.0, 'https://www.hannover.de/'],
+			['Hildesheim Chat', 52.1527188, 9.9518083, 8.0, 'https://www.hildesheim.de/'],
+			['Salzgitter Chat', 52.1503721, 10.3593147, 16.0, 'https://www.salzgitter.de/'],
+			['Wolfenbüttel Chat', 52.1625283, 10.5348215, 11.0, 'https://www.wolfenbuettel.de/'],
+			['Celle Chat', 52.6240560, 10.0810520, 13.0, 'https://www.celle.de/'],
+			['Goslar Chat', 51.9059936, 10.4266284, 16.0, 'https://www.goslar.de/'],
+			['Helmstedt Chat', 52.2087491, 11.0030275, 12.0, 'https://www.helmstedt.de/'],
+			['Gifhorn Chat', 52.4882194, 10.5453040, 12.0, 'https://www.gifhorn.de/'],
+			['Königslutter am Elm Chat', 52.2499307, 10.8171691, 12.0, 'https://www.koenigslutter.de/'],
+			['Lehrte Chat', 52.3749334, 9.9748557, 12.0, 'https://www.lehrte.de/'],
+		];
+
+		foreach ($cities as $index => [$name, $lat, $lng, $radius, $website])
+		{
+			LUP_Room::blank([
+				'room_id' => (string)(120 + $index),
+				'room_owner' => null,
+				'room_name' => $name,
+				'room_info' => 'Stadtchat für Begegnungen innerhalb des lokalen Stadtgebiets.',
+				'room_color' => '#133742',
+				'room_category' => '2',
+				'room_sort' => (string)(50 + $index),
+				'room_pos_lat' => (string)$lat,
+				'room_pos_lng' => (string)$lng,
+				// Publicly discoverable throughout the current regional test area.
+				'room_view' => '120.0',
+				// Entry remains guarded by this local city geofence.
+				'room_radius' => (string)$radius,
+				'room_www' => $website,
+				'room_icon' => $image->getID(),
+				'room_image' => $image->getID(),
+				'room_show_distance' => '1',
+			])->softReplace();
+		}
+	}
 
     /**
      * A small, real-world seed set for testing the LinkUUp location flow.
