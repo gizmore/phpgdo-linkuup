@@ -550,7 +550,6 @@ final class Install
             ['Café Kreuzgang', 5, 52.2651859, 10.5186063, 'Schützenstraße 22a', '38100', 0.075],
 
             // Clubs & Tanz (category 11): individual entrances, never a city-wide radius.
-            ['Eule XO', 11, 52.2595112, 10.5165467, 'Friedrich-Wilhelm-Straße 39', '38100', 0.075],
             ['Maxi Disco', 11, 52.2662387, 10.5220822, 'Hagenmarkt 6', '38100', 0.075],
             ['Privileg Club', 11, 52.2598031, 10.5215860, 'Wallstraße 1', '38100', 0.075],
             ['LULU Bar', 11, 52.2608885, 10.5203413, 'Friedrich-Wilhelm-Straße 37', '38100', 0.075],
