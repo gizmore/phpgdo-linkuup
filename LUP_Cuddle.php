@@ -4,10 +4,10 @@ namespace GDO\LinkUUp;
 
 use GDO\Core\GDO;
 use GDO\Core\GDT_AutoInc;
+use GDO\Core\GDT_Char;
 use GDO\Core\GDT_CreatedAt;
 use GDO\Core\GDT_CreatedBy;
 use GDO\Core\GDT_Object;
-use GDO\Core\GDT_String;
 use GDO\Date\GDT_Date;
 use GDO\User\GDO_User;
 use GDO\User\GDT_User;
@@ -20,7 +20,7 @@ final class LUP_Cuddle extends GDO
         return [
             GDT_AutoInc::make('cuddle_id'),
             // Enforces pair + location + UTC day exactly once at database level.
-            GDT_String::make('cuddle_key')->ascii()->length(64)->notNull()->unique(),
+            GDT_Char::make('cuddle_key')->ascii()->length(64)->notNull()->unique(),
             GDT_User::make('cuddle_a')->notNull(),
             GDT_User::make('cuddle_b')->notNull(),
             GDT_Object::make('cuddle_room')->table(LUP_Room::table())->notNull(),

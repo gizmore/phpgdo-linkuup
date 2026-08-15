@@ -3,7 +3,7 @@ declare(strict_types=1);
 namespace GDO\LinkUUp\Method;
 
 use GDO\Core\GDT;
-use GDO\Core\GDT_String;
+use GDO\Core\GDT_Char;
 use GDO\Core\Method;
 use GDO\LinkUUp\LUP_Cuddle;
 use GDO\LinkUUp\LUP_CuddleToken;
@@ -18,8 +18,8 @@ final class Cuddle extends Method
     public function gdoParameters(): array
     {
         return [
-            GDT_String::make('token')->ascii()->length(32)->notNull(),
-            GDT_String::make('mac')->ascii()->length(64)->notNull(),
+            GDT_Char::make('token')->ascii()->length(32)->notNull(),
+            GDT_Char::make('mac')->ascii()->length(64)->notNull(),
         ];
     }
 
@@ -28,7 +28,7 @@ final class Cuddle extends Method
     public function execute(): GDT
     {
         $scanner = GDO_User::current();
-        $token = LUP_CuddleToken::find($this->gdoParameterVar('token'));
+        $token = LUP_CuddleToken::findToken($this->gdoParameterVar('token'));
         if (!$token || !hash_equals($token->signature(), $this->gdoParameterVar('mac')))
         {
             return $this->error('err_lup_cuddle_token');

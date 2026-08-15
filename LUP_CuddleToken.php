@@ -4,9 +4,9 @@ namespace GDO\LinkUUp;
 
 use GDO\Core\GDO;
 use GDO\Core\GDT_AutoInc;
+use GDO\Core\GDT_Char;
 use GDO\Core\GDT_CreatedAt;
 use GDO\Core\GDT_Object;
-use GDO\Core\GDT_String;
 use GDO\Date\GDT_DateTime;
 use GDO\User\GDO_User;
 use GDO\User\GDT_User;
@@ -18,7 +18,7 @@ final class LUP_CuddleToken extends GDO
     {
         return [
             GDT_AutoInc::make('ctoken_id'),
-            GDT_String::make('ctoken_token')->ascii()->length(32)->notNull()->unique(),
+            GDT_Char::make('ctoken_token')->ascii()->length(32)->notNull()->unique(),
             GDT_User::make('ctoken_issuer')->notNull(),
             GDT_Object::make('ctoken_room')->table(LUP_Room::table())->notNull(),
             GDT_DateTime::make('ctoken_expires')->notNull(),
@@ -38,7 +38,7 @@ final class LUP_CuddleToken extends GDO
         ])->insert();
     }
 
-    public static function find(string $token): ?self
+    public static function findToken(string $token): ?self
     {
         return self::getByVars(['ctoken_token' => $token]);
     }
