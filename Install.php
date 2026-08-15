@@ -172,6 +172,8 @@ final class Install
         self::createBraunschweigRefinedLocations();
         self::createBraunschweigAdditionalCafes();
         self::createBraunschweigCafeExpansion();
+		self::createRegionalClubExpansion();
+		self::createRegionalMixedExpansion();
 
 		self::createDefaultImageVariants($module);
 	}
@@ -708,6 +710,115 @@ final class Install
                 'room_pos_lat' => (string)$lat,
                 'room_pos_lng' => (string)$lng,
                 'room_view' => '32.0',
+                'room_radius' => '0.075',
+                'room_www' => $website,
+                'room_address' => $address->getID(),
+                'room_icon' => $image->getID(),
+                'room_image' => $image->getID(),
+                'room_show_distance' => '1',
+            ])->softReplace();
+        }
+    }
+
+    /**
+     * Current club and dance venues for regional discovery tests.
+     * Each pin is placed at the recorded entrance/address centre and uses a
+     * deliberately tight 75 m geofence: finding a venue is possible from
+     * everywhere, while entering its live chat stays local.
+     */
+    private static function createRegionalClubExpansion(): void
+    {
+        $owner = GDO_User::getByName('shqiprim');
+        $image = self::$ICONS[4];
+        $clubs = [
+            ['Stereowerk', 'Braunschweig', 52.2501826, 10.5320079, 'Böcklerstraße 30', '38102', 'https://www.stereowerk.de/'],
+            ['Schön & Frölich', 'Braunschweig', 52.2564550, 10.4995286, 'Broitzemer Straße 220', '38118', 'https://jolly-eventlocation.de/'],
+            ['Capitol Music Club', 'Braunschweig', 52.2596010, 10.5164309, 'Gieseler 3', '38100', null],
+            ['Brain Klub', 'Braunschweig', 52.2593998, 10.5223018, 'Bruchtorwall 21', '38100', null],
+            ['The Lindbergh Palace', 'Braunschweig', 52.2597318, 10.5180901, 'Kalenwall 3', '38100', null],
+            ['Esplanade', 'Wolfsburg', 52.4243966, 10.7748901, 'Wielandstraße 3', '38440', 'https://www.esplanadewolfsburg.com/'],
+            ['Vibes', 'Wolfsburg', 52.4255124, 10.7814134, 'Schachtweg 34', '38440', null],
+            ['Palo Palo', 'Hannover', 52.3788393, 9.7438353, 'Raschplatz 8A', '30161', 'https://www.palopalo.de/'],
+            ['Baggi', 'Hannover', 52.3788393, 9.7438353, 'Raschplatz 7L', '30161', 'https://baggihannover.de/'],
+            ['Phoenix', 'Hannover', 52.3773769, 9.7329141, 'Goseriede 4', '30159', 'http://www.phoenix-club.de/'],
+        ];
+
+        foreach ($clubs as $index => [$name, $city, $lat, $lng, $street, $zip, $website])
+        {
+            $id = 190 + $index;
+            $address = GDO_Address::blank([
+                'address_id' => (string)$id,
+                'address_name' => $name,
+                'address_street' => $street,
+                'address_zip' => $zip,
+                'address_city' => $city,
+                'address_country' => 'DE',
+            ])->softReplace();
+
+            LUP_Room::blank([
+                'room_id' => (string)$id,
+                'room_owner' => $owner->getID(),
+                'room_name' => $name,
+                'room_info' => 'Club- und Tanzlocation. Der Live-Chat ist nur direkt am Standort verfügbar.',
+                'room_color' => '#6F42D7',
+                'room_category' => '11',
+                'room_pos_lat' => (string)$lat,
+                'room_pos_lng' => (string)$lng,
+                'room_view' => '60.0',
+                'room_radius' => '0.075',
+                'room_www' => $website,
+                'room_address' => $address->getID(),
+                'room_icon' => $image->getID(),
+                'room_image' => $image->getID(),
+                'room_show_distance' => '1',
+            ])->softReplace();
+        }
+    }
+
+    /**
+     * Current mixed venues for the regional catalogue: seven shisha/lounge
+     * venues plus three cultural meeting places. Sources were checked against
+     * active operator or municipal pages in August 2026.
+     */
+    private static function createRegionalMixedExpansion(): void
+    {
+        $owner = GDO_User::getByName('shqiprim');
+        $image = self::$ICONS[4];
+        $places = [
+            ['ZØES Shisha Bar & Club', 3, 'Braunschweig', 52.2668446, 10.5193779, 'Lange Straße 64', '38100', 'https://zoes-bs.de/'],
+            ['SAFE Lounge & Bar', 3, 'Braunschweig', 52.2697739, 10.5238469, 'Wendenstraße 49-50', '38100', 'https://safe-bs.de/'],
+            ['SixtyFive Lounge', 3, 'Hannover', 52.3892924, 9.7349712, 'Vahrenwalder Straße 42', '30165', 'https://sixtyfivelounge.de/'],
+            ['Barbados Shishabar', 3, 'Hannover', 52.3748900, 9.7312020, 'Goethestraße 11', '30169', 'https://barbados-hannover.de/'],
+            ['Nova Shisha Bar, Restaurant & Café', 3, 'Hannover', 52.3760345, 9.7333762, 'Georgstraße 7', '30159', 'https://novahannover.de/'],
+            ['Relax Café', 3, 'Hannover', 52.3769726, 9.7280167, 'Lange Laube 24', '30159', 'https://relaxhannover.de/'],
+            ['AURA Shishabar', 3, 'Hannover', 52.3777025, 9.7296681, 'Otto-Brenner-Straße 9', '30159', 'https://aura-hannover.de/'],
+            ['Roof Garden', 3, 'Hannover', 52.3760991, 9.7362421, 'Mehlstraße 2', '30159', 'https://roofgarden-hannover.de/'],
+            ['Soziokulturelles Zentrum Braunschweig', 12, 'Braunschweig', 52.2531498, 10.4992802, 'Westbahnhof 13', '38118', 'https://www.soziokultur-bs.de/'],
+            ['phaeno Wolfsburg', 12, 'Wolfsburg', 52.4288516, 10.7904410, 'Willy-Brandt-Platz 1', '38440', 'https://www.phaeno.de/'],
+        ];
+
+        foreach ($places as $index => [$name, $category, $city, $lat, $lng, $street, $zip, $website])
+        {
+            $id = 210 + $index;
+            $address = GDO_Address::blank([
+                'address_id' => (string)$id,
+                'address_name' => $name,
+                'address_street' => $street,
+                'address_zip' => $zip,
+                'address_city' => $city,
+                'address_country' => 'DE',
+            ])->softReplace();
+
+            LUP_Room::blank([
+                'room_id' => (string)$id,
+                'room_owner' => $owner->getID(),
+                'room_name' => $name,
+                'room_info' => 'Geprüfte regionale Testlokalität. Der Live-Chat ist nur direkt am Standort verfügbar.',
+                'room_color' => '#6F42D7',
+                'room_category' => (string)$category,
+                'room_pos_lat' => (string)$lat,
+                'room_pos_lng' => (string)$lng,
+                'room_view' => '60.0',
                 'room_radius' => '0.075',
                 'room_www' => $website,
                 'room_address' => $address->getID(),
