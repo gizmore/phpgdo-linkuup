@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 namespace GDO\LinkUUp;
 
 use GDO\Core\GDO;
@@ -6,57 +7,58 @@ use GDO\Core\GDT_AutoInc;
 use GDO\Core\GDT_CreatedAt;
 use GDO\Core\GDT_CreatedBy;
 use GDO\Core\GDT_Object;
+use GDO\Core\GDT_String;
+use GDO\Date\GDT_Date;
 use GDO\User\GDO_User;
 use GDO\User\GDT_User;
 
-class LUP_Cuddle extends GDO
+/** A single, mutually confirmed Cuddle encounter. */
+final class LUP_Cuddle extends GDO
 {
     public function gdoColumns(): array
     {
         return [
             GDT_AutoInc::make('cuddle_id'),
+            // Enforces pair + location + UTC day exactly once at database level.
+            GDT_String::make('cuddle_key')->ascii()->length(64)->notNull()->unique(),
             GDT_User::make('cuddle_a')->notNull(),
             GDT_User::make('cuddle_b')->notNull(),
-            GDT_Object::make('cuddle_room')->table(LUP_Room::table()),
+            GDT_Object::make('cuddle_room')->table(LUP_Room::table())->notNull(),
+            GDT_Date::make('cuddle_day')->notNull(),
             GDT_CreatedBy::make('cuddle_creator'),
             GDT_CreatedAt::make('cuddle_created'),
         ];
     }
 
-    public static function getCuddle(GDO_User $a, GDO_User $b, bool $getB=false, string $date=null): ?LUP_Cuddle
+    public static function utcDay(): string
     {
-        $aa = self::swap($a, $b, false);
-        $bb = self::swap($a, $b, true);
-        $date = new \DateTimeImmutable($date ?: null);
-        $dayStart = $date->setTime(0, 0, 0)->format('Y-m-d H:i:s.u');
-        $dayEnd   = $date->modify('+1 day')->setTime(0, 0, 0)->format('Y-m-d H:i:s.u');
-        $query = self::table()
-            ->select('*')
-            ->where(sprintf('cuddle_a=%d AND cuddle_b=%d AND cuddle_created >= %s AND cuddle_created < %s',
-                $aa->getID(),
-                $bb->getID(),
-                GDO::quoteS($dayStart),
-                GDO::quoteS($dayEnd),
-            ));
-        return $query->exec()->fetchObject();
+        return gmdate('Y-m-d');
     }
 
-    public static function swap(GDO_User $a, GDO_User $b, bool $getB): GDO_User
+    public static function key(GDO_User $a, GDO_User $b, LUP_Room $room, string $day): string
     {
-        $aa = $a->getID() < $b->getID() ? $a : $b;
-        $bb = $b->getID() < $a->getID() ? $b : $a;
-        return $getB ? $bb : $aa;
+        $ids = [(int)$a->getID(), (int)$b->getID()];
+        sort($ids, SORT_NUMERIC);
+        return hash('sha256', implode('|', ['lup-cuddle-v1', $ids[0], $ids[1], $room->getID(), $day]));
     }
 
-    public static function cuddle(GDO_User $a, GDO_User $b, ?LUP_Room $room = null): bool
+    public static function exists(GDO_User $a, GDO_User $b, LUP_Room $room, ?string $day = null): bool
     {
-        $aa = self::swap($a, $b, false);
-        $bb = self::swap($a, $b, true);
-        self::blank([
-            'cuddle_a' => $aa->getID(),
-            'cuddle_b' => $bb->getID(),
-            'cuddle_'
-        ]);
+        $key = self::key($a, $b, $room, $day ?: self::utcDay());
+        return self::getByVars(['cuddle_key' => $key]) !== null;
     }
 
+    public static function create(GDO_User $a, GDO_User $b, LUP_Room $room): self
+    {
+        $day = self::utcDay();
+        $ids = [(int)$a->getID(), (int)$b->getID()];
+        sort($ids, SORT_NUMERIC);
+        return self::blank([
+            'cuddle_key' => self::key($a, $b, $room, $day),
+            'cuddle_a' => (string)$ids[0],
+            'cuddle_b' => (string)$ids[1],
+            'cuddle_room' => $room->getID(),
+            'cuddle_day' => $day,
+        ])->insert();
+    }
 }

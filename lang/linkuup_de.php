@@ -221,5 +221,14 @@ return [
 	'lup_origin' => 'Origin of Country',
 	'lup_state' => 'Living State',
 	'lup_city' => 'Living City',
+	'lup_cuddle_token_ttl' => 'Gültigkeit des Cuddle-QR-Codes',
+	'err_lup_cuddle_token' => 'Dieser Cuddle-Code ist ungültig.',
+	'err_lup_cuddle_qr' => 'Bitte nutze den Cuddle-QR-Code.',
+	'err_lup_cuddle_used' => 'Dieser Cuddle-Code wurde bereits verwendet.',
+	'err_lup_cuddle_expired' => 'Dieser Cuddle-Code ist abgelaufen.',
+	'err_lup_cuddle_self' => 'Du kannst nicht mit dir selbst cuddlen.',
+	'err_lup_cuddle_room' => 'Diese Location ist nicht für Cuddles verfügbar.',
+	'err_lup_already_cuddled' => 'Ihr habt heute hier bereits zusammen gecuddelt.',
+	'msg_lup_cuddle_success' => 'Cuddle für euch beide bestätigt!',
 
 ];

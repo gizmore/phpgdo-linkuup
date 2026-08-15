@@ -12,6 +12,7 @@ use GDO\Core\GDT_Checkbox;
 use GDO\Core\GDT_Enum;
 use GDO\Core\GDT_String;
 use GDO\Core\GDT_UInt;
+use GDO\Date\GDT_Duration;
 use GDO\Core\Method;
 use GDO\Form\GDT_Form;
 use GDO\Gallery\GDO_Gallery;
@@ -73,6 +74,8 @@ final class Module_LinkUUp extends GDO_Module
 	public function getClasses(): array
 	{
 		return [
+			LUP_Cuddle::class,
+			LUP_CuddleToken::class,
 			LUP_HelpRead::class,
 			LUP_Trophy::class,
 			LUP_ProfileLike::class,
@@ -109,6 +112,7 @@ final class Module_LinkUUp extends GDO_Module
 			GDT_Checkbox::make('lup_ticket_engine')->initial('0'), # Need to purchase tickets for a room first?
 			GDT_Checkbox::make('lup_profile_likes_guests')->initial('0'), # Guests may not like users
             GDT_Length::make('lup_cuddle_range')->initial('0.100'), # Cuddle range
+			GDT_Duration::make('lup_cuddle_token_ttl')->initial('2m')->min(30)->max(900),
 			GDT_UInt::make('lup_num_top_comments')->initial('3')->max(100), # Num Top comments in Room detail.
 			GDT_UInt::make('lup_graph_width')->initial('512')->min(32)->max(4096),
 			GDT_UInt::make('lup_graph_height')->initial('392')->min(32)->max(4096),
@@ -211,6 +215,7 @@ final class Module_LinkUUp extends GDO_Module
 	public function cfgOnlyOneChat(): bool { return $this->getConfigValue('lup_only_one_chat'); }
 
     public function cfgCuddleRange(): float { return $this->getConfigValue('lup_cuddle_range'); }
+	public function cfgCuddleTokenTTL(): int { return $this->getConfigValue('lup_cuddle_token_ttl'); }
 
 	################
 	### Settings ###
