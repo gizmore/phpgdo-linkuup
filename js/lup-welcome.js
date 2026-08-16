@@ -3,6 +3,10 @@
     'use strict';
     const run = () => {
         const normalizeAccountGrid = () => {
+            /* The arrival page uses Bootstrap's native overlay unchanged.
+             * Repositioning its legacy links after a tap made the panel flash
+             * and immediately collapse on some phone browsers. */
+            if (document.body.classList.contains('lup-arrival-active')) return;
             const nav = document.querySelector('#navbarSupportedContent .navbar-nav');
             if (!nav) return;
             const items = Array.from(nav.children).filter((item) => item.classList.contains('nav-item'));
@@ -31,8 +35,20 @@
             });
         };
         normalizeAccountGrid();
+        if (document.body.classList.contains('lup-arrival-active')) {
+            document.querySelectorAll('#navbarSupportedContent a').forEach((link) => {
+                if (/^Ausloggen\b/i.test(link.textContent.trim())) {
+                    link.textContent = 'Ausloggen';
+                }
+            });
+        }
         const accountToggle = document.querySelector('[aria-controls="navbarSupportedContent"]');
-        if (accountToggle) accountToggle.addEventListener('click', () => window.setTimeout(normalizeAccountGrid, 0));
+        if (!document.body.classList.contains('lup-arrival-active') && accountToggle && accountToggle.dataset.lupAccountBound !== '1') {
+            accountToggle.dataset.lupAccountBound = '1';
+            /* Bootstrap owns the actual collapse state. We only normalize
+             * the legacy account links after its state change has completed. */
+            accountToggle.addEventListener('click', () => window.requestAnimationFrame(normalizeAccountGrid));
+        }
 
         const setupFriendsPage = () => {
             if (!window.location.pathname.toLowerCase().includes('friends;friendlist')) return;
@@ -46,8 +62,8 @@
                 friendTabs.classList.add('lup-friends-tabs');
                 friendTabs.querySelectorAll('a').forEach((link) => {
                     const label = link.textContent.trim();
-                    if (/Freund\(in\) hinzufügen/i.test(label)) link.textContent = 'Freundschaft anfragen';
-                    else if (/^Freunde/i.test(label)) link.textContent = 'Deine Freunde';
+                    if (/Freund\(in\) hinzufügen/i.test(label)) link.textContent = 'Freund hinzufügen';
+                    else if (/^Freunde/i.test(label)) link.textContent = 'Meine Freunde';
                     else if (/^Eingehende/i.test(label)) link.textContent = 'Eingehende Anfragen';
                     else if (/^Gesendete/i.test(label)) link.textContent = 'Gesendete Anfragen';
                 });
@@ -59,14 +75,34 @@
             if (heading) heading.before(hero); else content.prepend(hero);
             const list = content.querySelector('.gdt-list');
             const listTitle = content.querySelector('.gdt-list-title h3');
-            if (listTitle) listTitle.textContent = 'Deine Freunde';
+            if (listTitle) listTitle.textContent = 'Dein Freundeskreis';
             if (list && !list.querySelector('.gdt-list-item')) {
                 const empty = document.createElement('section');
                 empty.className = 'lup-friends-empty';
-                empty.innerHTML = '<div class="lup-friends-empty-mark" aria-hidden="true"><span></span><span></span><span></span></div><h2>Dein Kreis wartet.</h2><p>Wenn du jemandem vor Ort begegnest, kannst du eine Freundschaft anfragen. Hier bleiben später eure Verbindungen griffbereit.</p><a href="/linkuup;welcome.html?_lang=de">Orte in deiner Nähe entdecken</a>';
+                empty.innerHTML = '<div class="lup-friends-empty-art" aria-hidden="true"><i></i><b></b><em></em><span></span></div><div class="lup-friends-empty-copy"><span>DEIN FREUNDESKREIS</span><h2>Begegnungen bleiben verbunden.</h2><p>Hier siehst du deine Freunde, eingehende Anfragen und Menschen, mit denen du vor Ort in Kontakt bleiben möchtest.</p><a href="/linkuup;welcome.html?_lang=de">Orte entdecken</a></div>';
                 list.append(empty);
             }
         };
+        const setupFriendsModule = () => {
+            const path = window.location.pathname.toLowerCase();
+            if (!path.includes('friends;')) return;
+            document.body.classList.add('lup-friends-module');
+            const labels = [
+                [/Freund.*hinzuf/i, 'Freund hinzufügen'],
+                [/^(?:Ihre |Deine )?Freunde/i, 'Meine Freunde'],
+                [/^Eingehende/i, 'Eingehende Anfragen'],
+                [/^Gesendete/i, 'Gesendete Anfragen'],
+            ];
+            const links = Array.from(document.querySelectorAll('#top .gdt-bar.horizontal a, .lup-friends-tabs a'));
+            links.forEach((link) => {
+                const original = link.textContent.trim();
+                const match = labels.find(([pattern]) => pattern.test(original));
+                if (!match) return;
+                link.textContent = match[1];
+                link.closest('.gdt-link')?.classList.toggle('lup-friends-tab-active', link.href.toLowerCase().includes(path.split('/').pop()));
+            });
+        };
+        setupFriendsModule();
         setupFriendsPage();
         const polishFriendsNavigation = () => {
             if (!window.location.pathname.toLowerCase().includes('friends;friendlist')) return;
@@ -76,17 +112,20 @@
                 tabs.classList.add('lup-friends-tabs');
                 tabs.querySelectorAll('a').forEach((link) => {
                     const label = link.textContent.trim();
-                    if (/Freund.*hinzuf/i.test(label)) link.textContent = 'Freundschaft anfragen';
-                    else if (/^Freunde/i.test(label)) link.textContent = 'Deine Freunde';
+                    if (/Freund.*hinzuf/i.test(label)) link.textContent = 'Freund hinzufügen';
+                    else if (/^Freunde/i.test(label)) link.textContent = 'Meine Freunde';
                     else if (/^Eingehende/i.test(label)) link.textContent = 'Eingehende Anfragen';
                     else if (/^Gesendete/i.test(label)) link.textContent = 'Gesendete Anfragen';
                 });
             }
-            const title = Array.from(document.querySelectorAll('#content-wrap h1,#content-wrap h2,#content-wrap h3')).find((node) => /(?:Ihre|Deine) Freunde/.test(node.textContent) && !node.closest('.lup-friends-hero'));
-            if (title) title.textContent = 'Deine Freunde';
+            const title = Array.from(document.querySelectorAll('#content-wrap .gdt-list-title, #content-wrap h1, #content-wrap h2, #content-wrap h3, #content-wrap h4')).find((node) => /(?:Ihre|Deine) Freunde/.test(node.textContent) && !node.closest('.lup-friends-hero'));
+            if (title) {
+                const visibleTitle = title.matches('.gdt-list-title') ? title.querySelector('h1,h2,h3,h4') || title : title;
+                visibleTitle.textContent = 'Dein Freundeskreis';
+            }
         };
         polishFriendsNavigation();
-        window.setTimeout(polishFriendsNavigation, 500);
+        window.setTimeout(() => { setupFriendsModule(); polishFriendsNavigation(); }, 500);
 
         const links = document.querySelectorAll('[data-lup-scroll]');
         if (!links.length) return;
@@ -95,12 +134,51 @@
             if (!target) return;
             event.preventDefault();
             const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+            /* An expanded explanation belongs to the step the visitor just
+             * read. Before moving on, compact earlier steps again so their
+             * extra height can never make the next destination appear offset
+             * or leave its continuation button below the visible area. */
+            document.querySelectorAll('.lup-arrival-more[open]').forEach((details) => {
+                if (!target.contains(details)) details.open = false;
+            });
+            // The section itself has generous visual breathing room.  On a
+            // phone that put the actual heading below the fold, so navigate
+            // to the first visible content node instead.
+            const presentationTarget = target.querySelector('header') || target;
             target.classList.remove('lup-arrival-section-enter');
             void target.offsetWidth;
             target.classList.add('lup-arrival-section-enter');
-            target.scrollIntoView({ behavior: reduced ? 'auto' : 'smooth', block: 'start' });
+            /* The backend owns its own vertical scrolling area.  Native
+             * scrollIntoView() occasionally selected the document instead,
+             * especially on mobile, leaving the second journey button still
+             * hidden below the fold. */
+            const scroller = document.querySelector('#page-content-wrapper');
+            const header = document.querySelector('#page-content-wrapper > .navbar');
+            if (scroller && scroller.scrollHeight > scroller.clientHeight + 2) {
+                const destination = presentationTarget.getBoundingClientRect().top
+                    - scroller.getBoundingClientRect().top
+                    + scroller.scrollTop
+                    - (header ? header.getBoundingClientRect().height + 12 : 12);
+                scroller.scrollTo({ top: Math.max(0, destination), behavior: reduced ? 'auto' : 'smooth' });
+            } else {
+                const offset = header ? header.getBoundingClientRect().height + 12 : 12;
+                const destination = presentationTarget.getBoundingClientRect().top + window.scrollY - offset;
+                window.scrollTo({ top: Math.max(0, destination), behavior: reduced ? 'auto' : 'smooth' });
+            }
             window.setTimeout(() => target.classList.remove('lup-arrival-section-enter'), reduced ? 10 : 900);
         }));
+
+        /* Reading an explanation must not trigger a jump. Let the browser
+         * finish its native layout first, then preserve the reader's current
+         * position in the section. */
+        document.querySelectorAll('.lup-arrival-more').forEach((details) => {
+            details.addEventListener('toggle', () => {
+                const section = details.closest('.lup-arrival-hero, .lup-arrival-journey, .lup-arrival-categories, .lup-arrival-principles');
+                if (!section || !details.open) return;
+                window.requestAnimationFrame(() => section.classList.add('lup-arrival-reading'));
+                window.setTimeout(() => section.classList.remove('lup-arrival-reading'), 260);
+            });
+        });
 
         if (!('IntersectionObserver' in window)) return;
         const sections = document.querySelectorAll('.lup-arrival-journey, .lup-arrival-categories, .lup-arrival-principles');

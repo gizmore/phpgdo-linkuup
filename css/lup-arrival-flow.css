@@ -1,0 +1,100 @@
+/* Welcome journey: three plain, readable actions rather than numbered cards. */
+.lup-arrival-journey .lup-arrival-flow {
+  display:grid;
+  grid-template-columns:repeat(3,minmax(0,1fr));
+  gap:12px;
+  margin:44px 0 0;
+  padding:0;
+  border:0;
+  list-style:none;
+}
+.lup-arrival-journey .lup-arrival-flow::before { display:none; }
+.lup-arrival-journey .lup-arrival-flow li,
+.lup-arrival-journey .lup-arrival-flow li + li {
+  display:flex;
+  align-items:center;
+  gap:13px;
+  min-height:76px;
+  margin:0;
+  padding:13px 12px 13px 0;
+  border:0;
+  border-bottom:1px solid rgba(184,211,246,.13);
+  border-radius:0;
+  background:transparent;
+  box-shadow:none;
+}
+.lup-arrival-journey .lup-arrival-flow li:last-child { border-bottom:0; }
+.lup-arrival-journey .lup-arrival-flow li > span { display:none; }
+.lup-arrival-journey .lup-arrival-flow li > i {
+  position:static;
+  display:grid;
+  flex:0 0 36px;
+  place-items:center;
+  width:36px;
+  height:36px;
+  border:1px solid rgba(152,207,255,.26);
+  border-radius:11px 11px 11px 5px;
+  background:rgba(103,143,215,.11);
+  box-shadow:none;
+  color:#bfe7ff;
+  font-size:14px;
+}
+.lup-arrival-journey .lup-arrival-flow li:nth-child(2) > i { border-color:rgba(197,167,255,.28); background:rgba(147,108,244,.13); color:#dac9ff; }
+.lup-arrival-journey .lup-arrival-flow li:nth-child(3) > i { border-color:rgba(131,219,175,.25); background:rgba(75,192,135,.11); color:#b9efd1; }
+.lup-arrival-journey .lup-arrival-flow h3 { margin:0 0 3px; color:#f5f7ff; font-size:15px; font-weight:720; letter-spacing:-.015em; }
+.lup-arrival-journey .lup-arrival-flow p { margin:0; color:#aeb9cc; font-size:11px; line-height:1.35; }
+@media (max-width:760px) {
+  .lup-arrival-journey .lup-arrival-flow { grid-template-columns:1fr; gap:8px; margin-top:30px; }
+  .lup-arrival-journey .lup-arrival-flow li,
+  .lup-arrival-journey .lup-arrival-flow li + li { min-height:66px; padding:11px 0; border-bottom:1px solid rgba(184,211,246,.13); }
+}
+
+/* The legacy welcome sheet contains older card experiments with !important.
+ * These final rules intentionally win so each icon stays directly left of its
+ * own sentence on every viewport. */
+.lup-arrival-journey ol.lup-arrival-flow { display:grid !important; grid-template-columns:repeat(3,minmax(0,1fr)) !important; gap:12px !important; margin:44px 0 0 !important; padding:0 !important; border:0 !important; }
+.lup-arrival-journey ol.lup-arrival-flow::before { display:none !important; }
+.lup-arrival-journey ol.lup-arrival-flow li,
+.lup-arrival-journey ol.lup-arrival-flow li + li { position:relative !important; display:flex !important; align-items:center !important; gap:13px !important; min-height:76px !important; margin:0 !important; padding:13px 12px 13px 0 !important; overflow:visible !important; border:0 !important; border-bottom:1px solid rgba(184,211,246,.13) !important; border-right:0 !important; border-radius:0 !important; background:transparent !important; box-shadow:none !important; transform:none !important; }
+.lup-arrival-journey ol.lup-arrival-flow li:last-child { border-bottom:0 !important; }
+.lup-arrival-journey ol.lup-arrival-flow li > i { position:static !important; display:grid !important; flex:0 0 36px !important; place-items:center !important; width:36px !important; height:36px !important; margin:0 !important; border:1px solid rgba(152,207,255,.26) !important; border-radius:11px 11px 11px 5px !important; background:rgba(103,143,215,.11) !important; box-shadow:none !important; color:#bfe7ff !important; font-size:14px !important; }
+.lup-arrival-journey ol.lup-arrival-flow li > div { min-width:0 !important; }
+.lup-arrival-journey ol.lup-arrival-flow h3 { margin:0 0 3px !important; font-size:15px !important; }
+.lup-arrival-journey ol.lup-arrival-flow li p { margin:0 !important; font-size:11px !important; }
+@media (max-width:760px) { .lup-arrival-journey ol.lup-arrival-flow { grid-template-columns:1fr !important; gap:8px !important; margin-top:30px !important; }.lup-arrival-journey ol.lup-arrival-flow li,.lup-arrival-journey ol.lup-arrival-flow li + li { min-height:66px !important; padding:11px 0 !important; border-bottom:1px solid rgba(184,211,246,.13) !important; }.lup-arrival-journey ol.lup-arrival-flow li > i { position:static !important; width:36px !important; height:36px !important; } }
+
+/* The privacy promise uses the same restrained, left-aligned language. */
+.lup-arrival-principles .lup-arrival-principle-flow { display:grid !important; gap:0 !important; overflow:visible !important; border:0 !important; border-radius:0 !important; background:transparent !important; box-shadow:none !important; }
+.lup-arrival-principles .lup-arrival-principle-flow > div { display:flex !important; align-items:center !important; gap:13px !important; min-height:72px !important; padding:12px 0 !important; border:0 !important; border-bottom:1px solid rgba(184,211,246,.13) !important; background:transparent !important; transform:none !important; }
+.lup-arrival-principles .lup-arrival-principle-flow > div:last-child { border-bottom:0 !important; }
+.lup-arrival-principles .lup-arrival-principle-flow i { display:grid !important; flex:0 0 36px !important; place-items:center !important; width:36px !important; height:36px !important; border:1px solid rgba(152,207,255,.26) !important; border-radius:11px 11px 11px 5px !important; background:rgba(103,143,215,.11) !important; box-shadow:none !important; color:#bfe7ff !important; font-size:14px !important; }
+.lup-arrival-principles .lup-arrival-principle-flow > div:nth-child(2) i { border-color:rgba(197,167,255,.28) !important; background:rgba(147,108,244,.13) !important; color:#dac9ff !important; }
+.lup-arrival-principles .lup-arrival-principle-flow > div:nth-child(3) i { border-color:rgba(131,219,175,.25) !important; background:rgba(75,192,135,.11) !important; color:#b9efd1 !important; }
+.lup-arrival-principles .lup-arrival-principle-flow span { display:block !important; min-width:0 !important; }
+.lup-arrival-principles .lup-arrival-principle-flow b { display:block !important; margin:0 0 3px !important; color:#f5f7ff !important; font-size:15px !important; font-weight:720 !important; }
+.lup-arrival-principles .lup-arrival-principle-flow small { display:block !important; color:#aeb9cc !important; font-size:11px !important; line-height:1.35 !important; }
+
+/* Category chooser: compact place cues, not eight competing posters. */
+.lup-arrival-categories .lup-arrival-category-grid { display:grid !important; grid-template-columns:repeat(4,minmax(0,1fr)) !important; gap:10px !important; margin-top:35px !important; }
+.lup-arrival-categories .lup-arrival-category-grid .lup-arrival-category { display:flex !important; align-items:center !important; gap:10px !important; min-height:68px !important; padding:11px 10px !important; border:1px solid rgba(184,211,246,.12) !important; border-radius:14px !important; background:rgba(255,255,255,.025) !important; box-shadow:inset 0 1px 0 rgba(255,255,255,.045) !important; transform:none !important; }
+.lup-arrival-categories .lup-arrival-category-grid .lup-arrival-category > i { display:grid !important; flex:0 0 31px !important; place-items:center !important; width:31px !important; height:31px !important; margin:0 !important; border:1px solid rgba(152,207,255,.24) !important; border-radius:10px 10px 10px 4px !important; background:rgba(103,143,215,.10) !important; box-shadow:none !important; color:#bfe7ff !important; font-size:13px !important; }
+.lup-arrival-categories .lup-arrival-category-grid .lup-arrival-category > span { display:block !important; min-width:0 !important; }
+.lup-arrival-categories .lup-arrival-category-grid .lup-arrival-category b { display:block !important; overflow:hidden !important; color:#f5f7ff !important; font-size:12px !important; font-weight:720 !important; line-height:1.2 !important; text-overflow:ellipsis !important; white-space:nowrap !important; }
+.lup-arrival-categories .lup-arrival-category-grid .lup-arrival-category small { display:block !important; overflow:hidden !important; margin-top:3px !important; color:#aeb9cc !important; font-size:9px !important; line-height:1.25 !important; text-overflow:ellipsis !important; white-space:nowrap !important; }
+.lup-arrival-categories .lup-arrival-category-grid .lup-arrival-category-bar > i { border-color:rgba(242,170,114,.30) !important; background:rgba(242,170,114,.10) !important; color:#ffd0aa !important; }.lup-arrival-categories .lup-arrival-category-grid .lup-arrival-category-cafe > i { border-color:rgba(226,184,127,.30) !important; background:rgba(226,184,127,.10) !important; color:#f4d5a7 !important; }.lup-arrival-categories .lup-arrival-category-grid .lup-arrival-category-club > i { border-color:rgba(236,141,227,.30) !important; background:rgba(236,141,227,.10) !important; color:#f7beef !important; }.lup-arrival-categories .lup-arrival-category-grid .lup-arrival-category-culture > i,.lup-arrival-categories .lup-arrival-category-grid .lup-arrival-category-education > i { border-color:rgba(140,199,238,.30) !important; background:rgba(140,199,238,.10) !important; color:#c6eaff !important; }.lup-arrival-categories .lup-arrival-category-grid .lup-arrival-category-sport > i { border-color:rgba(131,210,162,.30) !important; background:rgba(131,210,162,.10) !important; color:#c5f0d4 !important; }.lup-arrival-categories .lup-arrival-category-grid .lup-arrival-category-health > i { border-color:rgba(244,154,178,.30) !important; background:rgba(244,154,178,.10) !important; color:#ffc8d7 !important; }
+@media (max-width:760px) { .lup-arrival-categories .lup-arrival-category-grid { grid-template-columns:repeat(2,minmax(0,1fr)) !important; gap:8px !important; margin-top:28px !important; }.lup-arrival-categories .lup-arrival-category-grid .lup-arrival-category { min-height:62px !important; padding:10px 8px !important; gap:8px !important; }.lup-arrival-categories .lup-arrival-category-grid .lup-arrival-category > i { flex-basis:28px !important; width:28px !important; height:28px !important; font-size:12px !important; }.lup-arrival-categories .lup-arrival-category-grid .lup-arrival-category b { font-size:11px !important; }.lup-arrival-categories .lup-arrival-category-grid .lup-arrival-category small { font-size:8px !important; } }
+
+/* One real map pin.  The pin and its two water-like landing waves are separate
+ * layers so old welcome styles cannot freeze one another's transforms. */
+.lup-arrival-world-pin { position:absolute !important; display:block !important; z-index:3 !important; width:48px !important; height:62px !important; overflow:visible !important; border:0 !important; border-radius:0 !important; background:transparent !important; box-shadow:none !important; opacity:.68 !important; transform:translate3d(0,0,0); will-change:transform; animation:lup-arrival-pin-drift 12s ease-in-out infinite !important; }
+.lup-arrival-world-pin::before,.lup-arrival-world-pin::after { display:none !important; content:none !important; }
+.lup-arrival-world-pin > i { position:absolute !important; z-index:2 !important; top:0 !important; left:50% !important; display:block !important; color:#a9e4ff !important; font-size:46px !important; line-height:1 !important; text-shadow:0 0 7px rgba(218,246,255,.70),0 0 21px rgba(104,180,255,.46),0 0 34px rgba(102,108,255,.18) !important; transform:translateX(-50%) translateY(-12px) rotate(-2deg); transform-origin:50% 100% !important; will-change:transform,opacity,filter; animation:lup-arrival-pin-touch 5.4s cubic-bezier(.42,.02,.18,1) infinite !important; }
+.lup-arrival-world-ripple { position:absolute !important; z-index:1 !important; bottom:5px !important; left:50% !important; display:block !important; width:19px !important; height:6px !important; margin:0 !important; border:1.5px solid rgba(172,232,255,.88) !important; border-radius:50% !important; background:transparent !important; box-shadow:0 0 9px rgba(101,193,255,.48),inset 0 0 5px rgba(189,234,255,.22) !important; opacity:0; transform:translateX(-50%) scale(.16); will-change:transform,opacity; animation:lup-arrival-pin-ripple 5.4s cubic-bezier(.13,.62,.34,1) infinite !important; }
+.lup-arrival-world-ripple.ripple-two { animation-delay:.18s !important; border-color:rgba(173,184,255,.70) !important; box-shadow:0 0 11px rgba(125,122,255,.36),inset 0 0 5px rgba(203,208,255,.18) !important; }
+@keyframes lup-arrival-pin-drift { 0%,100% { transform:translate3d(0,0,0); } 38% { transform:translate3d(-3px,2px,0); } 70% { transform:translate3d(2px,-2px,0); } }
+@keyframes lup-arrival-pin-touch { 0%,100% { opacity:.56; filter:brightness(.92); transform:translateX(-50%) translateY(-12px) rotate(-2deg); } 29% { opacity:.78; filter:brightness(1.10); transform:translateX(calc(-50% - 2px)) translateY(-16px) rotate(-4deg); } 46% { opacity:1; filter:brightness(1.28); transform:translateX(calc(-50% + 1px)) translateY(0) rotate(0deg); } 53% { opacity:.94; filter:brightness(1.10); transform:translateX(-50%) translateY(-3px) rotate(2deg); } 65% { opacity:.76; filter:brightness(1); transform:translateX(calc(-50% - 1px)) translateY(-9px) rotate(-2deg); } 80% { opacity:.62; filter:brightness(.96); transform:translateX(-50%) translateY(-12px) rotate(-2deg); } }
+@keyframes lup-arrival-pin-ripple { 0%,43%,100% { opacity:0; transform:translateX(-50%) scale(.16); } 47% { opacity:.94; transform:translateX(-50%) scale(.34); } 73% { opacity:.12; transform:translateX(-50%) scale(6.6); } 80% { opacity:0; transform:translateX(-50%) scale(7.4); } }
+@media (max-width:760px) { .lup-arrival-world-pin { width:38px !important; height:51px !important; }.lup-arrival-world-pin > i { font-size:38px !important; }.lup-arrival-world-ripple { bottom:6px !important; } }
+
+/* The former horizontal beam competed with the landing waves. */
+.lup-arrival-world-signal { display:none !important; }

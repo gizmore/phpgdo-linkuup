@@ -726,6 +726,48 @@ html,body,#wrapper,#page-content-wrapper { min-height:100%; background:var(--lup
 #sidebar-wrapper #leftnav a:hover,#sidebar-wrapper #leftnav a:focus,#gdo-left-bar .gdt-link a:hover,#gdo-left-bar .gdt-link a:focus { color:#f4f2fb !important; background:transparent !important; box-shadow:none !important; }
 #gdo-left-bar .gdt-link:hover { background:linear-gradient(90deg,rgba(114,96,213,.20),rgba(60,141,204,.08)) !important; box-shadow:inset 2px 0 0 rgba(167,146,255,.78) !important; }
 
+/* Language selection is a compact LinkUUp control, not a loose row of flags. */
+#gdo-left-bar .gdo-lang-switch {
+  display:flex;
+  align-items:center;
+  flex-wrap:wrap;
+  gap:7px;
+  margin-top:9px;
+  padding:10px !important;
+  border:1px solid rgba(186,207,255,.13);
+  border-radius:13px;
+  background:linear-gradient(135deg,rgba(88,117,200,.15),rgba(124,77,179,.10));
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.055);
+}
+#gdo-left-bar .gdo-lang-switch::before {
+  content:'SPRACHE';
+  flex:1 0 100%;
+  color:#9faad0;
+  font-size:8px;
+  font-weight:850;
+  letter-spacing:.14em;
+}
+#gdo-left-bar .gdo-lang-switch a {
+  display:grid;
+  place-items:center;
+  width:31px;
+  height:25px;
+  padding:0;
+  border:1px solid rgba(200,219,255,.17);
+  border-radius:8px 8px 8px 4px;
+  background:rgba(9,13,24,.34);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.06);
+  transition:transform .18s ease,border-color .18s ease,background .18s ease,box-shadow .18s ease;
+}
+#gdo-left-bar .gdo-lang-switch a:hover,
+#gdo-left-bar .gdo-lang-switch a:focus-visible {
+  transform:translateY(-2px);
+  border-color:rgba(161,208,255,.56);
+  background:linear-gradient(145deg,rgba(94,144,220,.34),rgba(120,78,183,.28));
+  box-shadow:0 5px 13px rgba(43,58,136,.26),inset 0 1px 0 rgba(255,255,255,.15);
+}
+#gdo-left-bar .gdo-lang-switch img { display:block; width:18px; height:auto; filter:saturate(.9) contrast(1.06); }
+
 /* Statistics QR access is a compact utility, not a giant empty image panel. */
 .lup-stat-qrcode { display:inline-flex; align-items:center; justify-content:center; gap:5px; width:auto; height:30px; margin:auto; padding:0 10px; border:1px solid rgba(190,181,255,.27); border-radius:10px; background:rgba(132,109,226,.12); box-shadow:none; color:#d6cdff !important; font-size:9px; font-weight:850; letter-spacing:.09em; text-decoration:none; }.lup-stat-qrcode i { color:#b8abff; font-size:15px; filter:none; }.lup-stat-qrcode:hover { transform:none; border-color:rgba(199,190,255,.48); background:rgba(137,114,229,.22); color:#f4f1ff !important; }
 
@@ -1653,6 +1695,65 @@ body.sb-sidenav-toggled #sidebarToggle { animation:lup-admin-menu-return .36s cu
 }
 
 /* Profile access is a clear, softly lit control instead of a small grey dot. */
+
+/* Welcome header: one continuous LinkUUp surface.  The legacy Bootstrap bar
+ * used a nearly black fallback and a grey raster icon; both broke the arrival
+ * page's visual language. */
+body:has(.lup-arrival) #page-content-wrapper > .navbar {
+  border-bottom:1px solid rgba(168,203,255,.13) !important;
+  background:linear-gradient(110deg,#202643 0%,#161b30 54%,#121521 100%) !important;
+  box-shadow:inset 0 -1px 0 rgba(255,255,255,.025),0 10px 28px rgba(4,7,17,.16) !important;
+}
+body:has(.lup-arrival) #page-content-wrapper > .navbar .navbar-toggler {
+  border-color:rgba(145,203,255,.34) !important;
+  border-radius:13px 13px 13px 5px !important;
+  background:linear-gradient(145deg,rgba(81,135,202,.62),rgba(91,67,167,.66)) !important;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.27),0 9px 20px rgba(27,49,114,.27),0 0 0 3px rgba(112,174,243,.07) !important;
+}
+body:has(.lup-arrival) #page-content-wrapper > .navbar .navbar-toggler .navbar-toggler-icon {
+  display:grid !important;
+  place-items:center;
+  width:20px !important;
+  height:20px !important;
+  background-image:none !important;
+  filter:none !important;
+}
+body:has(.lup-arrival) #page-content-wrapper > .navbar .navbar-toggler .navbar-toggler-icon::after {
+  content:'\f0c9';
+  color:#e9f8ff;
+  font:900 15px/1 'Font Awesome 5 Free';
+  text-shadow:0 1px 3px rgba(7,16,47,.62),0 0 9px rgba(163,223,255,.42);
+}
+body:has(.lup-arrival) #page-content-wrapper > .navbar .lup-account-toggle-icon {
+  border:1px solid rgba(150,204,255,.28) !important;
+  border-radius:11px 11px 11px 4px !important;
+  background:linear-gradient(145deg,rgba(75,128,194,.45),rgba(86,62,153,.39)) !important;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.18),0 7px 17px rgba(12,25,70,.19) !important;
+  color:#e6f6ff !important;
+}
+body:has(.lup-arrival) #page-content-wrapper > .navbar .lup-account-toggle-icon i {
+  color:#c9edff !important;
+  filter:drop-shadow(0 1px 3px rgba(5,12,39,.55));
+}
+body:has(.lup-arrival) #sidebarToggle {
+  width:43px !important;
+  min-width:43px !important;
+  height:43px !important;
+  min-height:43px !important;
+  margin-left:0 !important;
+  border:1px solid rgba(145,203,255,.30) !important;
+  border-radius:13px 13px 13px 5px !important;
+  background:linear-gradient(145deg,rgba(78,130,198,.58),rgba(85,62,158,.63)) !important;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.25),0 9px 19px rgba(22,43,104,.24),0 0 0 3px rgba(112,174,243,.06) !important;
+}
+body:has(.lup-arrival) #sidebarToggle::after { display:none !important; }
+body:has(.lup-arrival) #sidebarToggle .lup-sidebar-glyph { width:18px; gap:4px; }
+body:has(.lup-arrival) #sidebarToggle .lup-sidebar-glyph i {
+  height:2px;
+  background:linear-gradient(90deg,#f1fbff,#9cddff) !important;
+  box-shadow:0 0 7px rgba(144,213,255,.42) !important;
+}
+body:has(.lup-arrival) #sidebarToggle:hover { transform:translateY(-1px) !important; background:linear-gradient(145deg,rgba(94,153,219,.70),rgba(101,75,187,.68)) !important; }
 #page-content-wrapper > .navbar .navbar-toggler {
   width:46px !important;
   height:46px !important;
@@ -1903,6 +2004,45 @@ body:has(#content-wrap > #form.gdt-form.gdt-form-compact) #content-wrap {
   .lup-arrival-category small { font-size:8.5px; }
 }
 
+/* The long explanations are available on demand, not permanently competing
+ * with the welcome journey's headings and visual landmarks. */
+.lup-arrival-more { position:relative; z-index:4; width:max-content; max-width:100%; margin-top:17px; }
+.lup-arrival-more summary { display:inline-flex; align-items:center; gap:8px; min-height:28px; padding:0; color:#a9d9ff; font-size:11px; font-weight:760; cursor:pointer; list-style:none; }
+.lup-arrival-more summary::-webkit-details-marker { display:none; }
+.lup-arrival-more summary i { display:grid; place-items:center; width:17px; height:17px; border:1px solid rgba(166,214,255,.34); border-radius:50%; color:#cceeff; font-size:8px; transition:transform .2s ease,background .2s ease; }
+.lup-arrival-more[open] summary i { background:rgba(102,161,239,.20); transform:rotate(45deg); }
+.lup-arrival-more > p { max-width:470px; margin:8px 0 0; color:#b8bfd0; font-size:13px; line-height:1.55; }
+.lup-arrival-copy .lup-arrival-more { margin:22px 0 24px; }
+.lup-arrival-copy .lup-arrival-more > p { max-width:510px; }
+.lup-arrival-copy > p:not(.lup-arrival-kicker) { display:none; }
+@media (max-width:760px) {
+  .lup-arrival-more { margin-top:13px; }
+  .lup-arrival-more > p { max-width:min(100%,315px); font-size:12px; line-height:1.5; overflow-wrap:anywhere; }
+  .lup-arrival-copy .lup-arrival-more { margin:15px 0 20px; }
+  .lup-arrival-category b { white-space:normal; overflow-wrap:anywhere; }
+  .lup-arrival-category small { overflow-wrap:anywhere; }
+}
+
+/* The final "Echte Orte. Klare Kontrolle." chapter is a single phone column.
+ * Its optional explanation must never inherit the desktop grid width. */
+@media (max-width:760px) {
+  #lup-arrival-principles .lup-arrival-principles-copy,
+  #lup-arrival-principles .lup-arrival-more,
+  #lup-arrival-principles .lup-arrival-more > p {
+    box-sizing:border-box;
+    width:100%;
+    max-width:100%;
+    min-width:0;
+  }
+  #lup-arrival-principles .lup-arrival-more > p {
+    display:block;
+    padding-right:4px;
+    white-space:normal;
+    overflow-wrap:anywhere;
+    word-break:normal;
+  }
+}
+
 /* Arrival atmosphere: subtle map-light rather than decorative noise. */
 .lup-arrival-journey,
 .lup-arrival-categories,
@@ -2024,6 +2164,96 @@ body:has(.lup-arrival) #page-content-wrapper { height:auto !important; min-heigh
   .lup-arrival-hero-map::before { border-color:rgba(163,212,255,.20); }
 }
 @media (prefers-reduced-motion:reduce) { .lup-arrival-hero-map::before,.lup-arrival-hero-pin,.lup-arrival-hero-dot { animation:none; } }
+
+/* One clear orientation marker: the hero keeps its quiet map field while the
+ * single, right-hand pin carries the visual focus across the welcome journey. */
+.lup-arrival-world-pin {
+  top:19%;
+  right:10%;
+  z-index:3;
+  width:58px;
+  height:58px;
+  opacity:.92;
+  border-color:rgba(222,242,255,.68);
+  background:radial-gradient(circle at 34% 29%,rgba(255,255,255,.88) 0 2%,transparent 17%),linear-gradient(145deg,#73cdf3 0%,#5379d3 54%,#654eb5 100%);
+  box-shadow:0 13px 0 rgba(34,40,104,.31),0 23px 42px rgba(0,0,0,.25),0 0 0 7px rgba(118,205,255,.055),0 0 32px rgba(112,204,255,.50),inset 0 1px 0 rgba(255,255,255,.52);
+  animation:lup-arrival-primary-pin 6.6s cubic-bezier(.42,0,.25,1) infinite;
+}
+.lup-arrival-world-pin::before {
+  content:'';
+  position:absolute;
+  z-index:-1;
+  inset:-18px;
+  border:1px solid rgba(142,214,255,.32);
+  border-radius:50%;
+  box-shadow:0 0 0 11px rgba(101,112,225,.045),0 0 29px rgba(111,203,255,.15);
+  animation:lup-arrival-primary-signal 6.6s ease-out infinite;
+}
+.lup-arrival-world-pin::after {
+  content:'';
+  position:absolute;
+  bottom:-18px;
+  left:50%;
+  width:24px;
+  height:5px;
+  border-radius:50%;
+  background:rgba(88,186,255,.48);
+  filter:blur(4px);
+  transform:translateX(-50%) rotate(45deg);
+}
+.lup-arrival-world-pin i { transform:rotate(45deg); }
+@keyframes lup-arrival-primary-pin {
+  0%,100% { transform:translate3d(0,0,0) rotate(-45deg); }
+  52% { transform:translate3d(0,-8px,0) rotate(-45deg); }
+}
+@keyframes lup-arrival-primary-signal {
+  0%,70%,100% { opacity:.12; transform:scale(.78); }
+  24% { opacity:.72; transform:scale(1); }
+}
+@media (max-width:760px) {
+  .lup-arrival-world-pin {
+    top:13%;
+    right:7%;
+    width:50px;
+    height:50px;
+    opacity:.80;
+  }
+}
+@media (prefers-reduced-motion:reduce) {
+  .lup-arrival-world-pin,.lup-arrival-world-pin::before { animation:none; }
+}
+
+/* The welcome journey is one continuous map, not a bright hero on top of a
+ * separate dark page.  Keep the subtle moving field behind every section,
+ * including categories, principles and contact links. */
+.lup-arrival { background:#0b101a !important; }
+.lup-arrival-world {
+  position:fixed !important;
+  z-index:0 !important;
+  inset:0 !important;
+  min-height:100vh !important;
+  background:
+    radial-gradient(ellipse at 12% 14%, rgba(73,151,226,.24), transparent 25%),
+    radial-gradient(ellipse at 86% 38%, rgba(129,87,215,.20), transparent 27%),
+    radial-gradient(ellipse at 38% 78%, rgba(58,160,185,.15), transparent 28%),
+    linear-gradient(155deg,#111a2c 0%,#0b101a 48%,#111326 100%) !important;
+}
+.lup-arrival-world::before {
+  opacity:.8 !important;
+  background:
+    radial-gradient(circle at 18% 32%,rgba(161,220,255,.14) 0 1px,transparent 1.8px),
+    radial-gradient(circle at 79% 18%,rgba(210,181,255,.13) 0 1px,transparent 1.8px),
+    radial-gradient(circle at 66% 72%,rgba(155,221,255,.12) 0 .8px,transparent 1.6px),
+    radial-gradient(ellipse at 42% 48%,rgba(111,187,251,.10),transparent 27%),
+    radial-gradient(ellipse at 64% 64%,rgba(166,116,244,.10),transparent 30%) !important;
+  filter:blur(0) !important;
+  animation:lup-arrival-world-drift 20s ease-in-out infinite alternate !important;
+}
+.lup-arrival-world::after { opacity:.28 !important; }
+.lup-arrival > section,.lup-arrival > footer { position:relative; z-index:1 !important; }
+.lup-arrival-hero,.lup-arrival-journey,.lup-arrival-categories,#lup-arrival-principles,.lup-arrival-footer {
+  background:transparent !important;
+}
 
 /* Welcome account access: a calm profile control, aligned with the arrival map. */
 body:has(.lup-arrival) #page-content-wrapper > .navbar { min-height:66px; padding-right:14px; background:rgba(9,13,23,.88) !important; box-shadow:inset 0 -1px 0 rgba(177,202,255,.08); }
@@ -2482,3 +2712,1032 @@ body.lup-friends-page #top .gdt-bar.horizontal .gdt-link { display:flex; min-wid
 body.lup-friends-page .lup-friends-tabs { display:grid !important; grid-template-columns:repeat(4,minmax(0,1fr)); gap:8px; max-width:1080px; margin:0 auto 16px; padding:8px; border:1px solid rgba(177,205,255,.16); border-radius:17px; background:linear-gradient(135deg,rgba(26,38,63,.94),rgba(15,22,38,.96)); box-shadow:inset 0 1px 0 rgba(255,255,255,.07),0 12px 25px rgba(0,0,0,.15); }
 body.lup-friends-page .lup-friends-tabs .gdt-link { display:flex; min-width:0; } body.lup-friends-page .lup-friends-tabs .gdt-link a { display:flex; align-items:center; justify-content:center; width:100%; min-height:42px; padding:8px 10px; border:1px solid rgba(180,210,255,.14); border-radius:11px; background:rgba(255,255,255,.025); color:#c8dcf5 !important; font-size:11px; font-weight:760; line-height:1.2; text-align:center; text-decoration:none; } body.lup-friends-page .lup-friends-tabs .gdt-link a:hover { border-color:rgba(170,211,255,.40); background:linear-gradient(135deg,rgba(89,140,211,.25),rgba(113,80,183,.18)); color:#fff !important; }
 @media (max-width:620px) { body.lup-friends-page .lup-friends-tabs { grid-template-columns:repeat(2,minmax(0,1fr)); gap:7px; margin:0 14px 12px; padding:7px; border-radius:15px; } body.lup-friends-page .lup-friends-tabs .gdt-link a { min-height:47px; padding:8px; font-size:10px; } }
+
+/* The account drawer is opened often; avoid expensive full-page blur on every tap. */
+#navbarSupportedContent.show { backdrop-filter:none !important; -webkit-backdrop-filter:none !important; }
+
+/* Friends: one calm, predictable layout for list, requests and the add-friend form. */
+body.lup-friends-module #content-wrap { max-width:1080px; margin-inline:auto; padding-bottom:42px; }
+body.lup-friends-page .lup-friends-hero { display:none; }
+body.lup-friends-module #top .gdt-bar.horizontal,
+body.lup-friends-module .lup-friends-tabs {
+  display:grid !important;
+  grid-template-columns:repeat(4,minmax(0,1fr));
+  gap:7px;
+  max-width:1080px;
+  margin:0 auto 14px;
+  padding:7px;
+  border:1px solid rgba(177,205,255,.14);
+  border-radius:16px;
+  background:linear-gradient(135deg,rgba(25,37,62,.92),rgba(14,20,35,.94));
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.06),0 10px 22px rgba(0,0,0,.14);
+}
+body.lup-friends-module #top .gdt-bar.horizontal .gdt-link,
+body.lup-friends-module .lup-friends-tabs .gdt-link { display:flex; min-width:0; }
+body.lup-friends-module #top .gdt-bar.horizontal .gdt-link a,
+body.lup-friends-module .lup-friends-tabs .gdt-link a {
+  display:flex; align-items:center; justify-content:center; width:100%; min-height:44px; padding:8px 10px;
+  border:1px solid transparent; border-radius:10px; background:rgba(255,255,255,.025);
+  color:#c8dcf5 !important; font-size:11px; font-weight:760; line-height:1.2; text-align:center; text-decoration:none;
+  transition:background .16s ease,border-color .16s ease,color .16s ease;
+}
+body.lup-friends-module #top .gdt-bar.horizontal .gdt-link a:hover,
+body.lup-friends-module .lup-friends-tabs .gdt-link a:hover,
+body.lup-friends-module .lup-friends-tab-active a {
+  border-color:rgba(161,211,255,.30); background:linear-gradient(135deg,rgba(87,139,211,.21),rgba(108,78,178,.16)); color:#fff !important;
+}
+
+/* Four direct action points — no second frame around them. */
+body.lup-friends-module #top .gdt-bar.horizontal,
+body.lup-friends-module .lup-friends-tabs { padding:0; border:0; border-radius:0; background:transparent; box-shadow:none; grid-auto-rows:58px; }
+body.lup-friends-module #top .gdt-bar.horizontal .gdt-link a,
+body.lup-friends-module .lup-friends-tabs .gdt-link a {
+  position:relative; flex-direction:row; height:58px; min-height:58px; justify-content:flex-start; gap:8px; padding:9px 11px;
+  border-color:rgba(177,205,255,.14); border-radius:14px;
+  background:linear-gradient(145deg,rgba(30,45,74,.85),rgba(19,28,48,.90));
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.055),0 7px 15px rgba(0,0,0,.10);
+}
+body.lup-friends-module #top .gdt-bar.horizontal .gdt-link a::before,
+body.lup-friends-module .lup-friends-tabs .gdt-link a::before {
+  content:''; display:block; width:6px; height:6px; flex:0 0 6px; margin-left:1px; border-radius:50%;
+  background:#9ed9ff; box-shadow:0 0 9px rgba(145,210,255,.62);
+}
+body.lup-friends-module #top .gdt-bar.horizontal .gdt-link:nth-child(2) a::before,
+body.lup-friends-module .lup-friends-tabs .gdt-link:nth-child(2) a::before { background:#b9abff; box-shadow:0 0 9px rgba(185,171,255,.58); }
+body.lup-friends-module #top .gdt-bar.horizontal .gdt-link:nth-child(3) a::before,
+body.lup-friends-module .lup-friends-tabs .gdt-link:nth-child(3) a::before { background:#8fe0c4; box-shadow:0 0 9px rgba(143,224,196,.54); }
+body.lup-friends-module #top .gdt-bar.horizontal .gdt-link:nth-child(4) a::before,
+body.lup-friends-module .lup-friends-tabs .gdt-link:nth-child(4) a::before { background:#f1b0d4; box-shadow:0 0 9px rgba(241,176,212,.54); }
+body.lup-friends-module #content-wrap > .gdt-form,
+body.lup-friends-module #content-wrap > form,
+body.lup-friends-module #content-wrap > .gdt-container {
+  max-width:760px; margin:0 auto 18px; padding:22px; border:1px solid rgba(181,207,255,.15) !important;
+  border-radius:18px; background:linear-gradient(145deg,rgba(25,35,57,.94),rgba(14,20,34,.96)) !important;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.06),0 14px 28px rgba(0,0,0,.15);
+}
+body.lup-friends-page #content-wrap > .gdt-form,
+body.lup-friends-page #content-wrap > form {
+  max-width:none; margin:0 0 16px; padding:0; overflow:hidden; border-radius:16px;
+  background:rgba(17,27,46,.78) !important;
+}
+body.lup-friends-page #content-wrap > .gdt-form .gdt-container,
+body.lup-friends-page #content-wrap > form .gdt-container { margin:0; padding:14px 16px; background:transparent !important; }
+body.lup-friends-page #content-wrap > .gdt-form .form-label,
+body.lup-friends-page #content-wrap > form .form-label { margin:0; color:#dbe9ff !important; font-size:13px; }
+body.lup-friends-module #content-wrap .gdt-list { gap:14px; margin-bottom:20px; }
+body.lup-friends-module #content-wrap .gdt-list-title { padding:2px 2px 5px; border:0 !important; background:transparent !important; }
+body.lup-friends-module #content-wrap .gdt-list-title h3 { margin:0; color:#f2f6ff; font-size:21px; }
+body.lup-friends-module #content-wrap .gdt-list-item { min-height:138px; border-color:rgba(179,206,255,.14); }
+body.lup-friends-module #content-wrap .gdt-list-item::after { display:none; }
+body.lup-friends-module .lup-friends-empty {
+  grid-template-columns:112px minmax(0,1fr); align-items:center; justify-items:stretch; gap:22px;
+  min-height:196px; max-width:none; margin-top:0; padding:26px 30px; border:1px solid rgba(177,208,255,.16); border-radius:18px;
+  background:radial-gradient(circle at 92% 18%,rgba(109,155,227,.15),transparent 26%),linear-gradient(145deg,rgba(28,40,65,.80),rgba(14,20,34,.86));
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.06); text-align:left;
+}
+body.lup-friends-module .lup-friends-empty-mark { display:none; }
+.lup-friends-empty-art { position:relative; width:92px; height:92px; }
+.lup-friends-empty-art::before,.lup-friends-empty-art::after { content:''; position:absolute; width:52px; height:1px; transform-origin:left center; background:linear-gradient(90deg,rgba(140,208,255,.70),rgba(155,124,241,.12)); }
+.lup-friends-empty-art::before { top:28px; left:31px; transform:rotate(33deg); }.lup-friends-empty-art::after { top:61px; left:31px; transform:rotate(-33deg); }
+.lup-friends-empty-art i,.lup-friends-empty-art b,.lup-friends-empty-art em { position:absolute; display:block; border-radius:50%; background:#b6e7ff; box-shadow:0 0 17px rgba(146,215,255,.56); }
+.lup-friends-empty-art i { top:15px; left:13px; width:25px; height:25px; }.lup-friends-empty-art b { top:51px; left:13px; width:25px; height:25px; background:#baa9ff; box-shadow:0 0 17px rgba(186,169,255,.48); }.lup-friends-empty-art em { top:35px; right:4px; width:19px; height:19px; background:#a0e0c5; box-shadow:0 0 17px rgba(160,224,197,.46); }.lup-friends-empty-art span { position:absolute; inset:0; border:1px solid rgba(177,216,255,.12); border-radius:50%; }
+.lup-friends-empty-copy > span { display:block; margin-bottom:7px; color:#a9d9ff; font-size:9px; font-weight:850; letter-spacing:.15em; }.lup-friends-empty-copy h2 { margin:0; color:#f4f8ff; font-size:21px; font-weight:810; letter-spacing:-.035em; }.lup-friends-empty-copy p { max-width:530px; margin:8px 0 15px; color:#becbe0; font-size:12px; line-height:1.5; }.lup-friends-empty-copy a { display:inline-flex; align-items:center; min-height:36px; padding:8px 13px; border:1px solid rgba(178,218,255,.25); border-radius:10px; background:rgba(111,146,213,.14); color:#dff2ff !important; font-size:11px; font-weight:780; text-decoration:none; }
+body.lup-friends-module #content-wrap table { width:100%; overflow:hidden; border:1px solid rgba(177,207,255,.15); border-radius:15px; background:rgba(13,19,32,.48); color:#e8efff; }
+body.lup-friends-page #content-wrap .accordion,
+body.lup-friends-page #content-wrap .gdt-accordeon,
+body.lup-friends-page #content-wrap .gdo-accordeon { margin:0 0 13px; border:0 !important; background:transparent !important; box-shadow:none !important; }
+body.lup-friends-page #content-wrap .accordion-item { margin:0; border:1px solid rgba(178,208,255,.14) !important; border-radius:13px !important; background:rgba(20,30,50,.55) !important; box-shadow:none !important; }
+body.lup-friends-page #content-wrap .accordion-button,
+body.lup-friends-page #content-wrap .gdt-accordeon .title,
+body.lup-friends-page #content-wrap .gdo-accordeon .title { min-height:43px; padding:9px 14px; border-radius:12px !important; background:transparent !important; color:#cddcf2 !important; font-size:12px; font-weight:720; }
+
+/* Friends navigation stays deliberately weightless: four equal actions, no nested card borders. */
+body.lup-friends-module #top .gdt-bar.horizontal,
+body.lup-friends-module .lup-friends-tabs {
+  grid-template-columns:repeat(2,minmax(0,1fr)); grid-auto-rows:52px; gap:4px;
+}
+body.lup-friends-module #top .gdt-bar.horizontal .gdt-link,
+body.lup-friends-module .lup-friends-tabs .gdt-link { width:100%; min-width:0; }
+body.lup-friends-module #top .gdt-bar.horizontal .gdt-link a,
+body.lup-friends-module .lup-friends-tabs .gdt-link a {
+  height:52px; min-height:52px; padding:8px 10px; border:0; border-radius:0;
+  justify-content:center;
+  background:transparent; box-shadow:none; color:rgba(205,221,244,.76) !important;
+}
+body.lup-friends-module #top .gdt-bar.horizontal .gdt-link a:hover,
+body.lup-friends-module .lup-friends-tabs .gdt-link a:hover { border:0; background:transparent; color:#eaf5ff !important; }
+body.lup-friends-module .lup-friends-tab-active a {
+  border:0; background:transparent; color:#f4fbff !important;
+  text-shadow:0 0 11px rgba(153,211,255,.52);
+}
+body.lup-friends-module .lup-friends-tab-active a::before { box-shadow:0 0 13px rgba(164,221,255,.95) !important; }
+body.lup-friends-module #page-content-wrapper > .navbar .navbar-brand:has(#top),
+body.lup-friends-module #top,
+body.lup-friends-module #top > .gdt-container,
+body.lup-friends-module #top > .gdt-bar,
+body.lup-friends-module #top > .gdt-menu {
+  border:0 !important; background:transparent !important; box-shadow:none !important;
+}
+body.lup-friends-page #content-wrap .accordion,
+body.lup-friends-page #content-wrap .gdt-accordeon,
+body.lup-friends-page #content-wrap .gdo-accordeon { margin-top:0; }
+body.lup-friends-module #content-wrap th { padding:12px 14px; border:0; background:rgba(96,125,180,.14); color:#b9d8fa; font-size:10px; letter-spacing:.08em; text-transform:uppercase; }
+body.lup-friends-module #content-wrap td { padding:12px 14px; border-color:rgba(179,207,255,.10); color:#d9e3f4; vertical-align:middle; }
+body.lup-friends-module #content-wrap tr:last-child td { border-bottom:0; }
+@media (max-width:620px) {
+  body.lup-friends-module #top .gdt-bar.horizontal,
+  body.lup-friends-module .lup-friends-tabs { grid-template-columns:repeat(2,minmax(0,1fr)); gap:6px; margin:0 14px 12px; padding:6px; }
+  body.lup-friends-module #top .gdt-bar.horizontal .gdt-link a,
+  body.lup-friends-module .lup-friends-tabs .gdt-link a { min-height:46px; padding:7px; font-size:10px; }
+  body.lup-friends-module #content-wrap > .gdt-form,
+  body.lup-friends-module #content-wrap > form,
+  body.lup-friends-module #content-wrap > .gdt-container { margin-inline:0; padding:17px 14px; border-radius:15px; }
+  body.lup-friends-module #content-wrap table { display:block; overflow-x:auto; white-space:nowrap; }
+  body.lup-friends-module .lup-friends-empty { min-height:200px; padding:22px 16px; }
+}
+
+@media (max-width:620px) {
+  body.lup-friends-module .lup-friends-empty { grid-template-columns:1fr; justify-items:center; gap:10px; min-height:0; padding:24px 18px; text-align:center; }
+  .lup-friends-empty-art { width:76px; height:76px; transform:scale(.82); transform-origin:center; margin:-7px 0; }
+  .lup-friends-empty-copy h2 { font-size:19px; }.lup-friends-empty-copy p { margin-bottom:13px; font-size:11px; }
+}
+
+/* The Friends actions are rendered inside the mobile navbar. Match them precisely to the page grid. */
+@media (max-width:767.98px) {
+  body.lup-friends-module #page-content-wrapper > .navbar .navbar-brand { width:100%; margin:0 !important; padding:0 14px 10px !important; }
+  body.lup-friends-module #top { display:block !important; width:100% !important; min-width:0 !important; padding:0 !important; }
+  body.lup-friends-module #top > .gdt-container,
+  body.lup-friends-module #top > .gdt-bar,
+  body.lup-friends-module #top > .gdt-menu { display:grid !important; width:100% !important; min-width:0 !important; margin:0 !important; }
+  body.lup-friends-module #top.lup-friends-tabs,
+  body.lup-friends-module #top .lup-friends-tabs {
+    box-sizing:border-box; width:100%; max-width:none; margin:0 !important; padding:6px !important;
+    border-radius:15px;
+  }
+  body.lup-friends-module #content-wrap { padding-top:10px !important; }
+  body.lup-friends-module .lup-friends-hero { margin-top:0; margin-bottom:14px; }
+  body.lup-friends-module #content-wrap .gdt-list-title { padding-top:3px; }
+}
+
+@media (max-width:767.98px) {
+  body.lup-friends-module #top { position:relative; left:-31px; width:calc(100% + 31px) !important; }
+}
+
+/* Final welcome-header layer. Keep this at EOF: legacy backend skins append
+ * navbar styles earlier in this file. */
+body:has(.lup-arrival) #page-content-wrapper > nav.navbar {
+  border:0 !important;
+  border-bottom:1px solid rgba(142,194,255,.13) !important;
+  background:linear-gradient(100deg,#1f2744 0%,#18203a 48%,#121a31 100%) !important;
+  box-shadow:inset 0 -1px 0 rgba(255,255,255,.025),0 8px 22px rgba(3,7,18,.16) !important;
+}
+body:has(.lup-arrival) #page-content-wrapper > nav.navbar #sidebarToggle,
+body:has(.lup-arrival) #page-content-wrapper > nav.navbar .navbar-toggler {
+  display:grid !important;
+  place-items:center !important;
+  width:42px !important;
+  min-width:42px !important;
+  height:42px !important;
+  min-height:42px !important;
+  margin:0 !important;
+  padding:0 !important;
+  border:1px solid rgba(145,210,255,.32) !important;
+  border-radius:12px 12px 12px 4px !important;
+  background:linear-gradient(145deg,rgba(79,139,208,.70),rgba(91,66,176,.72)) !important;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.27),0 8px 18px rgba(23,45,111,.26),0 0 0 3px rgba(117,184,248,.07) !important;
+}
+body:has(.lup-arrival) #page-content-wrapper > nav.navbar #sidebarToggle::after { display:none !important; }
+body:has(.lup-arrival) #page-content-wrapper > nav.navbar #sidebarToggle .lup-sidebar-glyph { display:grid !important; width:18px !important; gap:4px !important; }
+body:has(.lup-arrival) #page-content-wrapper > nav.navbar #sidebarToggle .lup-sidebar-glyph i { height:2px !important; background:#e5f7ff !important; box-shadow:0 0 7px rgba(147,219,255,.54) !important; }
+body:has(.lup-arrival) #page-content-wrapper > nav.navbar .navbar-toggler .lup-account-toggle-icon {
+  display:grid !important;
+  place-items:center !important;
+  width:100% !important;
+  height:100% !important;
+  border:0 !important;
+  border-radius:inherit !important;
+  background:transparent !important;
+  box-shadow:none !important;
+  color:#d8f3ff !important;
+}
+body:has(.lup-arrival) #page-content-wrapper > nav.navbar .navbar-toggler .lup-account-toggle-icon i { color:#d8f3ff !important; font-size:13px !important; text-shadow:0 0 9px rgba(143,216,255,.50); }
+
+/* Static page marker fallback for browsers and cached theme layers that do
+ * not evaluate :has() while the backend is booting. */
+body.lup-arrival-active #page-content-wrapper > nav.navbar {
+  border:0 !important;
+  border-bottom:1px solid rgba(142,194,255,.13) !important;
+  background:linear-gradient(100deg,#1f2744 0%,#18203a 48%,#121a31 100%) !important;
+  box-shadow:inset 0 -1px 0 rgba(255,255,255,.025),0 8px 22px rgba(3,7,18,.16) !important;
+}
+body.lup-arrival-active #page-content-wrapper > nav.navbar #sidebarToggle,
+body.lup-arrival-active #page-content-wrapper > nav.navbar .navbar-toggler {
+  display:grid !important; place-items:center !important;
+  width:42px !important; min-width:42px !important; height:42px !important; min-height:42px !important;
+  margin:0 !important; padding:0 !important; border:1px solid rgba(145,210,255,.32) !important;
+  border-radius:12px 12px 12px 4px !important;
+  background:linear-gradient(145deg,rgba(79,139,208,.70),rgba(91,66,176,.72)) !important;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.27),0 8px 18px rgba(23,45,111,.26),0 0 0 3px rgba(117,184,248,.07) !important;
+}
+body.lup-arrival-active #page-content-wrapper > nav.navbar #sidebarToggle::after { display:none !important; }
+body.lup-arrival-active #page-content-wrapper > nav.navbar #sidebarToggle .lup-sidebar-glyph { display:grid !important; width:18px !important; gap:4px !important; }
+body.lup-arrival-active #page-content-wrapper > nav.navbar #sidebarToggle .lup-sidebar-glyph i { height:2px !important; background:#e5f7ff !important; box-shadow:0 0 7px rgba(147,219,255,.54) !important; }
+body.lup-arrival-active #page-content-wrapper > nav.navbar .navbar-toggler .lup-account-toggle-icon { display:grid !important; place-items:center !important; width:100% !important; height:100% !important; border:0 !important; border-radius:inherit !important; background:transparent !important; box-shadow:none !important; color:#d8f3ff !important; }
+body.lup-arrival-active #page-content-wrapper > nav.navbar .navbar-toggler .lup-account-toggle-icon i { color:#d8f3ff !important; font-size:13px !important; text-shadow:0 0 9px rgba(143,216,255,.50); }
+
+/* The header should read as a quiet navigation edge, not as a bright blue
+ * strip above the journey. */
+body.lup-arrival-active #page-content-wrapper > nav.navbar {
+  position:relative;
+  /* The account drawer lives directly below this bar. Hiding overflow here
+   * clipped the fully opened drawer and made the avatar button look dead. */
+  overflow:visible;
+  z-index:50;
+  background:radial-gradient(ellipse at 18% -140%,rgba(107,177,246,.20),transparent 48%),linear-gradient(100deg,#131a30,#101625 58%,#11172b) !important;
+}
+body.lup-arrival-active #page-content-wrapper > nav.navbar::before {
+  content:'';
+  position:absolute;
+  right:7%; bottom:0; left:7%;
+  height:1px;
+  background:linear-gradient(90deg,transparent,rgba(150,213,255,.58),rgba(164,128,245,.42),transparent);
+  box-shadow:0 0 12px rgba(121,187,255,.23);
+  pointer-events:none;
+}
+body.lup-arrival-active #page-content-wrapper > nav.navbar > .container-fluid { position:relative; z-index:1; }
+body.lup-arrival-active #page-content-wrapper > nav.navbar .navbar-toggler,
+body.lup-arrival-active #page-content-wrapper > nav.navbar .navbar-toggler-icon {
+  filter:none !important;
+}
+body.lup-arrival-active #page-content-wrapper > nav.navbar .navbar-toggler {
+  background:linear-gradient(145deg,#345f9b,#4d3b93) !important;
+}
+body.lup-arrival-active #page-content-wrapper > nav.navbar .navbar-toggler .lup-account-toggle-icon {
+  background:radial-gradient(circle at 34% 27%,rgba(192,234,255,.22),rgba(54,87,157,.12) 58%,transparent 59%) !important;
+}
+
+@media (max-width:430px) {
+  .lup-arrival-hero,.lup-arrival-journey,.lup-arrival-categories,#lup-arrival-principles { scroll-margin-top:64px; }
+  .lup-arrival-next { min-height:44px; }
+}
+
+/* Final phone rhythm: the welcome route should feel like one continuous
+ * composition, with each section landing close to the navigation edge. */
+@media (max-width:430px) {
+  body.lup-arrival-active #page-content-wrapper > nav.navbar,
+  body.lup-arrival-active #page-content-wrapper > nav.navbar > .container-fluid {
+    min-height:58px !important;
+  }
+
+  body.lup-arrival-active #page-content-wrapper > nav.navbar > .container-fluid {
+    padding-top:7px !important;
+    padding-bottom:7px !important;
+  }
+
+  .lup-arrival-hero {
+    min-height:calc(100svh - 58px) !important;
+    padding:20px 22px 30px !important;
+  }
+
+  .lup-arrival-copy {
+    margin-top:34px !important;
+  }
+
+  .lup-arrival-copy > p:not(.lup-arrival-kicker) {
+    margin:16px 0 20px !important;
+  }
+
+  .lup-arrival-actions { gap:10px !important; }
+  .lup-arrival-next { margin-top:15px !important; }
+
+  .lup-arrival-journey,
+  .lup-arrival-categories,
+  #lup-arrival-principles {
+    padding-top:46px !important;
+    padding-bottom:44px !important;
+  }
+
+  .lup-arrival-section-head > span,
+  .lup-arrival-journey header > span,
+  .lup-arrival-principles-copy > span { margin-top:12px !important; }
+
+  .lup-arrival-journey ol { margin-top:24px !important; gap:8px !important; }
+  .lup-arrival-category-grid { margin-top:22px !important; }
+  .lup-arrival-categories .lup-arrival-next { margin-top:14px !important; }
+}
+
+/* The welcome page has an intentionally empty legacy brand container between
+ * the menu and account controls. On phones it was wrapping onto its own row
+ * and creating the large unused blue strip. Keep the controls in one row. */
+@media (max-width:767.98px) {
+  body.lup-arrival-active #page-content-wrapper > nav.navbar {
+    display:flex !important;
+    min-height:58px !important;
+    padding:7px 10px !important;
+  }
+
+  body.lup-arrival-active #page-content-wrapper > nav.navbar > .container-fluid {
+    display:flex !important;
+    flex-wrap:nowrap !important;
+    align-items:center !important;
+    min-height:42px !important;
+    padding:0 !important;
+  }
+
+  body.lup-arrival-active #page-content-wrapper > nav.navbar .navbar-brand {
+    display:none !important;
+  }
+
+  body.lup-arrival-active #page-content-wrapper > nav.navbar #sidebarToggle,
+  body.lup-arrival-active #page-content-wrapper > nav.navbar .navbar-toggler {
+    align-self:center !important;
+    margin:0 !important;
+  }
+
+  /* Static fallback matching the :has() drawer rules above. The collapse
+   * must float over the page, never become a third item in the header row. */
+  body.lup-arrival-active #navbarSupportedContent.show,
+  body.lup-arrival-active #navbarSupportedContent.collapsing {
+    position:absolute !important;
+    z-index:60 !important;
+    top:58px !important;
+    right:10px !important;
+    left:10px !important;
+    width:auto !important;
+    max-height:calc(100svh - 76px) !important;
+    margin:0 !important;
+    padding:10px !important;
+    overflow-y:auto !important;
+    border:1px solid rgba(178,213,255,.22) !important;
+    border-radius:16px !important;
+    background:linear-gradient(145deg,rgba(23,32,54,.98),rgba(12,17,30,.98)) !important;
+    box-shadow:0 20px 45px rgba(0,0,0,.38),inset 0 1px 0 rgba(255,255,255,.10) !important;
+    transition:none !important;
+  }
+
+  body.lup-arrival-active #navbarSupportedContent.collapsing {
+    display:block !important;
+    height:auto !important;
+  }
+
+  body.lup-arrival-active #navbarSupportedContent.show::before {
+    content:'KONTO  /  BEREICHE' !important;
+    display:block !important;
+    margin:1px 2px 8px !important;
+    color:#a8cff3 !important;
+    font-size:8px !important;
+    font-weight:900 !important;
+    letter-spacing:.16em !important;
+  }
+
+  /* Account and admin actions share one exact mobile grid. The legacy theme
+   * promoted the profile link to a full row, which made the name and Admin
+   * button look unrelated to the other two-column controls. */
+  body.lup-arrival-active #navbarSupportedContent.show .navbar-nav {
+    grid-template-columns:repeat(2,minmax(0,1fr)) !important;
+    gap:7px !important;
+  }
+
+  body.lup-arrival-active #navbarSupportedContent.show .navbar-nav > .nav-item:first-child,
+  body.lup-arrival-active #navbarSupportedContent.show .navbar-nav > .nav-item:has(.gdt-profile-link) {
+    grid-column:auto !important;
+  }
+
+  /* The account is already represented by the avatar trigger. Repeating the
+   * nickname in the drawer wastes a tile and clipped longer names. */
+  body.lup-arrival-active #navbarSupportedContent.show .nav-item:has(.gdt-profile-link) {
+    display:none !important;
+  }
+
+  body.lup-arrival-active #navbarSupportedContent.show .gdt-profile-link,
+  body.lup-arrival-active #navbarSupportedContent.show .gdt-link > a {
+    box-sizing:border-box !important;
+    min-height:46px !important;
+    height:46px !important;
+    padding:8px 10px !important;
+    border-radius:12px !important;
+    font-size:10px !important;
+    line-height:1.1 !important;
+  }
+
+  body.lup-arrival-active #navbarSupportedContent.show .gdt-profile-link {
+    gap:7px !important;
+    overflow:hidden !important;
+  }
+
+  body.lup-arrival-active #navbarSupportedContent.show .gdt-profile-link .gdt-nickname {
+    overflow:hidden !important;
+    font-size:10px !important;
+    line-height:1.1 !important;
+    text-overflow:ellipsis !important;
+    white-space:nowrap !important;
+  }
+
+  /* GDO nests the first account actions in a flex-column container while
+   * later actions are direct grid items. Flatten only the welcome drawer so
+   * shqiprim, Admin and every other command occupy identical tiles. */
+  body.lup-arrival-active #navbarSupportedContent.show .navbar-nav > .nav-item,
+  body.lup-arrival-active #navbarSupportedContent.show .navbar-nav > .nav-item > .nav-link,
+  body.lup-arrival-active #navbarSupportedContent.show .navbar-nav .gdt-container,
+  body.lup-arrival-active #navbarSupportedContent.show .navbar-nav .gdt-menu {
+    display:contents !important;
+  }
+
+  body.lup-arrival-active #navbarSupportedContent.show .navbar-nav .gdt-link {
+    display:flex !important;
+    min-width:0 !important;
+  }
+
+  body.lup-arrival-active #navbarSupportedContent.show .navbar-nav .gdt-link > a {
+    display:flex !important;
+    align-items:center !important;
+    width:100% !important;
+    min-width:0 !important;
+    justify-content:flex-start !important;
+  }
+}
+
+/* Keep the first call to action connected to the next chapter instead of
+ * reserving an almost full extra screen of empty hero space. */
+@media (max-width:430px) {
+  .lup-arrival-hero {
+    min-height:660px !important;
+  }
+
+  .lup-arrival-journey,
+  .lup-arrival-categories,
+  #lup-arrival-principles {
+    padding-top:38px !important;
+    padding-bottom:38px !important;
+  }
+
+  .lup-arrival-journey > header,
+  .lup-arrival-section-head,
+  .lup-arrival-principles-copy { margin-top:0 !important; }
+}
+
+/* One account trigger for every backend module. Welcome previously received
+ * this blue control alone via its page marker; the account drawer is global,
+ * so the trigger must be global as well. The left sidebar control stays its
+ * own navigation affordance. */
+#page-content-wrapper > nav.navbar .navbar-toggler {
+  display:grid !important;
+  place-items:center !important;
+  width:42px !important;
+  min-width:42px !important;
+  height:42px !important;
+  min-height:42px !important;
+  margin:0 !important;
+  padding:0 !important;
+  border:1px solid rgba(145,210,255,.32) !important;
+  border-radius:12px 12px 12px 4px !important;
+  background:linear-gradient(145deg,#345f9b,#4d3b93) !important;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.27),0 8px 18px rgba(23,45,111,.26),0 0 0 3px rgba(117,184,248,.07) !important;
+  filter:none !important;
+  transition:transform .18s ease,filter .18s ease,box-shadow .18s ease !important;
+}
+#page-content-wrapper > nav.navbar .navbar-toggler:hover,
+#page-content-wrapper > nav.navbar .navbar-toggler:focus-visible {
+  border-color:rgba(205,233,255,.58) !important;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.33),0 10px 23px rgba(23,45,111,.34),0 0 0 3px rgba(117,184,248,.16) !important;
+  filter:brightness(1.08) !important;
+  transform:translateY(-1px);
+}
+#page-content-wrapper > nav.navbar .navbar-toggler .lup-account-toggle-icon {
+  display:grid !important;
+  place-items:center !important;
+  width:100% !important;
+  height:100% !important;
+  border:0 !important;
+  border-radius:inherit !important;
+  background:radial-gradient(circle at 34% 27%,rgba(192,234,255,.22),rgba(54,87,157,.12) 58%,transparent 59%) !important;
+  box-shadow:none !important;
+  color:#d8f3ff !important;
+}
+#page-content-wrapper > nav.navbar .navbar-toggler .lup-account-toggle-icon i {
+  color:#d8f3ff !important;
+  font-size:13px !important;
+  text-shadow:0 0 9px rgba(143,216,255,.50) !important;
+}
+
+/* The welcome marker sits below the heading. Its quiet beam belongs to the
+ * shared page field, so it remains coherent while the visitor scrolls. */
+.lup-arrival-world-pin {
+  top:32% !important;
+  right:10% !important;
+  width:54px !important;
+  height:54px !important;
+  border:1px solid rgba(222,242,255,.72) !important;
+  border-radius:50% 50% 50% 9px !important;
+  background:radial-gradient(circle at 50% 45%,#f4fcff 0 10%,#8ed8fa 11% 20%,transparent 21%),linear-gradient(145deg,#58bfe9 0%,#5671ca 56%,#6248ac 100%) !important;
+  box-shadow:0 11px 0 rgba(32,38,100,.28),0 20px 36px rgba(0,0,0,.22),0 0 0 6px rgba(118,205,255,.045),0 0 27px rgba(112,204,255,.42),inset 0 1px 0 rgba(255,255,255,.54) !important;
+}
+.lup-arrival-world-signal {
+  position:absolute;
+  z-index:1;
+  top:32%;
+  right:calc(10% - 6px);
+  width:min(58vw,620px);
+  height:2px;
+  opacity:.42;
+  pointer-events:none;
+  transform:rotate(-16deg);
+  transform-origin:right center;
+  background:linear-gradient(90deg,transparent 0%,rgba(112,184,255,.04) 28%,rgba(154,221,255,.44) 72%,rgba(226,246,255,.76) 100%);
+  box-shadow:0 0 7px rgba(129,204,255,.20),0 0 20px rgba(109,111,235,.10);
+  animation:lup-arrival-world-signal 8.5s ease-in-out infinite;
+}
+@keyframes lup-arrival-world-signal {
+  0%,100% { opacity:.13; filter:brightness(.8); transform:rotate(-16deg) scaleX(.76); }
+  48% { opacity:.50; filter:brightness(1.16); transform:rotate(-16deg) scaleX(1); }
+}
+@media (max-width:760px) {
+  .lup-arrival-world-pin {
+    top:34% !important;
+    right:7% !important;
+  }
+  .lup-arrival-world-signal {
+    top:34%;
+    right:calc(7% - 5px);
+    width:62vw;
+    opacity:.31;
+  }
+}
+@media (prefers-reduced-motion:reduce) {
+  .lup-arrival-world-signal { animation:none; opacity:.20; }
+}
+
+/* Welcome is deliberately quieter than the app itself: one marker, one word
+ * mark, and restrained navigation controls instead of competing blue cards. */
+body.lup-arrival-active #page-content-wrapper > nav.navbar #sidebarToggle,
+body.lup-arrival-active #page-content-wrapper > nav.navbar .navbar-toggler {
+  background:linear-gradient(145deg,rgba(20,28,43,.94),rgba(31,30,55,.94)) !important;
+  border-color:rgba(193,210,235,.18) !important;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.10),0 7px 18px rgba(0,0,0,.17) !important;
+}
+body.lup-arrival-active #page-content-wrapper > nav.navbar #sidebarToggle:hover,
+body.lup-arrival-active #page-content-wrapper > nav.navbar .navbar-toggler:hover {
+  background:linear-gradient(145deg,rgba(34,45,64,.98),rgba(43,38,70,.98)) !important;
+  border-color:rgba(203,225,248,.34) !important;
+}
+.lup-arrival-brand { gap:9px !important; }
+.lup-arrival-brand b { color:#f3f4f8; text-shadow:none; }
+.lup-arrival-brand small { color:rgba(207,211,225,.62); }
+.lup-arrival-world-pin {
+  border-color:rgba(232,231,255,.56) !important;
+  background:radial-gradient(circle at 50% 45%,#fff 0 9%,#d9e9fa 10% 18%,transparent 19%),linear-gradient(145deg,#8494bb 0%,#625f93 57%,#4b396f 100%) !important;
+  box-shadow:0 11px 0 rgba(25,27,59,.26),0 20px 36px rgba(0,0,0,.20),0 0 0 6px rgba(171,182,255,.035),0 0 25px rgba(164,185,255,.28),inset 0 1px 0 rgba(255,255,255,.52) !important;
+}
+.lup-arrival-world-signal {
+  opacity:.28;
+  background:linear-gradient(90deg,transparent 0%,rgba(173,182,255,.025) 28%,rgba(191,211,244,.27) 72%,rgba(240,245,255,.48) 100%);
+}
+
+/* The old left drawer is part of the welcome journey too. Keep its field
+ * charcoal-blue, use the full width for language choice and avoid a second
+ * loud colour system beside the hero. */
+body.lup-arrival-active #gdo-left-bar {
+  background:radial-gradient(ellipse at 88% 4%,rgba(105,100,164,.12),transparent 30%),linear-gradient(180deg,#121a29,#0b1019 88%) !important;
+  border-right-color:rgba(194,211,235,.13) !important;
+  box-shadow:14px 0 34px rgba(0,0,0,.29) !important;
+}
+body.lup-arrival-active #gdo-left-bar::before { color:rgba(211,219,233,.68); }
+body.lup-arrival-active #gdo-left-bar .gdt-link {
+  border-color:rgba(201,215,238,.09) !important;
+  background:rgba(255,255,255,.018) !important;
+}
+body.lup-arrival-active #gdo-left-bar .gdt-link a { color:#d4d9e3 !important; }
+body.lup-arrival-active #gdo-left-bar .gdt-link a i {
+  border-color:rgba(205,218,238,.14) !important;
+  background:rgba(154,171,204,.10) !important;
+  color:#c4d3e7 !important;
+}
+body.lup-arrival-active #gdo-left-bar .gdt-link:hover {
+  transform:translateX(2px);
+  background:rgba(176,192,221,.075) !important;
+  box-shadow:inset 2px 0 0 rgba(184,207,239,.56) !important;
+}
+body.lup-arrival-active #gdo-left-bar .gdo-lang-switch {
+  display:grid;
+  grid-template-columns:repeat(5,minmax(0,1fr));
+  gap:6px;
+  width:100%;
+  padding:9px !important;
+  border-color:rgba(197,213,239,.11);
+  border-radius:12px;
+  background:rgba(255,255,255,.025);
+}
+body.lup-arrival-active #gdo-left-bar .gdo-lang-switch::before { grid-column:1 / -1; color:rgba(205,215,233,.55); }
+body.lup-arrival-active #gdo-left-bar .gdo-lang-switch a {
+  width:100%;
+  height:25px;
+  border-color:rgba(202,216,239,.10);
+  border-radius:7px;
+  background:rgba(5,9,17,.30);
+}
+body.lup-arrival-active #gdo-left-bar .gdo-lang-switch a:hover,
+body.lup-arrival-active #gdo-left-bar .gdo-lang-switch a:focus-visible {
+  transform:translateY(-1px);
+  border-color:rgba(204,223,244,.38);
+  background:rgba(160,184,220,.13);
+  box-shadow:none;
+}
+
+/* Final welcome drawer geometry — deliberately force this over the legacy
+ * language module's inline-sized controls. */
+body.lup-arrival-active #gdo-left-bar {
+  padding:54px 12px 16px !important;
+  background:#0d1420 !important;
+}
+body.lup-arrival-active #gdo-left-bar::before {
+  top:17px;
+  left:14px;
+  content:'LINKUUP · MENÜ';
+  letter-spacing:.13em;
+}
+body.lup-arrival-active #gdo-left-bar .gdo-lang-switch {
+  display:grid !important;
+  grid-template-columns:repeat(5,minmax(0,1fr)) !important;
+  align-items:center !important;
+  gap:5px !important;
+  margin:0 0 14px !important;
+  padding:7px !important;
+  background:rgba(199,215,240,.035) !important;
+}
+body.lup-arrival-active #gdo-left-bar .gdo-lang-switch::before {
+  display:none !important;
+  content:none !important;
+}
+body.lup-arrival-active #gdo-left-bar .gdo-lang-switch a {
+  display:grid !important;
+  place-items:center !important;
+  width:100% !important;
+  min-width:0 !important;
+  height:28px !important;
+  margin:0 !important;
+  padding:0 !important;
+  border-radius:7px !important;
+}
+body.lup-arrival-active #gdo-left-bar .gdo-lang-switch img {
+  width:18px !important;
+  max-width:18px !important;
+}
+
+/* Shared backend sidebar: this is intentionally global, because a drawer
+ * should not change its visual language when the user changes backend pages. */
+#gdo-left-bar {
+  background:#0d1420 !important;
+  border-right:1px solid rgba(197,213,235,.13) !important;
+}
+#gdo-left-bar .gdt-bar { gap:7px !important; }
+#gdo-left-bar .gdt-link {
+  border-color:rgba(201,216,238,.09) !important;
+  border-radius:10px !important;
+  background:rgba(255,255,255,.018) !important;
+  box-shadow:none !important;
+}
+#gdo-left-bar .gdt-link a { min-height:44px !important; color:#d7dde8 !important; }
+#gdo-left-bar .gdt-link a i {
+  border-color:rgba(202,218,238,.13) !important;
+  border-radius:8px !important;
+  background:rgba(184,200,224,.09) !important;
+  box-shadow:none !important;
+  color:#c9d8ea !important;
+}
+#gdo-left-bar .gdo-lang-switch {
+  display:flex !important;
+  align-items:center !important;
+  justify-content:space-between !important;
+  gap:6px !important;
+  width:100% !important;
+  margin:0 0 14px !important;
+  padding:7px !important;
+  border-color:rgba(202,216,238,.12) !important;
+  border-radius:10px !important;
+  background:rgba(255,255,255,.022) !important;
+}
+#gdo-left-bar .gdo-lang-switch::before { display:none !important; content:none !important; }
+#gdo-left-bar .gdo-lang-switch a {
+  display:grid !important;
+  flex:1 1 0 !important;
+  place-items:center !important;
+  width:auto !important;
+  min-width:0 !important;
+  height:28px !important;
+  margin:0 !important;
+  padding:0 !important;
+  border-color:rgba(207,220,240,.10) !important;
+  border-radius:7px !important;
+  background:rgba(4,8,15,.28) !important;
+}
+
+/* LinkUUp control deck: a flat, floating navigation layer rather than a
+ * stack of generic Bootstrap cards.  The content remains exactly the same. */
+#gdo-left-bar {
+  width:278px !important;
+  padding:64px 14px 18px !important;
+  background:linear-gradient(180deg,#101927 0%,#0a1019 72%,#080d15 100%) !important;
+  box-shadow:18px 0 50px rgba(0,0,0,.34) !important;
+}
+#gdo-left-bar::before {
+  top:20px !important;
+  left:17px !important;
+  content:'LINKUUP  ·  BEREICHE' !important;
+  color:#e4e8f1 !important;
+  font-size:10px !important;
+  letter-spacing:.17em !important;
+}
+#gdo-left-bar .gdt-bar {
+  position:relative;
+  display:flex !important;
+  flex-direction:column !important;
+  gap:2px !important;
+}
+#gdo-left-bar .gdt-bar::after {
+  content:'';
+  position:absolute;
+  top:65px;
+  bottom:18px;
+  left:17px;
+  width:1px;
+  background:linear-gradient(180deg,rgba(164,193,230,.23),rgba(164,193,230,.025));
+  pointer-events:none;
+}
+#gdo-left-bar .gdo-lang-switch {
+  order:-1;
+  display:grid !important;
+  grid-template-columns:repeat(5,minmax(0,1fr)) !important;
+  gap:7px !important;
+  margin:0 0 18px !important;
+  padding:0 0 14px !important;
+  border:0 !important;
+  border-bottom:1px solid rgba(190,210,237,.10) !important;
+  border-radius:0 !important;
+  background:transparent !important;
+}
+#gdo-left-bar .gdo-lang-switch a {
+  height:30px !important;
+  border:1px solid rgba(192,211,238,.12) !important;
+  border-radius:8px !important;
+  background:rgba(255,255,255,.025) !important;
+}
+#gdo-left-bar .gdo-lang-switch a:hover,
+#gdo-left-bar .gdo-lang-switch a:focus-visible {
+  transform:translateY(-1px) !important;
+  border-color:rgba(202,224,246,.46) !important;
+  background:rgba(147,175,215,.13) !important;
+}
+#gdo-left-bar .gdt-link {
+  z-index:1;
+  overflow:visible !important;
+  border:0 !important;
+  border-radius:9px !important;
+  background:transparent !important;
+}
+#gdo-left-bar .gdt-link::before {
+  top:50% !important;
+  bottom:auto !important;
+  left:0 !important;
+  width:4px !important;
+  height:4px !important;
+  border-radius:50% !important;
+  background:rgba(185,201,223,.34) !important;
+  box-shadow:none !important;
+  transform:translateY(-50%);
+}
+#gdo-left-bar .gdt-link a {
+  min-height:47px !important;
+  padding:9px 9px 9px 24px !important;
+  border:1px solid transparent !important;
+  border-radius:9px !important;
+  color:#bfc9d8 !important;
+  font-size:12px !important;
+  font-weight:720 !important;
+}
+#gdo-left-bar .gdt-link a i {
+  width:26px !important;
+  height:26px !important;
+  margin-right:10px !important;
+  border:0 !important;
+  border-radius:50% !important;
+  background:rgba(171,191,220,.11) !important;
+  color:#c9d9ec !important;
+}
+#gdo-left-bar .gdt-link:hover,
+#gdo-left-bar .gdt-link:focus-within {
+  transform:none !important;
+  background:transparent !important;
+  box-shadow:none !important;
+}
+#gdo-left-bar .gdt-link:hover::before,
+#gdo-left-bar .gdt-link:focus-within::before {
+  width:5px !important;
+  height:5px !important;
+  background:#b7dcff !important;
+  box-shadow:0 0 10px rgba(154,208,255,.70) !important;
+}
+#gdo-left-bar .gdt-link:hover a,
+#gdo-left-bar .gdt-link:focus-within a {
+  border-color:rgba(185,208,237,.13) !important;
+  background:linear-gradient(90deg,rgba(161,190,226,.10),rgba(161,190,226,.025)) !important;
+  color:#f2f6fb !important;
+}
+
+/* Actual Bootstrap backend sidebar — rebuilt as LinkUUp's control deck. */
+#wrapper > #sidebar-wrapper {
+  width:15rem !important;
+  min-width:15rem !important;
+  flex:0 0 15rem !important;
+  border-right:1px solid rgba(183,206,233,.14) !important;
+  background:radial-gradient(ellipse at 100% 0,rgba(89,106,158,.17),transparent 33%),linear-gradient(180deg,#111a29 0%,#0b121d 58%,#080d15 100%) !important;
+  box-shadow:18px 0 48px rgba(0,0,0,.28) !important;
+}
+#sidebar-wrapper .lup-sidebar-brand {
+  min-height:82px !important;
+  padding:17px 18px 14px !important;
+  border-bottom:1px solid rgba(191,211,237,.11) !important;
+  background:linear-gradient(100deg,rgba(255,255,255,.045),transparent 66%) !important;
+}
+#sidebar-wrapper .lup-sidebar-brand::after { opacity:.45; }
+#sidebar-wrapper .lup-sidebar-brand-mark {
+  flex-basis:36px !important;
+  width:36px !important;
+  height:36px !important;
+  border-color:rgba(207,226,246,.27) !important;
+  border-radius:11px 11px 11px 4px !important;
+  background:linear-gradient(145deg,rgba(137,151,188,.58),rgba(83,75,132,.54)) !important;
+  box-shadow:none !important;
+}
+#sidebar-wrapper .lup-sidebar-brand strong { color:#edf2f8 !important; font-size:13px !important; letter-spacing:.16em !important; text-shadow:none !important; }
+#sidebar-wrapper .lup-sidebar-brand small { color:rgba(197,211,229,.55) !important; }
+#sidebar-wrapper .lup-sidebar-section-label { padding:15px 18px 8px !important; color:rgba(190,207,229,.54) !important; }
+#sidebar-wrapper .lup-sidebar-section-label span { background:linear-gradient(90deg,#a8caeb,rgba(168,202,235,.08)) !important; box-shadow:none !important; }
+#sidebar-wrapper #leftnav { padding:0 12px 16px !important; }
+#sidebar-wrapper #leftnav > .list-group-item {
+  margin:2px 0 !important;
+  padding:0 !important;
+  overflow:visible !important;
+  border:0 !important;
+  border-radius:10px !important;
+  background:transparent !important;
+  box-shadow:none !important;
+}
+#sidebar-wrapper #leftnav > .list-group-item:has(.gdo-lang-switch) {
+  margin:0 0 10px !important;
+  padding:0 0 12px !important;
+  border-bottom:1px solid rgba(190,210,237,.10) !important;
+}
+#sidebar-wrapper .gdo-lang-switch {
+  display:flex !important;
+  align-items:center !important;
+  justify-content:space-between !important;
+  gap:6px !important;
+  width:100% !important;
+  padding:0 !important;
+  border:0 !important;
+  border-radius:0 !important;
+  background:transparent !important;
+}
+#sidebar-wrapper .gdo-lang-switch a {
+  display:grid !important;
+  flex:1 1 0 !important;
+  place-items:center !important;
+  width:auto !important;
+  min-width:0 !important;
+  height:30px !important;
+  padding:0 !important;
+  border:1px solid rgba(191,211,237,.12) !important;
+  border-radius:8px !important;
+  background:rgba(255,255,255,.025) !important;
+  box-shadow:none !important;
+}
+#sidebar-wrapper .gdo-lang-switch a:hover,#sidebar-wrapper .gdo-lang-switch a:focus-visible { transform:translateY(-1px); border-color:rgba(206,229,249,.42) !important; background:rgba(172,198,228,.13) !important; box-shadow:none !important; }
+#sidebar-wrapper #leftnav > .list-group-item .gdt-link { position:relative; display:block; overflow:visible !important; border:0 !important; border-radius:10px !important; background:transparent !important; box-shadow:none !important; }
+#sidebar-wrapper #leftnav > .list-group-item .gdt-link::before { top:50% !important; bottom:auto !important; left:1px !important; width:4px !important; height:4px !important; border-radius:50% !important; background:rgba(182,200,223,.34) !important; box-shadow:none !important; transform:translateY(-50%); }
+#sidebar-wrapper #leftnav > .list-group-item .gdt-link > a { min-height:46px !important; padding:9px 9px 9px 22px !important; border:1px solid transparent !important; border-radius:10px !important; background:transparent !important; color:#bdc8d8 !important; font-size:12px !important; font-weight:720 !important; }
+#sidebar-wrapper #leftnav > .list-group-item .gdt-link > a i { width:26px !important; height:26px !important; margin-right:10px !important; border:0 !important; border-radius:50% !important; background:rgba(173,193,219,.10) !important; color:#c5d7eb !important; box-shadow:none !important; }
+#sidebar-wrapper #leftnav > .list-group-item:has(.gdt-link:hover) .gdt-link::before,#sidebar-wrapper #leftnav > .list-group-item:focus-within .gdt-link::before { width:5px !important; height:5px !important; background:#b8deff !important; box-shadow:0 0 10px rgba(151,208,255,.68) !important; }
+#sidebar-wrapper #leftnav > .list-group-item:has(.gdt-link:hover) .gdt-link > a,#sidebar-wrapper #leftnav > .list-group-item:focus-within .gdt-link > a { border-color:rgba(187,211,239,.13) !important; background:linear-gradient(90deg,rgba(166,193,226,.11),rgba(166,193,226,.025)) !important; color:#f2f6fb !important; }
+#sidebar-wrapper .lup-sidebar-foot { margin:0 15px 14px !important; padding:12px 3px 0 !important; border-top-color:rgba(190,210,237,.10) !important; color:rgba(184,199,221,.52) !important; }
+
+/* One exact internal grid: every sidebar element now shares the same edge. */
+#wrapper > #sidebar-wrapper .lup-sidebar-brand { padding-left:16px !important; padding-right:16px !important; }
+#wrapper > #sidebar-wrapper .lup-sidebar-section-label { padding-left:16px !important; padding-right:16px !important; }
+#wrapper > #sidebar-wrapper #leftnav { padding-left:16px !important; padding-right:16px !important; }
+#wrapper > #sidebar-wrapper .lup-sidebar-foot { margin-left:16px !important; margin-right:16px !important; }
+#wrapper > #sidebar-wrapper::after {
+  content:'';
+  position:absolute;
+  top:86px;
+  right:-38px;
+  width:112px;
+  height:112px;
+  border:1px solid rgba(168,202,234,.10);
+  border-radius:50%;
+  box-shadow:0 0 0 20px rgba(113,126,196,.025),0 0 46px rgba(90,141,199,.08);
+  pointer-events:none;
+}
+#wrapper > #sidebar-wrapper .lup-sidebar-brand-mark { position:relative; overflow:hidden; }
+#wrapper > #sidebar-wrapper .lup-sidebar-brand-mark::after {
+  content:'';
+  position:absolute;
+  width:8px;
+  height:8px;
+  right:5px;
+  bottom:5px;
+  border:1px solid rgba(221,243,255,.50);
+  border-radius:50%;
+  background:#80d7bb;
+  box-shadow:0 0 10px rgba(107,223,177,.58);
+}
+
+/* Every jump arrives at a stable reading position, also after an expanded
+ * explanation changed the height of the preceding step. */
+.lup-arrival-journey,
+.lup-arrival-categories,
+.lup-arrival-principles { scroll-margin-top:76px; }
+.lup-arrival-reading { overflow-anchor:none; }
+
+/* iPhone 6 / short portrait screens: keep a whole journey step and its next
+ * action together after a guided jump. The copy remains present, just tighter. */
+@media (max-width:390px) and (max-height:700px) {
+  .lup-arrival-journey {
+    min-height:0 !important;
+    padding-top:28px !important;
+    padding-bottom:24px !important;
+  }
+  .lup-arrival-journey h2 { font-size:32px !important; line-height:1 !important; }
+  .lup-arrival-journey header > p { margin-bottom:10px !important; }
+  .lup-arrival-journey .lup-arrival-more { margin-top:9px !important; }
+  .lup-arrival-journey ol { margin-top:18px !important; }
+  .lup-arrival-journey li,
+  .lup-arrival-journey li + li {
+    min-height:0 !important;
+    padding:13px 0 13px 50px !important;
+  }
+  .lup-arrival-journey li > span { top:15px !important; }
+  .lup-arrival-journey li > i { top:16px !important; width:32px !important; height:32px !important; font-size:12px !important; }
+  .lup-arrival-journey h3 { margin:0 0 3px !important; font-size:15px !important; }
+  .lup-arrival-journey li p { font-size:11px !important; line-height:1.35 !important; }
+  .lup-arrival-journey .lup-arrival-next { min-height:42px !important; margin-top:14px !important; }
+}
+
+/* Backend control deck: the same calm depth as the welcome screen, without
+ * sacrificing space to decoration. */
+#wrapper > #sidebar-wrapper {
+  background:radial-gradient(ellipse at 112% 20%,rgba(101,94,176,.18),transparent 34%),radial-gradient(ellipse at 104% 67%,rgba(77,150,196,.10),transparent 31%),linear-gradient(180deg,#101b2b 0%,#0b1421 58%,#080f19 100%) !important;
+}
+#wrapper > #sidebar-wrapper::after {
+  top:118px !important;
+  right:-54px !important;
+  width:138px !important;
+  height:138px !important;
+  border-color:rgba(175,210,241,.13) !important;
+  box-shadow:0 0 0 24px rgba(117,129,206,.028),0 0 58px rgba(92,154,211,.10) !important;
+}
+#wrapper > #sidebar-wrapper .lup-sidebar-brand,
+#wrapper > #sidebar-wrapper .lup-sidebar-section-label,
+#wrapper > #sidebar-wrapper #leftnav,
+#wrapper > #sidebar-wrapper .lup-sidebar-foot { position:relative; z-index:1; }
+#wrapper > #sidebar-wrapper #leftnav { padding-left:8px !important; padding-right:10px !important; }
+#wrapper > #sidebar-wrapper .lup-sidebar-section-label { padding-left:10px !important; }
+#wrapper > #sidebar-wrapper #leftnav > .list-group-item .gdt-link > a { padding-left:6px !important; }
+#wrapper > #sidebar-wrapper #leftnav > .list-group-item .gdt-link > a i { margin-right:7px !important; }
+#wrapper > #sidebar-wrapper #leftnav > .list-group-item .gdt-link::before { left:0 !important; }
+#wrapper > #sidebar-wrapper .lup-sidebar-foot { margin-left:10px !important; margin-right:10px !important; }
+
+/* Navigation copy sits closer to the edge; the two top controls use one
+ * shared control language on every backend page. */
+#wrapper > #sidebar-wrapper #leftnav > .list-group-item .gdt-link > a {
+  padding-left:10px !important;
+}
+#wrapper > #sidebar-wrapper #leftnav > .list-group-item .gdt-link > a i {
+  width:24px !important;
+  height:24px !important;
+  margin-right:8px !important;
+}
+#page-content-wrapper > nav.navbar #sidebarToggle,
+#page-content-wrapper > nav.navbar .navbar-toggler {
+  display:grid !important;
+  place-items:center !important;
+  width:42px !important;
+  min-width:42px !important;
+  height:42px !important;
+  min-height:42px !important;
+  padding:0 !important;
+  border:1px solid rgba(195,214,238,.18) !important;
+  border-radius:11px !important;
+  background:linear-gradient(145deg,#172235,#201c35) !important;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.10),0 7px 18px rgba(0,0,0,.18) !important;
+}
+#page-content-wrapper > nav.navbar #sidebarToggle:hover,
+#page-content-wrapper > nav.navbar .navbar-toggler:hover {
+  border-color:rgba(210,229,248,.38) !important;
+  background:linear-gradient(145deg,#23324a,#30274e) !important;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.16),0 9px 22px rgba(0,0,0,.22) !important;
+}
+
+/* Final alignment override: this comes after legacy backend spacing rules. */
+#wrapper > #sidebar-wrapper #leftnav { padding-left:8px !important; padding-right:10px !important; }
+#wrapper > #sidebar-wrapper #leftnav > .list-group-item .gdt-link > a { padding-left:6px !important; }
+#wrapper > #sidebar-wrapper #leftnav > .list-group-item .gdt-link > a i { width:24px !important; height:24px !important; margin-right:7px !important; }

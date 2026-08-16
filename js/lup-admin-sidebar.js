@@ -1,41 +1,45 @@
-/* Reliable LinkUUp backend drawer control. The old Classic theme relied only
- * on labels and a hidden checkbox, which can become unreachable after opening. */
+/* Keep the legacy backend drawer predictable. Its visual trigger remains in
+ * the theme; this only synchronises the state and makes the page surface a
+ * reliable close target. */
 (function () {
     'use strict';
 
     function initialise() {
         var checkbox = document.getElementById('gdo-left-nav');
-        if (!checkbox || document.getElementById('lup-admin-drawer-toggle')) {
+        var page = document.getElementById('gdo-pagewrap');
+        if (!checkbox || !page || checkbox.dataset.lupDrawerBound === '1') {
             return;
         }
-
-        var toggle = document.createElement('button');
-        toggle.id = 'lup-admin-drawer-toggle';
-        toggle.type = 'button';
-        toggle.setAttribute('aria-controls', 'gdo-left-bar');
-
-        var shade = document.createElement('button');
-        shade.id = 'lup-admin-drawer-shade';
-        shade.type = 'button';
-        shade.setAttribute('aria-label', 'Navigation schließen');
+        checkbox.dataset.lupDrawerBound = '1';
 
         function setOpen(open) {
             checkbox.checked = open;
             document.body.classList.toggle('lup-admin-drawer-open', open);
-            toggle.textContent = open ? '×' : '☰';
-            toggle.setAttribute('aria-label', open ? 'Navigation schließen' : 'Navigation öffnen');
         }
 
-        toggle.addEventListener('click', function () { setOpen(!checkbox.checked); });
-        shade.addEventListener('click', function () { setOpen(false); });
+        checkbox.addEventListener('change', function () { setOpen(checkbox.checked); });
+        /* The remaining welcome surface is the natural close target. Using a
+         * document capture handler also works when an inner page component
+         * stops bubbling its own click event. */
+        document.addEventListener('pointerdown', function (event) {
+            if (!checkbox.checked) {
+                return;
+            }
+            var drawer = document.getElementById('gdo-left-bar');
+            var trigger = document.querySelector('label[for="gdo-left-nav"]');
+            if ((drawer && drawer.contains(event.target)) ||
+                (trigger && trigger.contains(event.target)) ||
+                event.target === checkbox) {
+                return;
+            }
+            setOpen(false);
+        }, true);
         document.addEventListener('keydown', function (event) {
             if (event.key === 'Escape' && checkbox.checked) {
                 setOpen(false);
             }
         });
 
-        document.body.appendChild(shade);
-        document.body.appendChild(toggle);
         setOpen(checkbox.checked);
     }
 
