@@ -42,6 +42,42 @@
                 }
             });
         }
+        const animateArrivalPin = () => {
+            const pin = document.querySelector('.lup-arrival-world-pin > i');
+            if (!pin || pin.dataset.lupPinAnimated === '1' ||
+                window.matchMedia('(prefers-reduced-motion: reduce)').matches ||
+                typeof pin.animate !== 'function') return;
+            pin.dataset.lupPinAnimated = '1';
+            /* Each short sequence is generated anew. That retains a calm,
+             * physical rhythm but avoids the obvious identical CSS loop. */
+            pin.style.setProperty('animation', 'none', 'important');
+            pin.style.setProperty('will-change', 'transform', 'important');
+            const random = (min, max) => min + Math.random() * (max - min);
+            const nextMotion = () => {
+                const leftA = random(-3.2, -1.1);
+                const rightA = random(1.2, 3.6);
+                const leftB = random(-2.6, -0.8);
+                const liftA = random(18, 24);
+                const liftB = random(10, 16);
+                const settle = random(3, 6);
+                const animation = pin.animate([
+                    { transform: 'translate3d(-50%,-10px,0) rotate(-1.2deg)', offset: 0 },
+                    { transform: `translate3d(calc(-50% + ${leftA}px),-${liftA}px,0) rotate(${random(-4.2, -2.3)}deg)`, offset: .17 },
+                    { transform: `translate3d(calc(-50% + ${rightA}px),-${liftB}px,0) rotate(${random(1.6, 3.5)}deg)`, offset: .39 },
+                    { transform: `translate3d(calc(-50% + ${leftB}px),-${settle}px,0) rotate(${random(-2.4, -.6)}deg)`, offset: .58 },
+                    { transform: 'translate3d(-50%,0,0) rotate(0deg)', offset: .67 },
+                    { transform: `translate3d(calc(-50% + ${random(-1.2, 1.8)}px),-${random(4, 8)}px,0) rotate(${random(-1.3, 1.5)}deg)`, offset: .82 },
+                    { transform: 'translate3d(-50%,-10px,0) rotate(-1.2deg)', offset: 1 },
+                ], {
+                    duration: random(4800, 6200),
+                    easing: 'cubic-bezier(.33,.01,.32,1)',
+                    fill: 'forwards',
+                });
+                animation.onfinish = () => window.setTimeout(nextMotion, random(80, 420));
+            };
+            nextMotion();
+        };
+        animateArrivalPin();
         const accountToggle = document.querySelector('[aria-controls="navbarSupportedContent"]');
         if (!document.body.classList.contains('lup-arrival-active') && accountToggle && accountToggle.dataset.lupAccountBound !== '1') {
             accountToggle.dataset.lupAccountBound = '1';

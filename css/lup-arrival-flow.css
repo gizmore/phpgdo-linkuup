@@ -86,15 +86,233 @@
 
 /* One real map pin.  The pin and its two water-like landing waves are separate
  * layers so old welcome styles cannot freeze one another's transforms. */
-.lup-arrival-world-pin { position:absolute !important; display:block !important; z-index:3 !important; width:48px !important; height:62px !important; overflow:visible !important; border:0 !important; border-radius:0 !important; background:transparent !important; box-shadow:none !important; opacity:.68 !important; transform:translate3d(0,0,0); will-change:transform; animation:lup-arrival-pin-drift 12s ease-in-out infinite !important; }
+.lup-arrival-world-pin { position:absolute !important; display:block !important; z-index:3 !important; width:48px !important; height:62px !important; overflow:visible !important; border:0 !important; border-radius:0 !important; background:transparent !important; box-shadow:none !important; opacity:.72 !important; transform:translate3d(0,0,0); will-change:transform; animation:lup-arrival-pin-drift 15s cubic-bezier(.45,.05,.25,1) infinite !important; }
 .lup-arrival-world-pin::before,.lup-arrival-world-pin::after { display:none !important; content:none !important; }
-.lup-arrival-world-pin > i { position:absolute !important; z-index:2 !important; top:0 !important; left:50% !important; display:block !important; color:#a9e4ff !important; font-size:46px !important; line-height:1 !important; text-shadow:0 0 7px rgba(218,246,255,.70),0 0 21px rgba(104,180,255,.46),0 0 34px rgba(102,108,255,.18) !important; transform:translateX(-50%) translateY(-12px) rotate(-2deg); transform-origin:50% 100% !important; will-change:transform,opacity,filter; animation:lup-arrival-pin-touch 5.4s cubic-bezier(.42,.02,.18,1) infinite !important; }
-.lup-arrival-world-ripple { position:absolute !important; z-index:1 !important; bottom:5px !important; left:50% !important; display:block !important; width:19px !important; height:6px !important; margin:0 !important; border:1.5px solid rgba(172,232,255,.88) !important; border-radius:50% !important; background:transparent !important; box-shadow:0 0 9px rgba(101,193,255,.48),inset 0 0 5px rgba(189,234,255,.22) !important; opacity:0; transform:translateX(-50%) scale(.16); will-change:transform,opacity; animation:lup-arrival-pin-ripple 5.4s cubic-bezier(.13,.62,.34,1) infinite !important; }
+.lup-arrival-world-pin > i { position:absolute !important; z-index:2 !important; top:0 !important; left:50% !important; display:block !important; color:#a9e4ff !important; font-size:46px !important; line-height:1 !important; text-shadow:0 0 7px rgba(218,246,255,.70),0 0 21px rgba(104,180,255,.46),0 0 34px rgba(102,108,255,.18) !important; transform:translate3d(-50%,-12px,0) rotate(-2deg); transform-origin:50% 100% !important; will-change:transform,opacity; animation:lup-arrival-pin-touch 6.8s cubic-bezier(.42,.02,.18,1) infinite !important; }
+.lup-arrival-world-ripple { position:absolute !important; z-index:1 !important; bottom:5px !important; left:50% !important; display:block !important; width:19px !important; height:6px !important; margin:0 !important; border:1.5px solid rgba(172,232,255,.88) !important; border-radius:50% !important; background:transparent !important; box-shadow:0 0 9px rgba(101,193,255,.48),inset 0 0 5px rgba(189,234,255,.22) !important; opacity:0; transform:translate3d(-50%,0,0) scale(.16); will-change:transform,opacity; animation:lup-arrival-pin-ripple 6.8s cubic-bezier(.12,.63,.30,1) infinite !important; }
 .lup-arrival-world-ripple.ripple-two { animation-delay:.18s !important; border-color:rgba(173,184,255,.70) !important; box-shadow:0 0 11px rgba(125,122,255,.36),inset 0 0 5px rgba(203,208,255,.18) !important; }
-@keyframes lup-arrival-pin-drift { 0%,100% { transform:translate3d(0,0,0); } 38% { transform:translate3d(-3px,2px,0); } 70% { transform:translate3d(2px,-2px,0); } }
-@keyframes lup-arrival-pin-touch { 0%,100% { opacity:.56; filter:brightness(.92); transform:translateX(-50%) translateY(-12px) rotate(-2deg); } 29% { opacity:.78; filter:brightness(1.10); transform:translateX(calc(-50% - 2px)) translateY(-16px) rotate(-4deg); } 46% { opacity:1; filter:brightness(1.28); transform:translateX(calc(-50% + 1px)) translateY(0) rotate(0deg); } 53% { opacity:.94; filter:brightness(1.10); transform:translateX(-50%) translateY(-3px) rotate(2deg); } 65% { opacity:.76; filter:brightness(1); transform:translateX(calc(-50% - 1px)) translateY(-9px) rotate(-2deg); } 80% { opacity:.62; filter:brightness(.96); transform:translateX(-50%) translateY(-12px) rotate(-2deg); } }
-@keyframes lup-arrival-pin-ripple { 0%,43%,100% { opacity:0; transform:translateX(-50%) scale(.16); } 47% { opacity:.94; transform:translateX(-50%) scale(.34); } 73% { opacity:.12; transform:translateX(-50%) scale(6.6); } 80% { opacity:0; transform:translateX(-50%) scale(7.4); } }
+@keyframes lup-arrival-pin-drift { 0%,100% { transform:translate3d(0,0,0); } 32% { transform:translate3d(-3px,2px,0); } 66% { transform:translate3d(2px,-2px,0); } }
+@keyframes lup-arrival-pin-touch { 0%,100% { opacity:.60; transform:translate3d(-50%,-11px,0) rotate(-2deg); } 19% { opacity:.70; transform:translate3d(calc(-50% - 2px),-15px,0) rotate(-3deg); } 37% { opacity:.82; transform:translate3d(calc(-50% + 1px),-7px,0) rotate(1deg); } 48% { opacity:1; transform:translate3d(-50%,0,0) rotate(0deg); } 56% { opacity:.94; transform:translate3d(calc(-50% + 1px),-3px,0) rotate(1deg); } 71% { opacity:.76; transform:translate3d(calc(-50% - 1px),-9px,0) rotate(-1deg); } 87% { opacity:.62; transform:translate3d(-50%,-12px,0) rotate(-2deg); } }
+@keyframes lup-arrival-pin-ripple { 0%,44%,100% { opacity:0; transform:translate3d(-50%,0,0) scale(.16); } 48% { opacity:.92; transform:translate3d(-50%,0,0) scale(.30); } 67% { opacity:.30; transform:translate3d(-50%,0,0) scale(4.7); } 82% { opacity:0; transform:translate3d(-50%,0,0) scale(7.6); } }
 @media (max-width:760px) { .lup-arrival-world-pin { width:38px !important; height:51px !important; }.lup-arrival-world-pin > i { font-size:38px !important; }.lup-arrival-world-ripple { bottom:6px !important; } }
 
 /* The former horizontal beam competed with the landing waves. */
 .lup-arrival-world-signal { display:none !important; }
+
+/* Welcome and backend shell share one material: deep midnight, fine map-lines,
+ * and one cyan orientation accent.  The location pin remains the only animated
+ * hero object; navigation deliberately stays quiet. */
+body.lup-arrival-active {
+  --lup-shell:#09111d;
+  --lup-shell-deep:#070c14;
+  --lup-surface:rgba(17,29,47,.72);
+  --lup-line:rgba(161,214,255,.15);
+  --lup-text:#e6f1ff;
+  --lup-muted:rgba(194,213,235,.62);
+  --lup-accent:#9bdfff;
+  background:var(--lup-shell-deep) !important;
+}
+body.lup-arrival-active #wrapper,
+body.lup-arrival-active #page-content-wrapper,
+body.lup-arrival-active #content-wrap { background:var(--lup-shell-deep) !important; }
+body.lup-arrival-active #page-content-wrapper > nav.navbar {
+  min-height:64px !important;
+  border-bottom:1px solid var(--lup-line) !important;
+  background:linear-gradient(90deg,#0b1422,#09111d 54%,#0c1423) !important;
+  box-shadow:0 8px 26px rgba(0,0,0,.18) !important;
+}
+body.lup-arrival-active #page-content-wrapper > nav.navbar::before {
+  right:22px !important;
+  left:22px !important;
+  background:linear-gradient(90deg,transparent,rgba(155,223,255,.36),rgba(155,223,255,.12),transparent) !important;
+  box-shadow:0 0 10px rgba(117,195,255,.16) !important;
+}
+body.lup-arrival-active #page-content-wrapper > nav.navbar #sidebarToggle,
+body.lup-arrival-active #page-content-wrapper > nav.navbar .navbar-toggler {
+  width:40px !important;
+  min-width:40px !important;
+  height:40px !important;
+  min-height:40px !important;
+  border:1px solid var(--lup-line) !important;
+  border-radius:11px !important;
+  background:rgba(142,202,255,.055) !important;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.055),0 8px 18px rgba(0,0,0,.13) !important;
+}
+body.lup-arrival-active #page-content-wrapper > nav.navbar #sidebarToggle:hover,
+body.lup-arrival-active #page-content-wrapper > nav.navbar .navbar-toggler:hover {
+  border-color:rgba(166,225,255,.35) !important;
+  background:rgba(142,202,255,.11) !important;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.09),0 0 18px rgba(103,190,255,.12) !important;
+}
+body.lup-arrival-active #page-content-wrapper > nav.navbar #sidebarToggle .lup-sidebar-glyph i { background:var(--lup-accent) !important; box-shadow:0 0 7px rgba(155,223,255,.42) !important; }
+
+body.lup-arrival-active #sidebar-wrapper {
+  border-right:1px solid var(--lup-line) !important;
+  background:radial-gradient(ellipse at 105% 12%,rgba(86,155,218,.12),transparent 31%),linear-gradient(180deg,#0b1422 0%,#09111d 58%,#070c14 100%) !important;
+  box-shadow:14px 0 38px rgba(0,0,0,.20) !important;
+}
+body.lup-arrival-active #sidebar-wrapper .lup-sidebar-brand {
+  min-height:72px !important;
+  border-bottom:1px solid var(--lup-line) !important;
+  background:linear-gradient(90deg,rgba(155,223,255,.045),transparent 60%) !important;
+}
+body.lup-arrival-active #sidebar-wrapper .lup-sidebar-brand-mark {
+  border-color:var(--lup-line) !important;
+  border-radius:10px !important;
+  background:rgba(155,223,255,.065) !important;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.07) !important;
+}
+body.lup-arrival-active #sidebar-wrapper .lup-sidebar-brand strong { color:var(--lup-text) !important; }
+body.lup-arrival-active #sidebar-wrapper .lup-sidebar-brand small,
+body.lup-arrival-active #sidebar-wrapper .lup-sidebar-section-label,
+body.lup-arrival-active #sidebar-wrapper .lup-sidebar-foot { color:var(--lup-muted) !important; }
+body.lup-arrival-active #sidebar-wrapper .lup-sidebar-section-label span { background:linear-gradient(90deg,var(--lup-accent),transparent) !important; }
+body.lup-arrival-active #sidebar-wrapper #leftnav > .list-group-item .gdt-link > a { color:rgba(220,235,255,.76) !important; }
+body.lup-arrival-active #sidebar-wrapper #leftnav > .list-group-item .gdt-link > a i {
+  background:rgba(155,223,255,.055) !important;
+  color:var(--lup-accent) !important;
+}
+body.lup-arrival-active #sidebar-wrapper #leftnav > .list-group-item:has(.gdt-link:hover) .gdt-link > a,
+body.lup-arrival-active #sidebar-wrapper #leftnav > .list-group-item:focus-within .gdt-link > a {
+  border-color:rgba(155,223,255,.15) !important;
+  background:linear-gradient(90deg,rgba(155,223,255,.09),transparent 88%) !important;
+  color:#f5f9ff !important;
+}
+
+body.lup-arrival-active .lup-arrival-hero h1 { color:#edf5ff !important; text-shadow:0 12px 30px rgba(0,0,0,.20) !important; }
+body.lup-arrival-active .lup-arrival-copy .lup-arrival-kicker,
+body.lup-arrival-active .lup-arrival-brand small { color:var(--lup-muted) !important; }
+body.lup-arrival-active .lup-arrival-actions a:first-child {
+  border:1px solid rgba(155,223,255,.24) !important;
+  background:rgba(155,223,255,.10) !important;
+  box-shadow:0 10px 24px rgba(0,0,0,.15),inset 0 1px 0 rgba(255,255,255,.08) !important;
+}
+
+/* Necessary consent stays explicit, but no longer erases the first impression. */
+body.lup-arrival-active #gdo_dsgvo_panel .gdo_dsgvo_overlay { background:rgba(3,7,14,.46) !important; backdrop-filter:blur(2px); }
+body.lup-arrival-active #gdo_dsgvo_panel .gdo_dsgvo_info {
+  width:min(680px,calc(100vw - 32px)) !important;
+  border:1px solid rgba(166,215,255,.28) !important;
+  border-radius:18px !important;
+  background:rgba(14,23,39,.94) !important;
+  box-shadow:0 24px 55px rgba(0,0,0,.34),inset 0 1px 0 rgba(255,255,255,.06) !important;
+}
+body.lup-arrival-active #gdo_dsgvo_panel .gdo_dsgvo_info p { color:#d6e5f7 !important; font-size:13px !important; line-height:1.45 !important; }
+body.lup-arrival-active #gdo_dsgvo_panel #gdo-dsgvo-accept-button { border-radius:10px !important; background:linear-gradient(135deg,#7aaef0,#7668d7) !important; }
+@media (max-width:760px) {
+  body.lup-arrival-active #gdo_dsgvo_panel .gdo_dsgvo_info { right:14px !important; bottom:14px !important; left:14px !important; width:auto !important; padding:15px !important; border-radius:16px !important; }
+  body.lup-arrival-active #gdo_dsgvo_panel .gdo_dsgvo_info p { margin:0 0 10px !important; font-size:12px !important; }
+  body.lup-arrival-active #gdo_dsgvo_panel #gdo-dsgvo-accept-button { min-height:38px !important; padding:9px 13px !important; }
+}
+
+/* Phone hero: the next action belongs close to the first view, even after the
+ * optional explanation opens.  Let content grow naturally instead of reserving
+ * an almost empty second screen. */
+@media (max-width:430px) {
+  .lup-arrival-hero { min-height:580px !important; padding-bottom:20px !important; }
+  .lup-arrival-copy { margin-top:28px !important; }
+  .lup-arrival-copy .lup-arrival-more { margin:12px 0 15px !important; }
+  .lup-arrival-actions { margin-top:0 !important; }
+}
+
+/* A continuous buoyant movement: transform-only, GPU friendly, with a wider
+ * but calm arc so the location marker reads as alive instead of merely blinking. */
+.lup-arrival-world-pin > i { animation-duration:5.6s !important; animation-timing-function:linear !important; }
+.lup-arrival-world-ripple { animation-duration:5.6s !important; animation-timing-function:linear !important; }
+@keyframes lup-arrival-pin-touch {
+  0%,100% { opacity:.62; transform:translate3d(-50%,-11px,0) rotate(-2deg); }
+  12% { opacity:.69; transform:translate3d(calc(-50% - 2px),-16px,0) rotate(-3deg); }
+  25% { opacity:.78; transform:translate3d(calc(-50% - 3px),-14px,0) rotate(-3deg); }
+  38% { opacity:.90; transform:translate3d(calc(-50% - 1px),-7px,0) rotate(-1deg); }
+  48% { opacity:1; transform:translate3d(-50%,0,0) rotate(0deg); }
+  57% { opacity:.93; transform:translate3d(calc(-50% + 2px),-4px,0) rotate(2deg); }
+  70% { opacity:.80; transform:translate3d(calc(-50% + 2px),-10px,0) rotate(2deg); }
+  84% { opacity:.67; transform:translate3d(-50%,-14px,0) rotate(-1deg); }
+}
+@keyframes lup-arrival-pin-ripple {
+  0%,43%,100% { opacity:0; transform:translate3d(-50%,0,0) scale(.16); }
+  48% { opacity:.96; transform:translate3d(-50%,0,0) scale(.35); }
+  61% { opacity:.52; transform:translate3d(-50%,0,0) scale(3.2); }
+  76% { opacity:.08; transform:translate3d(-50%,0,0) scale(6.8); }
+  83% { opacity:0; transform:translate3d(-50%,0,0) scale(8); }
+}
+
+/* The open drawer does not add a physical backdrop: the page itself handles
+ * the outside tap, leaving the navigation bar and page geometry untouched. */
+#lup-sidebar-backdrop { display:none !important; }
+@media (max-width:767.98px) {
+  body.lup-sidebar-drawer-open #sidebar-wrapper {
+    z-index:1040 !important;
+    box-shadow:20px 0 44px rgba(0,0,0,.34) !important;
+    transition:transform .24s cubic-bezier(.2,.8,.2,1),box-shadow .24s ease !important;
+  }
+}
+
+/* LinkUUp's living place marker: a restrained hover, one brief orientation
+ * shake, then a precise landing pulse.  It stays an abstract map marker — no
+ * character animation — and uses transforms only for a fluid phone render. */
+.lup-arrival-world-pin > i {
+  font-size:50px !important;
+  opacity:.82 !important;
+  backface-visibility:hidden !important;
+  -webkit-font-smoothing:antialiased;
+  animation:lup-arrival-pin-presence 8.6s cubic-bezier(.45,0,.55,1) infinite !important;
+}
+.lup-arrival-world-ripple {
+  animation:lup-arrival-pin-presence-ripple 8.6s cubic-bezier(.12,.63,.30,1) infinite !important;
+}
+.lup-arrival-world-ripple.ripple-two { animation-delay:.22s !important; }
+@keyframes lup-arrival-pin-presence {
+  0%,100% { transform:translate3d(-50%,-12px,0) rotate(-1deg); }
+  22% { transform:translate3d(calc(-50% - 1px),-16px,0) rotate(-1.5deg); }
+  40% { transform:translate3d(calc(-50% + 1px),-8px,0) rotate(.7deg); }
+  48% { transform:translate3d(calc(-50% - 1px),-2px,0) rotate(-2.2deg); }
+  51% { transform:translate3d(calc(-50% + 1px),-1px,0) rotate(2.2deg); }
+  54% { transform:translate3d(-50%,0,0) rotate(0deg); }
+  70% { transform:translate3d(calc(-50% + 1px),-4px,0) rotate(.7deg); }
+  87% { transform:translate3d(calc(-50% - 1px),-10px,0) rotate(-.8deg); }
+}
+@keyframes lup-arrival-pin-presence-ripple {
+  0%,49%,100% { opacity:0; transform:translate3d(-50%,0,0) scale(.16); }
+  54% { opacity:.90; transform:translate3d(-50%,0,0) scale(.32); }
+  68% { opacity:.42; transform:translate3d(-50%,0,0) scale(3.7); }
+  83% { opacity:0; transform:translate3d(-50%,0,0) scale(6.8); }
+}
+@media (max-width:760px) {
+  .lup-arrival-world-pin { width:43px !important; height:55px !important; }
+  .lup-arrival-world-pin > i { font-size:43px !important; }
+}
+@media (prefers-reduced-motion:reduce) {
+  .lup-arrival-world-pin,.lup-arrival-world-pin > i,.lup-arrival-world-ripple { animation:none !important; }
+}
+
+/* One compositor animation only. The former parent drift and child bounce
+ * fought over separate layers on some GPUs and looked like a small stutter. */
+.lup-arrival-world-pin { animation:none !important; transform:translate3d(0,0,0) !important; }
+.lup-arrival-world-pin > i {
+  /* Do not declare transform as !important here: that would win over the
+   * keyframes and freeze the visible marker in one place. */
+  animation:lup-arrival-pin-fluid 3.6s cubic-bezier(.36,.02,.28,1) infinite !important;
+}
+.lup-arrival-world-ripple { animation:lup-arrival-pin-fluid-ripple 3.6s cubic-bezier(.18,.58,.32,1) infinite !important; }
+.lup-arrival-world-ripple.ripple-two { animation-delay:.26s !important; }
+@keyframes lup-arrival-pin-fluid {
+  0%,100% { transform:translate3d(-50%,-10px,0) rotate(-2deg); }
+  12% { transform:translate3d(calc(-50% - 3px),-29px,0) rotate(-5deg); }
+  25% { transform:translate3d(calc(-50% + 4px),-22px,0) rotate(4deg); }
+  38% { transform:translate3d(calc(-50% - 3px),-11px,0) rotate(-2deg); }
+  47% { transform:translate3d(calc(-50% + 3px),-3px,0) rotate(3deg); }
+  53% { transform:translate3d(-50%,0,0) rotate(0deg); }
+  64% { transform:translate3d(calc(-50% + 4px),-9px,0) rotate(3deg); }
+  78% { transform:translate3d(calc(-50% - 4px),-23px,0) rotate(-4deg); }
+  90% { transform:translate3d(calc(-50% + 2px),-17px,0) rotate(2deg); }
+}
+@keyframes lup-arrival-pin-fluid-ripple {
+  0%,56%,100% { opacity:0; transform:translate3d(-50%,0,0) scale(.16); }
+  63% { opacity:.90; transform:translate3d(-50%,0,0) scale(.31); }
+  79% { opacity:.40; transform:translate3d(-50%,0,0) scale(4.1); }
+  96% { opacity:0; transform:translate3d(-50%,0,0) scale(7); }
+}
+@media (prefers-reduced-motion:reduce) {
+  .lup-arrival-world-pin,.lup-arrival-world-pin > i,.lup-arrival-world-ripple { animation:none !important; }
+}

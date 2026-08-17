@@ -1544,6 +1544,35 @@ body.sb-sidenav-toggled #sidebarToggle { animation:lup-admin-menu-return .36s cu
   }
 }
 
+/* The account control language is global: every backend page receives the
+ * same compact, meaningful icons instead of a mixture of dots and fallbacks. */
+#page-content-wrapper #navbarSupportedContent.show .gdt-link > a > .gdo-icon { display:none !important; }
+#page-content-wrapper #navbarSupportedContent.show .gdt-link > a::before {
+  display:grid !important;
+  place-items:center !important;
+  flex:0 0 20px !important;
+  width:20px !important;
+  height:20px !important;
+  margin:0 !important;
+  padding:0 !important;
+  border:1px solid rgba(183,216,255,.24) !important;
+  border-radius:7px 7px 7px 3px !important;
+  background:linear-gradient(145deg,rgba(113,153,224,.24),rgba(113,82,187,.18)) !important;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.13),0 0 10px rgba(125,171,240,.09) !important;
+  color:#c9e5ff !important;
+  font-family:'Font Awesome 5 Free' !important;
+  font-size:9px !important;
+  font-weight:900 !important;
+  line-height:1 !important;
+}
+#page-content-wrapper #navbarSupportedContent.show a[href*='user;profile']::before { content:'\f2bd' !important; }
+#page-content-wrapper #navbarSupportedContent.show a[href*='account;']::before { content:'\f013' !important; }
+#page-content-wrapper #navbarSupportedContent.show a[href*='admin;']::before { content:'\f3ed' !important; }
+#page-content-wrapper #navbarSupportedContent.show a[href*='friends;']::before { content:'\f0c0' !important; }
+#page-content-wrapper #navbarSupportedContent.show a[href*='gallery;']::before { content:'\f03e' !important; }
+#page-content-wrapper #navbarSupportedContent.show a[href*='login;logout']::before { content:'\f2f5' !important; }
+#page-content-wrapper #navbarSupportedContent.show a[href*='linkuup;main']::before { content:'\f0c0' !important; }
+
 /* Login and registration always provide a calm, visible way back to LinkUUp. */
 .login-form .gdt-link a[href*="linkuup;welcome"],
 #content-wrap .gdt-form .gdt-link a[href*="linkuup;welcome"] {
@@ -3155,6 +3184,21 @@ body.lup-arrival-active #page-content-wrapper > nav.navbar .navbar-toggler .lup-
     min-width:0 !important;
     justify-content:flex-start !important;
   }
+
+  /* Preserve GDO's real menu groups. Flattening them with display:contents
+   * made the individual point controls lose their shared grid on signed-in
+   * accounts. */
+  body.lup-arrival-active #navbarSupportedContent.show .navbar-nav > .nav-item,
+  body.lup-arrival-active #navbarSupportedContent.show .navbar-nav > .nav-item > .nav-link {
+    display:flex !important;
+  }
+  body.lup-arrival-active #navbarSupportedContent.show .navbar-nav .gdt-container,
+  body.lup-arrival-active #navbarSupportedContent.show .navbar-nav .gdt-menu {
+    display:grid !important;
+    grid-template-columns:repeat(2,minmax(0,1fr)) !important;
+    gap:7px !important;
+    width:100% !important;
+  }
 }
 
 /* Keep the first call to action connected to the next chapter instead of
@@ -3741,3 +3785,84 @@ body.lup-arrival-active #gdo-left-bar .gdo-lang-switch img {
 #wrapper > #sidebar-wrapper #leftnav { padding-left:8px !important; padding-right:10px !important; }
 #wrapper > #sidebar-wrapper #leftnav > .list-group-item .gdt-link > a { padding-left:6px !important; }
 #wrapper > #sidebar-wrapper #leftnav > .list-group-item .gdt-link > a i { width:24px !important; height:24px !important; margin-right:7px !important; }
+
+/* Old GDO UTF-8 icon fallbacks contain literal words ("user-circle",
+ * "shield-alt"). The menu already supplies its own small status point. */
+body.lup-arrival-active #navbarSupportedContent.show .gdt-link > a > .gdo-utf8-icon-user-circle,
+body.lup-arrival-active #navbarSupportedContent.show .gdt-link > a > .gdo-utf8-icon-shield-alt {
+  display:none !important;
+  width:0 !important;
+  min-width:0 !important;
+  margin:0 !important;
+  padding:0 !important;
+}
+
+/* One compact icon language for every account action. */
+@media (max-width:767.98px) {
+  body.lup-arrival-active #navbarSupportedContent.show .gdt-link > a > .gdo-icon { display:none !important; }
+  body.lup-arrival-active #navbarSupportedContent.show .gdt-link > a::before {
+    display:grid !important;
+    place-items:center !important;
+    flex:0 0 20px !important;
+    width:20px !important;
+    height:20px !important;
+    margin:0 !important;
+    padding:0 !important;
+    border:1px solid rgba(183,216,255,.24) !important;
+    border-radius:7px 7px 7px 3px !important;
+    background:linear-gradient(145deg,rgba(113,153,224,.24),rgba(113,82,187,.18)) !important;
+    box-shadow:inset 0 1px 0 rgba(255,255,255,.13),0 0 10px rgba(125,171,240,.09) !important;
+    color:#c9e5ff !important;
+    font-family:'Font Awesome 5 Free' !important;
+    font-size:9px !important;
+    font-weight:900 !important;
+    line-height:1 !important;
+  }
+  body.lup-arrival-active #navbarSupportedContent.show a[href*='user;profile']::before { content:'\f2bd' !important; }
+  body.lup-arrival-active #navbarSupportedContent.show a[href*='account;']::before { content:'\f013' !important; }
+  body.lup-arrival-active #navbarSupportedContent.show a[href*='admin;']::before { content:'\f3ed' !important; }
+  body.lup-arrival-active #navbarSupportedContent.show a[href*='friends;']::before { content:'\f0c0' !important; }
+  body.lup-arrival-active #navbarSupportedContent.show a[href*='gallery;']::before { content:'\f03e' !important; }
+  body.lup-arrival-active #navbarSupportedContent.show a[href*='login;logout']::before { content:'\f2f5' !important; }
+  body.lup-arrival-active #navbarSupportedContent.show a[href*='linkuup;main']::before { content:'\f0c0' !important; }
+}
+
+/* Signed-in account menu: GDO nests the first account links in a container.
+ * Flatten structural wrappers only, then place every actual action in one
+ * equal two-column grid: profile/account, admin/friends, gallery/logout. */
+@media (max-width:767.98px) {
+  body.lup-arrival-active #navbarSupportedContent.show .navbar-nav {
+    display:grid !important;
+    grid-template-columns:repeat(2,minmax(0,1fr)) !important;
+    gap:7px !important;
+    width:100% !important;
+    margin:0 !important;
+    padding:0 !important;
+  }
+  body.lup-arrival-active #navbarSupportedContent.show .navbar-nav > .nav-item,
+  body.lup-arrival-active #navbarSupportedContent.show .navbar-nav > .nav-item > .nav-link,
+  body.lup-arrival-active #navbarSupportedContent.show .navbar-nav .gdt-container,
+  body.lup-arrival-active #navbarSupportedContent.show .navbar-nav .gdt-menu {
+    display:contents !important;
+  }
+  body.lup-arrival-active #navbarSupportedContent.show .navbar-nav .gdt-link {
+    display:block !important;
+    min-width:0 !important;
+    width:100% !important;
+  }
+  body.lup-arrival-active #navbarSupportedContent.show .navbar-nav .gdt-link > a {
+    display:flex !important;
+    align-items:center !important;
+    gap:7px !important;
+    min-width:0 !important;
+    width:100% !important;
+    min-height:46px !important;
+    overflow:hidden !important;
+    text-overflow:ellipsis !important;
+    white-space:nowrap !important;
+  }
+  body.lup-arrival-active #navbarSupportedContent.show .gdo-utf8-icon-user-circle,
+  body.lup-arrival-active #navbarSupportedContent.show .gdo-utf8-icon-shield-alt {
+    display:none !important;
+  }
+}
