@@ -25,6 +25,7 @@ class LUPWS_RoomTopComments extends LUPWS_RoomComment
 		{
 			return $msg->rplyError('err_room_disabled');
 		}
+		$this->commentRoom = $room;
 
 		# Query
 		$limit = Module_LinkUUp::instance()->cfgNumTopComments();

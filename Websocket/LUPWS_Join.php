@@ -46,12 +46,11 @@ class LUPWS_Join extends LUPWS_Command
 			return; # $msg->rplyError('err_join_twice');
 		}
 
-		if (!LUP_Global::isVIP($user))
+		// Local rooms are local for every account. Privileged roles may manage
+		// rooms, but they must never bypass the live GPS entrance requirement.
+		if (!$room->isInChatRange($lat, $lng))
 		{
-			if (!$room->isInChatRange($lat, $lng))
-			{
-				return $msg->rplyError('err_room_not_near');
-			}
+			return $msg->rplyError('err_room_not_near');
 		}
 
 		if ($this->cfgTicketEngine())

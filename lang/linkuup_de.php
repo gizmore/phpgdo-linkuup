@@ -4,6 +4,8 @@ namespace GDO\LinkUUp\lang;
 return [
 
 	'lup_welcome' => 'Willkommen!',
+	'lup_staff' => 'Team-Bereich',
+	'lup_back_to_backend' => 'Zurück zum LinkUUp-Start',
 	'lup_landing_kicker' => 'Lokale Verbindung, zu deinen Bedingungen',
 	'lup_landing_title' => 'In der Nähe treffen. Gemeinsam planen.',
 	'lup_landing_lead' => 'LinkUUp hilft Menschen, Orte, Gespräche und Pläne zu entdecken, die zum eigenen Alltag passen.',
@@ -200,7 +202,7 @@ return [
 
 	# 7.0.1
 	'mt_linkuup_statistics' => 'Statistics',
-	'mt_linkuup_admin' => 'Admin Section',
+	'mt_linkuup_admin' => 'Verwaltung',
 	'mt_linkuup_editmenu' => 'Edit Menu',
 	'mt_linkuup_roomicon' => 'Icon',
 	'mt_linkuup_roomimage' => 'Image',

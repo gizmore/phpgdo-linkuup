@@ -26,8 +26,11 @@ final class LUP_RoomVisit extends GDO
 	###########
 	public static function hasJoinedToday(LUP_Room $room, GDO_User $user)
 	{
-		$condition = sprintf('visit_room=%s AND visit_user=%s AND DATE(visit_at)=\'%s\'',
-			$room->getID(), $user->getID(), date('Y-m-d'));
+		// A location earns one verified visit point per rolling 24-hour window.
+		// This is fairer than resetting the counter at midnight and prevents
+		// repeated room joins from inflating the course score.
+		$condition = sprintf('visit_room=%s AND visit_user=%s AND visit_at >= DATE_SUB(NOW(), INTERVAL 24 HOUR)',
+			$room->getID(), $user->getID());
 		return self::table()->countWhere($condition) > 0;
 	}
 

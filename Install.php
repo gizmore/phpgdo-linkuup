@@ -167,9 +167,14 @@ final class Install
         self::createPeine();
 		self::createWolfsburg();
         self::createBrunswick();
+		self::createRegionalCityChats();
         self::createBraunschweigTestBars();
         self::createBraunschweigEducation();
         self::createBraunschweigRefinedLocations();
+        self::createBraunschweigAdditionalCafes();
+        self::createBraunschweigCafeExpansion();
+		self::createRegionalClubExpansion();
+		self::createRegionalMixedExpansion();
 
 		self::createDefaultImageVariants($module);
 	}
@@ -319,7 +324,7 @@ final class Install
             'room_address' => null,
             'room_icon' => $imagePeine->getId(),
             'room_image' => $imagePeine->getId(),
-            'room_show_distance' => '0',
+            'room_show_distance' => '1',
         ])->softReplace();
     }
 
@@ -346,7 +351,7 @@ final class Install
 			'room_address' => null,
 			'room_icon' => $imageBS->getId(),
 			'room_image' => $imageBS->getId(),
-			'room_show_distance' => '0',
+			'room_show_distance' => '1',
 		])->softReplace();
 	}
 
@@ -373,9 +378,59 @@ final class Install
             'room_address' => null,
             'room_icon' => $imageBS->getId(),
             'room_image' => $imageBS->getId(),
-            'room_show_distance' => '0',
+            'room_show_distance' => '1',
         ])->softReplace();
     }
+
+	/**
+	 * Regional city chats for the first live GPS test area.
+	 *
+	 * Coordinates are administrative-city centroids verified against OpenStreetMap
+	 * boundary relations. LinkUUp currently authorises a room with one circular
+	 * geofence, so each radius is sized to cover the complete municipal extent
+	 * rather than an arbitrary tiny downtown circle. A future multi-polygon
+	 * geofence can replace these circles without changing the room records.
+	 */
+	private static function createRegionalCityChats(): void
+	{
+		$image = self::$ICONS[4];
+		$cities = [
+			// name, latitude, longitude, radius in km, official city URL
+			['Hannover Chat', 52.3744779, 9.7385532, 15.0, 'https://www.hannover.de/'],
+			['Hildesheim Chat', 52.1527188, 9.9518083, 8.0, 'https://www.hildesheim.de/'],
+			['Salzgitter Chat', 52.1503721, 10.3593147, 16.0, 'https://www.salzgitter.de/'],
+			['Wolfenbüttel Chat', 52.1625283, 10.5348215, 11.0, 'https://www.wolfenbuettel.de/'],
+			['Celle Chat', 52.6240560, 10.0810520, 13.0, 'https://www.celle.de/'],
+			['Goslar Chat', 51.9059936, 10.4266284, 16.0, 'https://www.goslar.de/'],
+			['Helmstedt Chat', 52.2087491, 11.0030275, 12.0, 'https://www.helmstedt.de/'],
+			['Gifhorn Chat', 52.4882194, 10.5453040, 12.0, 'https://www.gifhorn.de/'],
+			['Königslutter am Elm Chat', 52.2499307, 10.8171691, 12.0, 'https://www.koenigslutter.de/'],
+			['Lehrte Chat', 52.3749334, 9.9748557, 12.0, 'https://www.lehrte.de/'],
+		];
+
+		foreach ($cities as $index => [$name, $lat, $lng, $radius, $website])
+		{
+			LUP_Room::blank([
+				'room_id' => (string)(120 + $index),
+				'room_owner' => null,
+				'room_name' => $name,
+				'room_info' => 'Stadtchat für Begegnungen innerhalb des lokalen Stadtgebiets.',
+				'room_color' => '#133742',
+				'room_category' => '2',
+				'room_sort' => (string)(50 + $index),
+				'room_pos_lat' => (string)$lat,
+				'room_pos_lng' => (string)$lng,
+				// Publicly discoverable throughout the current regional test area.
+				'room_view' => '120.0',
+				// Entry remains guarded by this local city geofence.
+				'room_radius' => (string)$radius,
+				'room_www' => $website,
+				'room_icon' => $image->getID(),
+				'room_image' => $image->getID(),
+				'room_show_distance' => '1',
+			])->softReplace();
+		}
+	}
 
     /**
      * A small, real-world seed set for testing the LinkUUp location flow.
@@ -498,7 +553,6 @@ final class Install
             ['Café Kreuzgang', 5, 52.2651859, 10.5186063, 'Schützenstraße 22a', '38100', 0.075],
 
             // Clubs & Tanz (category 11): individual entrances, never a city-wide radius.
-            ['Eule XO', 11, 52.2595112, 10.5165467, 'Friedrich-Wilhelm-Straße 39', '38100', 0.075],
             ['Maxi Disco', 11, 52.2662387, 10.5220822, 'Hagenmarkt 6', '38100', 0.075],
             ['Privileg Club', 11, 52.2598031, 10.5215860, 'Wallstraße 1', '38100', 0.075],
             ['LULU Bar', 11, 52.2608885, 10.5203413, 'Friedrich-Wilhelm-Straße 37', '38100', 0.075],
@@ -551,6 +605,223 @@ final class Install
                 'room_pos_lng' => (string)$lng,
                 'room_view' => '32.0',
                 'room_radius' => (string)$radius,
+                'room_address' => $address->getID(),
+                'room_icon' => $image->getID(),
+                'room_image' => $image->getID(),
+                'room_show_distance' => '1',
+            ])->softReplace();
+        }
+    }
+
+    /**
+     * A second, independently numbered café set for the location catalogue.
+     * Every pin is placed on the venue itself and deliberately uses a 75 m
+     * geofence, so nearby cafés never become one shared room.
+     */
+    private static function createBraunschweigAdditionalCafes(): void
+    {
+        $owner = GDO_User::getByName('shqiprim');
+        $image = self::$ICONS[4];
+        $cafes = [
+            ['Café Zeit', 52.2642962, 10.5218784, 'Sack 24', '38100'],
+            ['Café Zeit Piccolo', 52.2876766, 10.5275435, 'Siegfriedstraße 42', '38106'],
+            ['Café Mamio', 52.2869242, 10.4986368, 'Dorfstraße 6', '38114'],
+            ['Cinnful', 52.2640173, 10.5205852, 'Neue Straße 8', '38100'],
+            ['fiets kaffee.bar', 52.2674509, 10.5408346, 'Altewiekring 29', '38102'],
+            ['Kaffeehaus', 52.2574348, 10.5046552, 'Cyriaksring 35', '38118'],
+            ['Second Home Café', 52.2632320, 10.5456928, 'Kastanienallee 60', '38102'],
+            ['Makery', 52.2613395, 10.5268753, 'Kuhstraße', '38100'],
+            ['Juan & Jane', 52.2637570, 10.5174601, 'Handelsweg 11', '38100'],
+            ['Buchcafé Sisu Lou', 52.2683709, 10.5375977, 'Wiesenstraße 11', '38102'],
+        ];
+
+        foreach ($cafes as $index => [$name, $lat, $lng, $street, $zip])
+        {
+            // Keep these IDs isolated from the original seed catalogue.
+            $id = 160 + $index;
+            $address = GDO_Address::blank([
+                'address_id' => (string)$id,
+                'address_name' => $name,
+                'address_street' => $street,
+                'address_zip' => $zip,
+                'address_city' => 'Braunschweig',
+                'address_country' => 'DE',
+            ])->softReplace();
+
+            LUP_Room::blank([
+                'room_id' => (string)$id,
+                'room_owner' => $owner->getID(),
+                'room_name' => $name,
+                'room_info' => 'Café in Braunschweig. Der Chat ist nur direkt am Standort verfügbar.',
+                'room_color' => '#6F42D7',
+                'room_category' => '5',
+                'room_pos_lat' => (string)$lat,
+                'room_pos_lng' => (string)$lng,
+                'room_view' => '32.0',
+                'room_radius' => '0.075',
+                'room_address' => $address->getID(),
+                'room_icon' => $image->getID(),
+                'room_image' => $image->getID(),
+                'room_show_distance' => '1',
+            ])->softReplace();
+        }
+    }
+
+    /**
+     * Second café expansion for the regional test catalogue.
+     * Pins are mapped to the venue itself (OpenStreetMap verification,
+     * August 2026); 75 m keeps adjacent Innenstadt venues separate.
+     */
+    private static function createBraunschweigCafeExpansion(): void
+    {
+        $owner = GDO_User::getByName('shqiprim');
+        $image = self::$ICONS[4];
+        $cafes = [
+            ['Mandrin', 52.2716758, 10.5412999, 'Waterloostraße 17', '38106', null],
+            ['Café Lit', 52.2652252, 10.5216875, 'Sack 15', '38100', 'https://www.graff.de/ueber-uns/cafe-lit.html'],
+            ['Café Krokus', 52.2644264, 10.5364909, 'Parkstraße 7', '38102', 'https://cafe-krokus.eatbu.com/?lang=de'],
+            ['Kaffeezeremonie', 52.2618481, 10.5309869, 'Am Magnitor 12', '38100', 'https://kaffeezeremonie.de/'],
+            ['NI Coffee', 52.2620773, 10.5202723, 'Kohlmarkt 7', '38100', 'https://www.nicoffee.de/'],
+            ['Coffee Fellows', 52.2622166, 10.5222776, 'Schuhstraße 2', '38100', 'https://www.coffee-fellows.com/locations/coffee-fellows-braunschweig/'],
+            ['Die Apotheke', 52.2637208, 10.5220708, 'Schuhstraße 4', '38100', 'http://www.apotheke-bar.com/'],
+            ['Nesly', 52.2724510, 10.5368760, 'Hagenring 27a', '38106', 'https://nessly-bistro-cafe-braunschweig.eatbu.com/'],
+            ['Café Limonella', 52.2619874, 10.5282013, 'Langedammstraße 12', '38100', 'https://www.magniviertel.de/cafe-limonella/'],
+            ['Das kleine Cafe', 52.2618874, 10.5302217, 'Ölschlägern 17', '38100', 'https://das-kleine-cafe.metro.biz/'],
+        ];
+
+        foreach ($cafes as $index => [$name, $lat, $lng, $street, $zip, $website])
+        {
+            $id = 170 + $index;
+            $address = GDO_Address::blank([
+                'address_id' => (string)$id,
+                'address_name' => $name,
+                'address_street' => $street,
+                'address_zip' => $zip,
+                'address_city' => 'Braunschweig',
+                'address_country' => 'DE',
+            ])->softReplace();
+
+            LUP_Room::blank([
+                'room_id' => (string)$id,
+                'room_owner' => $owner->getID(),
+                'room_name' => $name,
+                'room_info' => 'Café in Braunschweig. Der Chat ist nur direkt am Standort verfügbar.',
+                'room_color' => '#6F42D7',
+                'room_category' => '5',
+                'room_pos_lat' => (string)$lat,
+                'room_pos_lng' => (string)$lng,
+                'room_view' => '32.0',
+                'room_radius' => '0.075',
+                'room_www' => $website,
+                'room_address' => $address->getID(),
+                'room_icon' => $image->getID(),
+                'room_image' => $image->getID(),
+                'room_show_distance' => '1',
+            ])->softReplace();
+        }
+    }
+
+    /**
+     * Current club and dance venues for regional discovery tests.
+     * Each pin is placed at the recorded entrance/address centre and uses a
+     * deliberately tight 75 m geofence: finding a venue is possible from
+     * everywhere, while entering its live chat stays local.
+     */
+    private static function createRegionalClubExpansion(): void
+    {
+        $owner = GDO_User::getByName('shqiprim');
+        $image = self::$ICONS[4];
+        $clubs = [
+            ['Stereowerk', 'Braunschweig', 52.2501826, 10.5320079, 'Böcklerstraße 30', '38102', 'https://www.stereowerk.de/'],
+            ['Schön & Frölich', 'Braunschweig', 52.2564550, 10.4995286, 'Broitzemer Straße 220', '38118', 'https://jolly-eventlocation.de/'],
+            ['Capitol Music Club', 'Braunschweig', 52.2596010, 10.5164309, 'Gieseler 3', '38100', null],
+            ['Brain Klub', 'Braunschweig', 52.2593998, 10.5223018, 'Bruchtorwall 21', '38100', null],
+            ['The Lindbergh Palace', 'Braunschweig', 52.2597318, 10.5180901, 'Kalenwall 3', '38100', null],
+            ['Esplanade', 'Wolfsburg', 52.4243966, 10.7748901, 'Wielandstraße 3', '38440', 'https://www.esplanadewolfsburg.com/'],
+            ['Vibes', 'Wolfsburg', 52.4255124, 10.7814134, 'Schachtweg 34', '38440', null],
+            ['Palo Palo', 'Hannover', 52.3788393, 9.7438353, 'Raschplatz 8A', '30161', 'https://www.palopalo.de/'],
+            ['Baggi', 'Hannover', 52.3788393, 9.7438353, 'Raschplatz 7L', '30161', 'https://baggihannover.de/'],
+            ['Phoenix', 'Hannover', 52.3773769, 9.7329141, 'Goseriede 4', '30159', 'http://www.phoenix-club.de/'],
+        ];
+
+        foreach ($clubs as $index => [$name, $city, $lat, $lng, $street, $zip, $website])
+        {
+            $id = 190 + $index;
+            $address = GDO_Address::blank([
+                'address_id' => (string)$id,
+                'address_name' => $name,
+                'address_street' => $street,
+                'address_zip' => $zip,
+                'address_city' => $city,
+                'address_country' => 'DE',
+            ])->softReplace();
+
+            LUP_Room::blank([
+                'room_id' => (string)$id,
+                'room_owner' => $owner->getID(),
+                'room_name' => $name,
+                'room_info' => 'Club- und Tanzlocation. Der Live-Chat ist nur direkt am Standort verfügbar.',
+                'room_color' => '#6F42D7',
+                'room_category' => '11',
+                'room_pos_lat' => (string)$lat,
+                'room_pos_lng' => (string)$lng,
+                'room_view' => '60.0',
+                'room_radius' => '0.075',
+                'room_www' => $website,
+                'room_address' => $address->getID(),
+                'room_icon' => $image->getID(),
+                'room_image' => $image->getID(),
+                'room_show_distance' => '1',
+            ])->softReplace();
+        }
+    }
+
+    /**
+     * Current mixed venues for the regional catalogue: seven shisha/lounge
+     * venues plus three cultural meeting places. Sources were checked against
+     * active operator or municipal pages in August 2026.
+     */
+    private static function createRegionalMixedExpansion(): void
+    {
+        $owner = GDO_User::getByName('shqiprim');
+        $image = self::$ICONS[4];
+        $places = [
+            ['ZØES Shisha Bar & Club', 3, 'Braunschweig', 52.2668446, 10.5193779, 'Lange Straße 64', '38100', 'https://zoes-bs.de/'],
+            ['SAFE Lounge & Bar', 3, 'Braunschweig', 52.2697739, 10.5238469, 'Wendenstraße 49-50', '38100', 'https://safe-bs.de/'],
+            ['SixtyFive Lounge', 3, 'Hannover', 52.3892924, 9.7349712, 'Vahrenwalder Straße 42', '30165', 'https://sixtyfivelounge.de/'],
+            ['Barbados Shishabar', 3, 'Hannover', 52.3748900, 9.7312020, 'Goethestraße 11', '30169', 'https://barbados-hannover.de/'],
+            ['Nova Shisha Bar, Restaurant & Café', 3, 'Hannover', 52.3760345, 9.7333762, 'Georgstraße 7', '30159', 'https://novahannover.de/'],
+            ['Relax Café', 3, 'Hannover', 52.3769726, 9.7280167, 'Lange Laube 24', '30159', 'https://relaxhannover.de/'],
+            ['AURA Shishabar', 3, 'Hannover', 52.3777025, 9.7296681, 'Otto-Brenner-Straße 9', '30159', 'https://aura-hannover.de/'],
+            ['Roof Garden', 3, 'Hannover', 52.3760991, 9.7362421, 'Mehlstraße 2', '30159', 'https://roofgarden-hannover.de/'],
+            ['Soziokulturelles Zentrum Braunschweig', 12, 'Braunschweig', 52.2531498, 10.4992802, 'Westbahnhof 13', '38118', 'https://www.soziokultur-bs.de/'],
+            ['phaeno Wolfsburg', 12, 'Wolfsburg', 52.4288516, 10.7904410, 'Willy-Brandt-Platz 1', '38440', 'https://www.phaeno.de/'],
+        ];
+
+        foreach ($places as $index => [$name, $category, $city, $lat, $lng, $street, $zip, $website])
+        {
+            $id = 210 + $index;
+            $address = GDO_Address::blank([
+                'address_id' => (string)$id,
+                'address_name' => $name,
+                'address_street' => $street,
+                'address_zip' => $zip,
+                'address_city' => $city,
+                'address_country' => 'DE',
+            ])->softReplace();
+
+            LUP_Room::blank([
+                'room_id' => (string)$id,
+                'room_owner' => $owner->getID(),
+                'room_name' => $name,
+                'room_info' => 'Geprüfte regionale Testlokalität. Der Live-Chat ist nur direkt am Standort verfügbar.',
+                'room_color' => '#6F42D7',
+                'room_category' => (string)$category,
+                'room_pos_lat' => (string)$lat,
+                'room_pos_lng' => (string)$lng,
+                'room_view' => '60.0',
+                'room_radius' => '0.075',
+                'room_www' => $website,
                 'room_address' => $address->getID(),
                 'room_icon' => $image->getID(),
                 'room_image' => $image->getID(),

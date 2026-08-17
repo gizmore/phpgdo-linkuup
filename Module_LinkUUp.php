@@ -184,10 +184,16 @@ final class Module_LinkUUp extends GDO_Module
 
 	public function onIncludeScripts(): void
 	{
-		$this->addCSS('css/lup.css');
+		$this->addCSS('css/lup.css?lup_skin=20260816_051');
+		$this->addCSS('css/lup-arrival-flow.css?lup_skin=20260816_053');
+		$this->addJS('js/lup-welcome.js?lup_nav=20260816_008');
+		$this->addJS('js/lup-admin-sidebar.js?lup_nav=20260816_013');
+		// Bootstrap5 owns the current sidebar. The legacy drawer helper targets
+		// an older theme and can create a competing toggle on mixed backend pages.
 		// A separate revision is used for the visual back-office polish so
 		// browsers do not keep an older stylesheet after a local cache clear.
-		CSS::addFile($this->wwwPath('css/lup.css?lup_skin=20260813_33'));
+		CSS::addFile($this->wwwPath('css/lup.css?lup_skin=20260816_051'));
+		CSS::addFile($this->wwwPath('css/lup-arrival-flow.css?lup_skin=20260816_053'));
 	}
 
 	/**
@@ -266,6 +272,7 @@ final class Module_LinkUUp extends GDO_Module
 					"GDO\\File\\Method\\GetFile",
 
 					"GDO\\Register\\Method\\Form",
+					"GDO\\Register\\Method\\TOS",
 					"GDO\\Recovery\\Method\\Form",
 					"GDO\\Recovery\\Method\\Change",
 					"GDO\\Websocket\\Method\\GetSecret",
@@ -366,6 +373,16 @@ final class Module_LinkUUp extends GDO_Module
 		$a->removeFieldNamed('link_instagram_auth');
 		$a->removeFieldNamed('link_register');
 		$a->removeFieldNamed('link_register_guest');
+		// The stripped-down backend sign-in screen still needs an obvious exit.
+		$a->addField(GDT_Link::make('lup_back_to_backend')
+			->href(href('LinkUUp', 'Welcome'))->text('lup_back_to_backend'));
+	}
+
+	/** Keep registration from becoming a dead-end in the back office as well. */
+	public function hookRegisterForm(GDT_Form $form)
+	{
+		$form->actions()->addField(GDT_Link::make('lup_back_to_backend')
+			->href(href('LinkUUp', 'Welcome'))->text('lup_back_to_backend'));
 	}
 
 	public function hookRecoveryForm(GDT_Form $form)

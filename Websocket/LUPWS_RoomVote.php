@@ -29,7 +29,6 @@ class LUPWS_RoomVote extends GWS_CommandMethod
 		{
 			return $msg->replyErrorMessage($msg->cmd(), t('err_room'));
 		}
-        $msg->move(-4); // Reset cursor
 		if ($this->room->isDisabled())
 		{
 			return $msg->replyErrorMessage($msg->cmd(), t('err_room_disabled'));
@@ -46,8 +45,14 @@ class LUPWS_RoomVote extends GWS_CommandMethod
 
 	public function replySuccess(GWS_Message $msg, GDT_Response $response)
 	{
-		$payload = $this->gdoToBinary($this->room) .
-			$this->gdoToBinary($this->room->getAddressOrBlank()) .
+		// Up::execute() writes the aggregate into a freshly loaded GDO. Refresh
+		// the websocket's persistent room copy before returning it to the app.
+		// Without this, a valid vote can keep rendering as "0 Stimmen" until the
+		// websocket server is restarted.
+		$room = LUP_Global::refreshRoom($this->room->getID()) ?: $this->room;
+		$payload = $this->gdoToBinary($room) .
+			$this->gdoToBinary($room->getAddressOrBlank()) .
+			LUP_Global::userListPayloadData($room, false) .
 			$msg->wr32(0);
 		$msg->replyBinary($msg->cmd(), $payload);
 	}
