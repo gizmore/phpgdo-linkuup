@@ -27,7 +27,7 @@ final class OwnerRooms extends MethodQueryTable
 		];
 	}
 
-	public function getQuery(): Query
+	public function gdoQuery(): Query
 	{
 		$user = GDO_User::current();
 

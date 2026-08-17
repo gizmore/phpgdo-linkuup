@@ -42,7 +42,7 @@ final class RoomComments extends MethodQueryTable
 		];
 	}
 
-	public function getQuery(): Query
+	public function gdoQuery(): Query
 	{
 		$room = $this->getRoom();
 		$query = LUP_RoomComments::table()->select('comment_id_t.*');
