@@ -341,6 +341,18 @@ final class LocationRegistry
         return $entry;
     }
 
+    /** Import every approved registry record during a fresh LinkUUp install. */
+    public static function importApproved(): void
+    {
+        foreach (self::LOCATIONS as $key => $entry)
+        {
+            if (($entry['status'] ?? null) === 'approved')
+            {
+                self::import($key);
+            }
+        }
+    }
+
     /**
      * Explicitly import one approved record. Drafts are blocked by design.
      * The stable IDs make the import safe to repeat without duplicate rooms.

@@ -175,6 +175,7 @@ final class Install
         self::createBraunschweigCafeExpansion();
 		self::createRegionalClubExpansion();
 		self::createRegionalMixedExpansion();
+		LocationRegistry::importApproved();
 
 		self::createDefaultImageVariants($module);
 	}
