@@ -43,21 +43,16 @@ final class Cuddle extends Method
         }
 
         $issuer = $token->issuer();
-        $room = $token->room();
-        if ($room->isDisabled() || !$room->gdoValue('room_active'))
-        {
-            return $this->error('err_lup_cuddle_room');
-        }
         if ($issuer->getID() === $scanner->getID())
         {
             return $this->error('err_lup_cuddle_self');
         }
-        if (LUP_Cuddle::exists($issuer, $scanner, $room))
+        if (LUP_Cuddle::exists($issuer, $scanner))
         {
             return $this->error('err_lup_already_cuddled');
         }
 
-        LUP_Cuddle::create($issuer, $scanner, $room);
+        LUP_Cuddle::create($issuer, $scanner);
         $token->consume($scanner);
         $module = Module_LinkUUp::instance();
         $module->saveUserSetting($issuer, 'lup_cuddles', (string)($module->cfgCuddles($issuer) + 1));

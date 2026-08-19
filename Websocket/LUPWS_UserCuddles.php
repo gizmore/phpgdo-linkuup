@@ -29,7 +29,7 @@ final class LUPWS_UserCuddles extends GWS_Command
 
         $userId = (int)$user->getID();
         $result = LUP_Cuddle::table()->
-            select('cuddle_a, cuddle_b, cuddle_room, cuddle_day')->
+            select('cuddle_a, cuddle_b, cuddle_day')->
             where("cuddle_a=$userId OR cuddle_b=$userId") ->
             order('cuddle_day DESC, cuddle_id DESC')->
             exec();
@@ -40,7 +40,6 @@ final class LUPWS_UserCuddles extends GWS_Command
             $partnerId = ((int)$row['cuddle_a'] === $userId) ? $row['cuddle_b'] : $row['cuddle_a'];
             $day = strtotime($row['cuddle_day'] . ' UTC');
             $payload .= GWS_Message::wr32($partnerId);
-            $payload .= GWS_Message::wr32($row['cuddle_room']);
             $payload .= GWS_Message::wr32($day ?: 0);
         }
 

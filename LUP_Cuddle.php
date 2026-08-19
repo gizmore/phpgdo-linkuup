@@ -7,7 +7,6 @@ use GDO\Core\GDT_AutoInc;
 use GDO\Core\GDT_Char;
 use GDO\Core\GDT_CreatedAt;
 use GDO\Core\GDT_CreatedBy;
-use GDO\Core\GDT_Object;
 use GDO\Date\GDT_Date;
 use GDO\User\GDO_User;
 use GDO\User\GDT_User;
@@ -19,11 +18,10 @@ final class LUP_Cuddle extends GDO
     {
         return [
             GDT_AutoInc::make('cuddle_id'),
-            // Enforces pair + location + UTC day exactly once at database level.
+            // Enforces pair + UTC day exactly once at database level.
             GDT_Char::make('cuddle_key')->ascii()->length(64)->notNull()->unique(),
             GDT_User::make('cuddle_a')->notNull(),
             GDT_User::make('cuddle_b')->notNull(),
-            GDT_Object::make('cuddle_room')->table(LUP_Room::table())->notNull(),
             GDT_Date::make('cuddle_day')->notNull(),
             GDT_CreatedBy::make('cuddle_creator'),
             GDT_CreatedAt::make('cuddle_created'),
@@ -35,29 +33,28 @@ final class LUP_Cuddle extends GDO
         return gmdate('Y-m-d');
     }
 
-    public static function key(GDO_User $a, GDO_User $b, LUP_Room $room, string $day): string
+    public static function key(GDO_User $a, GDO_User $b, string $day): string
     {
         $ids = [(int)$a->getID(), (int)$b->getID()];
         sort($ids, SORT_NUMERIC);
-        return hash('sha256', implode('|', ['lup-cuddle-v1', $ids[0], $ids[1], $room->getID(), $day]));
+        return hash('sha256', implode('|', ['lup-cuddle-v2', $ids[0], $ids[1], $day]));
     }
 
-    public static function exists(GDO_User $a, GDO_User $b, LUP_Room $room, ?string $day = null): bool
+    public static function exists(GDO_User $a, GDO_User $b, ?string $day = null): bool
     {
-        $key = self::key($a, $b, $room, $day ?: self::utcDay());
+        $key = self::key($a, $b, $day ?: self::utcDay());
         return self::getByVars(['cuddle_key' => $key]) !== null;
     }
 
-    public static function create(GDO_User $a, GDO_User $b, LUP_Room $room): self
+    public static function create(GDO_User $a, GDO_User $b): self
     {
         $day = self::utcDay();
         $ids = [(int)$a->getID(), (int)$b->getID()];
         sort($ids, SORT_NUMERIC);
         return self::blank([
-            'cuddle_key' => self::key($a, $b, $room, $day),
+            'cuddle_key' => self::key($a, $b, $day),
             'cuddle_a' => (string)$ids[0],
             'cuddle_b' => (string)$ids[1],
-            'cuddle_room' => $room->getID(),
             'cuddle_day' => $day,
         ])->insert();
     }
