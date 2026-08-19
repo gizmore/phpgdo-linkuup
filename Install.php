@@ -125,6 +125,17 @@ final class Install
         GDO_UserPermission::grant($mira, 'admin');
         GDO_UserPermission::grant($mira, 'staff');
 
+        # Peter is a normal seeded member. His secret deliberately aliases
+        # gizmore's installer password without duplicating it in secret.php.
+        $peter = GDO_User::blank([
+            'user_id' => '6',
+            'user_type' => GDT_UserType::MEMBER,
+            'user_name' => 'Peter',
+            'user_level' => '1',
+        ])->softReplace();
+        $peterPasswordKey = $passwords['peter'][0];
+        $peter->saveSettingVar('Login', 'password', BCrypt::create($passwords[$peterPasswordKey][0])->__toString());
+
         # Settings
 		Module_Core::instance()->saveConfigVar('allow_guests', '1');
 		# Let every ACL-capable user setting retain its own relation visibility.
