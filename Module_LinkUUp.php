@@ -163,7 +163,7 @@ final class Module_LinkUUp extends GDO_Module
 
 			GDT_Divider::make('div_contact'),
             GDT_ACLRelation::make('lup_course_visible')->hidden(),
-            GDT_ACLRelation::make('lup_cuddle_visible')->hidden(),
+            GDT_ACLRelation::make('lup_cuddles_visible')->hidden(),
 
 			GDT_Divider::make('div_sexy'),
 			GDT_EyeColor::make('lup_eyecolor'),
