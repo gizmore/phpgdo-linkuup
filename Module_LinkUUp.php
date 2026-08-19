@@ -221,7 +221,7 @@ final class Module_LinkUUp extends GDO_Module
 	public function cfgOnlyOneChat(): bool { return $this->getConfigValue('lup_only_one_chat'); }
 
     public function cfgCuddleRange(): float { return $this->getConfigValue('lup_cuddle_range'); }
-	public function cfgCuddleTokenTTL(): int { return $this->getConfigValue('lup_cuddle_token_ttl'); }
+	public function cfgCuddleTokenTTL(): int { return (int)$this->getConfigValue('lup_cuddle_token_ttl'); }
 
 	################
 	### Settings ###
