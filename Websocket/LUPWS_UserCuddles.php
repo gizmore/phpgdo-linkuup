@@ -17,7 +17,7 @@ final class LUPWS_UserCuddles extends GWS_Command
 {
     public function execute(GWS_Message $msg)
     {
-        $user = GDO_User::findById($msg->read32u());
+        $user = GDO_User::findById((string)$msg->read32u());
 
         /** @var GDT_ACLRelation $acl */
         $acl = Module_LinkUUp::instance()->userSetting($user, 'lup_cuddles_visible');
