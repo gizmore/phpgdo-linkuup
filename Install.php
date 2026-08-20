@@ -175,7 +175,7 @@ final class Install
 		# Category
 		$cats = self::installCats($icons);
         self::createCountries();
-        self::createPeine();
+        InstallPeine::seed(self::$ICONS);
 		self::createWolfsburg();
         self::createBrunswick();
 		self::createRegionalCityChats();
@@ -271,72 +271,6 @@ final class Install
             'room_icon' => $image->getID(),
             'room_image' => $image->getID(),
             'room_show_distance' => '0',
-        ])->softReplace();
-    }
-
-    private static function createPeine(): void
-    {
-        $gizmore = GDO_User::getByName('gizmore');
-
-        # Address
-        $garage = GDO_Address::blank([
-            'address_id' => '2',
-            'address_company' => null,
-            'address_vat' => null,
-            'address_name' => 'Garage Peine',
-            'address_street' => 'Pulverturmval 68',
-            'address_zip' => '31224',
-            'address_city' => 'Peine',
-            'address_country' => 'DE',
-            'address_phone' => '+49 5171 725 29',
-            'address_phone_fax' => null,
-            'address_phone_mobile' => null,
-            'address_email' => 'garage-peine@gmx.de',
-        ])->softReplace();
-
-        # Room
-        LUP_Room::blank([
-            'room_id' => '2',
-            'room_owner' => $gizmore->getID(),
-            'room_name' => 'Garage',
-            'room_info' => 'Die Garage ist der Rock, Metal und Punk Szenetreff in Peine.',
-            'room_color' => '#133742', # Gold
-            'room_category' => '4',
-            'room_pos_lat' => '52.32269098898768',
-            'room_pos_lng' => '10.22945615522831',
-            'room_view' => '2',
-            'room_radius' => '0.2',
-            'room_www' => 'https://www.facebook.com/garage.peine/',
-            'room_phone' => '05171 79 120 53',
-            'room_hours' => "Tu-Su 18:00-03:00;",
-            'room_address' => $garage->getID(),
-            'room_icon' => self::$ICONS[1]->getID(),
-            'room_image' => self::$ICONS[2]->getID(),
-            'room_show_distance' => '1',
-        ])->softReplace();
-
-        $imagePeine = self::$ICONS[3];
-        LUP_Room::blank([
-            'room_id' => '3',
-            'room_owner' => null,
-            'room_name' => 'Peine',
-            'room_info' => 'Die Stadt Peine. Kennt man doch,',
-            'room_color' => '#133742', # Gold
-            'room_category' => '2',
-			'room_sort' => '20',
-            'room_pos_lat' => '52.32399278721452',
-            'room_pos_lng' => '10.2207358761131',
-            // Keep city chat access local. Discovery is handled separately by room_view.
-            'room_view' => '100',
-			// Covers the actual town area; venue rooms retain their precise small radii.
-            'room_radius' => '5',
-            'room_www' => 'https://www.peine.de/',
-            'room_phone' => null,
-            'room_hours' => null,
-            'room_address' => null,
-            'room_icon' => $imagePeine->getId(),
-            'room_image' => $imagePeine->getId(),
-            'room_show_distance' => '1',
         ])->softReplace();
     }
 
