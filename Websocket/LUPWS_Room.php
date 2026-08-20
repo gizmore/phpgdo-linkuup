@@ -5,6 +5,7 @@ use GDO\LinkUUp\LUP_Global;
 use GDO\LinkUUp\LUP_Room;
 use GDO\LinkUUp\LUPWS_Command;
 use GDO\Websocket\Server\GWS_Commands;
+use GDO\Websocket\Server\GWS_Global;
 use GDO\Websocket\Server\GWS_Message;
 
 class LUPWS_Room extends LUPWS_Command
@@ -29,7 +30,18 @@ class LUPWS_Room extends LUPWS_Command
 
 	public function hookLUPRoomAdded(LUP_Room $room)
 	{
-		die(print_r($room, 1));
+		self::broadcastRoomAdded(LUP_Global::refreshRoom($room->getID()) ?: $room);
+	}
+
+	/** A new room is a live catalogue event, not just a successful form submit. */
+	public static function broadcastRoomAdded(LUP_Room $room): void
+	{
+		$command = new self();
+		$payload = $command->gdoToBinary($room);
+		$payload .= $command->gdoToBinary($room->getAddressOrBlank());
+		$payload .= LUP_Global::userListPayloadData($room, false);
+		$payload .= GWS_Message::wr32(0);
+		GWS_Global::broadcastBinary(GWS_Message::payload(0x1165) . $payload);
 	}
 
 }

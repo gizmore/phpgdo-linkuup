@@ -34,6 +34,11 @@ return [
 
 	'err_room' => 'This room is unknown.',
 	'err_lup_vip_only' => 'This is only available to VIP users.',
+	'err_lup_room_name' => 'Please enter a valid room name.',
+	'err_lup_room_info' => 'The description is too long.',
+	'err_lup_room_position' => 'A valid GPS position is required for this room.',
+	'err_lup_room_radius' => 'The chat radius must be between 150 and 500 metres.',
+	'err_lup_room_category' => 'Please choose a valid category.',
 	'err_room_not_near' => 'This room is not in chat distance.',
 	'err_not_in_room' => 'You did not join this chatroom.',
 	'err_user_not_near' => 'This user is not near you.',
