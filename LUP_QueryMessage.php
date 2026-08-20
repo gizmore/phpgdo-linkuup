@@ -71,17 +71,18 @@ final class LUP_QueryMessage extends GDO
 
 	public function payload()
 	{
-		return
-			GWS_Message::wr32($this->getID()) .
-			GWS_Message::wr32($this->getFromID()) .
-			GWS_Message::wr32($this->getToID()) .
-			GWS_Message::wrS($this->getText()) .
-			GWS_Message::wr32($this->gdoValue('lupqm_created')) .
-			GWS_Message::wr32($this->gdoValue('lupqm_delivered')) .
-			GWS_Message::wr32($this->gdoValue('lupqm_read')) .
-			GWS_Message::wr8($this->gdoVar('lupqm_ack')) .
-			GWS_Message::wr8($this->gdoVar('lupqm_from_deleted')) .
-			GWS_Message::wr8($this->gdoVar('lupqm_to_deleted'));
+		// Keep direct deliveries byte-identical to GWS_Command::gdoToBinary().
+		// A GDO itself inherits the empty GDT binary renderer, so render every
+		// serializable GDO column explicitly.
+		$payload = '';
+		foreach ($this->gdoColumnsCache() as $field)
+		{
+			if ($field->isSerializable() && (!$field->isHidden()))
+			{
+				$payload .= $field->gdo($this)->renderBinary();
+			}
+		}
+		return $payload;
 	}
 
 	public function getText() { return $this->gdoVar('lupqm_text'); }
