@@ -4,6 +4,7 @@ namespace GDO\LinkUUp\lang;
 return [
 
 	'lup_welcome' => 'Willkommen!',
+	'lup_home' => 'LinkUUp',
 	'lup_staff' => 'Team-Bereich',
 	'lup_back_to_backend' => 'Zurück zum LinkUUp-Start',
 	'lup_landing_kicker' => 'Lokale Verbindung, zu deinen Bedingungen',
