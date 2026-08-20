@@ -35,6 +35,7 @@ return [
 	'lup_owner' => 'Eigentümer',
 
 	'err_room' => 'Dieser Raum ist unbekannt.',
+	'err_lup_vip_only' => 'Das ist nur für VIP Nutzer.',
 	'err_room_not_near' => 'Dieser Raum ist nicht in Chatreichweite.',
 	'err_not_in_room' => 'Sie befinden sich nicht in diesem Chatraum.',
 	'err_user_not_near' => 'Dieser Nutzer befindet sich nicht in Ihrer Nähe.',

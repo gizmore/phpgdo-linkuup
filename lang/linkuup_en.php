@@ -33,6 +33,7 @@ return [
 	'lup_owner' => 'Owner',
 
 	'err_room' => 'This room is unknown.',
+	'err_lup_vip_only' => 'This is only available to VIP users.',
 	'err_room_not_near' => 'This room is not in chat distance.',
 	'err_not_in_room' => 'You did not join this chatroom.',
 	'err_user_not_near' => 'This user is not near you.',

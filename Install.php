@@ -93,6 +93,7 @@ final class Install
         $gizmore->saveSettingVar('Country', 'country_of_living', 'DE');
         GDO_UserPermission::grant($gizmore, 'admin');
         GDO_UserPermission::grant($gizmore, 'staff');
+		LUP_Trophy::getOrCreate($gizmore)->saveVar('lt_vip', '1');
 		self::installGizmoreAvatar($gizmore);
 
 		$shqiprim = GDO_User::blank([
@@ -110,6 +111,7 @@ final class Install
         $shqiprim->saveSettingVar('Country', 'country_of_living', 'DE');
         GDO_UserPermission::grant($shqiprim, 'admin');
         GDO_UserPermission::grant($shqiprim, 'staff');
+		LUP_Trophy::getOrCreate($shqiprim)->saveVar('lt_vip', '1');
 
         # mira
         $mira = GDO_User::blank([
@@ -127,6 +129,7 @@ final class Install
         $mira->saveSettingVar('Country', 'country_of_living', 'US');
         GDO_UserPermission::grant($mira, 'admin');
         GDO_UserPermission::grant($mira, 'staff');
+		LUP_Trophy::getOrCreate($mira)->saveVar('lt_vip', '1');
 
         # Peter is a normal seeded member. His secret deliberately aliases
         # gizmore's installer password without duplicating it in secret.php.
