@@ -206,7 +206,7 @@ final class Module_LinkUUp extends GDO_Module
 
 	public function onInitSidebar(): void
 	{
-		GDT_Page::instance()->leftBar()->addFieldFirst(
+		GDT_Page::instance()->topBar()->addFieldFirst(
 			GDT_Link::make('lup_home')->href(href('LinkUUp', 'Welcome')));
 
 		if (GDO_User::current()->isStaff())
