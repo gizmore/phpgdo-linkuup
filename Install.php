@@ -14,6 +14,7 @@ use GDO\Date\Time;
 use GDO\File\GDO_File;
 use GDO\File\ImageResize;
 use GDO\File\Method\CronjobImageVariants;
+use GDO\Favicon\Module_Favicon;
 use GDO\Javascript\Module_Javascript;
 use GDO\Language\Module_Language;
 use GDO\Login\Module_Login;
@@ -178,6 +179,7 @@ final class Install
 		GDO_Permission::create('lup_worker');
 
 		# Image
+		self::installFavicon();
 		$icons = self::installIcons();
 		# Category
 		$cats = self::installCats($icons);
@@ -196,6 +198,22 @@ final class Install
 		LocationRegistry::importApproved();
 
 		self::createDefaultImageVariants($module);
+	}
+
+	/** Install LinkUUp's favicon once without replacing a site-specific choice. */
+	private static function installFavicon(): void
+	{
+		$favicon = Module_Favicon::instance();
+		if ($favicon->cfgFavicon())
+		{
+			return;
+		}
+		$file = GDO_File::fromPath(
+			'linkuup_favicon.png',
+			Module_LinkUUp::instance()->filePath('data/linkuup_favicon.png'),
+		)->insert();
+		$favicon->saveConfigVar('favicon', $file->getID());
+		$favicon->updateFavicon();
 	}
 
 	private static function createDefaultImageVariants(Module_LinkUUp $module): void
