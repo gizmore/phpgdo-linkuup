@@ -33,7 +33,7 @@ class LUPWS_FriendsRequest extends GWS_CommandForm
 	 */
 	public function postExecute(GWS_Message $msg, GDT_Form $form, GDT_Response $response)
 	{
-		if (!$response->isError())
+		if (!$response->hasError())
 		{
 			$this->sendNotifications($msg->user()->getID(), $form->getFormVar('frq_friend'));
 		}
