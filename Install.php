@@ -94,7 +94,7 @@ final class Install
         GDO_UserPermission::grant($gizmore, 'admin');
         GDO_UserPermission::grant($gizmore, 'staff');
 		LUP_Trophy::getOrCreate($gizmore)->saveVar('lt_vip', '1');
-		self::installGizmoreAvatar($gizmore);
+		self::installAvatar('gizmore', 'gizmore.png');
 
 		$shqiprim = GDO_User::blank([
             'user_id' => '3',
@@ -127,9 +127,10 @@ final class Install
         $mira->saveSettingVar('Birthday', 'birthday', '2026-07-23');
         $mira->saveSettingVar('Country', 'country_of_origin', 'US');
         $mira->saveSettingVar('Country', 'country_of_living', 'US');
-        GDO_UserPermission::grant($mira, 'admin');
-        GDO_UserPermission::grant($mira, 'staff');
+		GDO_UserPermission::grant($mira, 'admin');
+		GDO_UserPermission::grant($mira, 'staff');
 		LUP_Trophy::getOrCreate($mira)->saveVar('lt_vip', '1');
+		self::installAvatar('mira', 'mira.png');
 
         # Peter is a normal seeded member. His secret deliberately aliases
         # gizmore's installer password without duplicating it in secret.php.
@@ -256,17 +257,18 @@ final class Install
 		return $icons;
 	}
 
-	/** Install the supplied profile image and select it for the seeded owner. */
-	private static function installGizmoreAvatar(GDO_User $user): void
+	/** Install the supplied public profile image for a seeded user once. */
+	private static function installAvatar(string $username, string $filename): void
 	{
+		$user = GDO_User::getByName($username);
 		if (GDO_UserAvatar::getById($user->getID()))
 		{
 			return;
 		}
 
 		$file = GDO_File::fromPath(
-			'gizmore.png',
-			Module_LinkUUp::instance()->filePath('install_data/gizmore.png'),
+			$filename,
+			Module_LinkUUp::instance()->filePath("install_data/$filename"),
 		)->insert();
 		$avatar = GDO_Avatar::blank([
 			'avatar_file_id' => $file->getID(),

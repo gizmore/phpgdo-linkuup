@@ -22,6 +22,7 @@ final class InstallPeine
 		self::seedTownHall($icons);
 		self::seedMogwai($icons);
 		self::seedStandesamt($icons);
+		self::seedEmploymentAgency($icons);
 	}
 
 	private static function seedGarage(array $icons): void
@@ -180,6 +181,41 @@ final class InstallPeine
 			'room_pos_lng' => '10.2467682',
 			'room_view' => '32.0',
 			'room_radius' => '0.075',
+			'room_address' => $address->getID(),
+			'room_icon' => $image->getID(),
+			'room_image' => $image->getID(),
+			'room_show_distance' => '1',
+		])->softReplace();
+	}
+
+	/** Agentur für Arbeit Peine, Im Schleusenteich 1. */
+	private static function seedEmploymentAgency(array $icons): void
+	{
+		$address = GDO_Address::blank([
+			'address_id' => '239',
+			'address_name' => 'Agentur für Arbeit Peine',
+			'address_street' => 'Im Schleusenteich 1',
+			'address_zip' => '31224',
+			'address_city' => 'Peine',
+			'address_country' => 'DE',
+			'address_phone' => '+49 5171 7740-62',
+		])->softReplace();
+
+		$image = $icons[3];
+		LUP_Room::blank([
+			'room_id' => '239',
+			'room_owner' => null,
+			'room_name' => 'Arbeitsamt Peine',
+			'room_info' => 'Agentur für Arbeit Peine.',
+			'room_color' => '#3D6CC9',
+			'room_category' => '16',
+			'room_active' => '1',
+			'room_pos_lat' => '52.3210250',
+			'room_pos_lng' => '10.2389154',
+			'room_view' => '10.0',
+			'room_radius' => '0.177',
+			'room_www' => 'https://www.arbeitsagentur.de/vor-ort/hildesheim/peine',
+			'room_phone' => '05171 7740-62',
 			'room_address' => $address->getID(),
 			'room_icon' => $image->getID(),
 			'room_image' => $image->getID(),
