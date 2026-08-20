@@ -159,6 +159,7 @@ final class Install
 		Module_Maps::instance()->saveConfigVar('maps_record_history', '60s');
         Module_Websocket::instance()->saveConfigVar('ws_processor', GDO_PATH . 'GDO/LinkUUp/LUP_Websocket.php');
         Module_Websocket::instance()->saveConfigVar('ws_timer', '100ms');
+        Module_Websocket::instance()->saveConfigVar('ws_left_bar', '0');
         Module_Register::instance()->saveConfigVar('captcha', '0');
         Module_Register::instance()->saveConfigVar('email_activation', '0');
         if (GDO_ENV === 'dev')
