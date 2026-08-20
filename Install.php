@@ -4,6 +4,8 @@ namespace GDO\LinkUUp;
 
 use GDO\AboutMe\Module_AboutMe;
 use GDO\Address\GDO_Address;
+use GDO\Avatar\GDO_Avatar;
+use GDO\Avatar\GDO_UserAvatar;
 use GDO\Core\Module_Core;
 use GDO\CORS\Module_CORS;
 use GDO\Crypto\BCrypt;
@@ -91,6 +93,7 @@ final class Install
         $gizmore->saveSettingVar('Country', 'country_of_living', 'DE');
         GDO_UserPermission::grant($gizmore, 'admin');
         GDO_UserPermission::grant($gizmore, 'staff');
+		self::installGizmoreAvatar($gizmore);
 
 		$shqiprim = GDO_User::blank([
             'user_id' => '3',
@@ -248,6 +251,25 @@ final class Install
 		}
         self::$ICONS = $icons;
 		return $icons;
+	}
+
+	/** Install the supplied profile image and select it for the seeded owner. */
+	private static function installGizmoreAvatar(GDO_User $user): void
+	{
+		if (GDO_UserAvatar::getById($user->getID()))
+		{
+			return;
+		}
+
+		$file = GDO_File::fromPath(
+			'gizmore.png',
+			Module_LinkUUp::instance()->filePath('install_data/gizmore.png'),
+		)->insert();
+		$avatar = GDO_Avatar::blank([
+			'avatar_file_id' => $file->getID(),
+			'avatar_public' => '1',
+		])->insert();
+		GDO_UserAvatar::updateAvatar($user, $avatar->getID());
 	}
 
     private static function createCountries(): void
