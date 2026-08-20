@@ -2,6 +2,7 @@
 namespace GDO\LinkUUp\Websocket;
 
 use GDO\LinkUUp\LUP_Global;
+use GDO\LinkUUp\LUP_SignupGPS;
 use GDO\LinkUUp\LUPWS_Command;
 use GDO\Websocket\Server\GWS_Commands;
 use GDO\Websocket\Server\GWS_Message;
@@ -21,7 +22,7 @@ final class LUPWS_Position extends LUPWS_Command
 		$lng = $message->readFloat();
 
 		LUP_Global::updateGPS($user, $lat, $lng);
-// 		LUP_SignupGPS::updateGPS($user, $lat, $lng);
+		LUP_SignupGPS::updateGPS($user, $lat, $lng);
 
 		# Make user part rooms when not in range anymore
 		$rooms = LUP_Global::getRoomsForUser($user);

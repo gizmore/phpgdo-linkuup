@@ -221,6 +221,8 @@ return [
 	'err_lup_cuddle_used' => 'This Cuddle code has already been used.',
 	'err_lup_cuddle_expired' => 'This Cuddle code has expired.',
 	'err_lup_cuddle_self' => 'You cannot Cuddle yourself.',
+	'err_lup_cuddle_position' => 'Both people need a current GPS position for a Cuddle.',
+	'err_lup_cuddle_distance' => 'You need to be closer than %s metres to Cuddle.',
 	'err_lup_cuddle_room' => 'This Location is not available for Cuddles.',
 	'err_lup_already_cuddled' => 'You have already Cuddled together here today.',
 	'msg_lup_cuddle_success' => 'Cuddle confirmed for both of you!',

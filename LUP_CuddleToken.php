@@ -28,11 +28,12 @@ final class LUP_CuddleToken extends GDO
 
     public static function issue(GDO_User $issuer, int $ttl): self
     {
-        return self::blank([
+        $token = self::blank([
             'ctoken_token' => bin2hex(random_bytes(16)),
             'ctoken_issuer' => $issuer->getID(),
             'ctoken_expires' => gmdate('Y-m-d H:i:s', time() + $ttl),
         ])->insert();
+        return self::findToken($token->gdoVar('ctoken_token')) ?? $token;
     }
 
     public static function findToken(string $token): ?self

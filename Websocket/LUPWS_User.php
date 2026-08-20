@@ -1,6 +1,7 @@
 <?php
 namespace GDO\LinkUUp\Websocket;
 
+use GDO\Core\GDO_Module;
 use GDO\LinkUUp\LUP_Global;
 use GDO\LinkUUp\LUPWS_Command;
 use GDO\User\GDO_User;
@@ -29,6 +30,28 @@ class LUPWS_User extends LUPWS_Command
 			$user = GDO_User::ghost()->setVar('user_id', $userId);
 		}
 		return LUP_Global::fullUserPayload($user);
+	}
+
+	/** Recache and send both changed profiles to the two Cuddle participants. */
+	public function hookLUPUserRecache(string|int $issuerId, string|int $scannerId): void
+	{
+		$users = [];
+		foreach (array_unique([(string)$issuerId, (string)$scannerId]) as $userId)
+		{
+			if ($user = GWS_Global::getOrLoadUserById($userId))
+			{
+				$user->tempUnset(GDO_Module::SETTINGS_KEY);
+				$users[] = $user;
+			}
+		}
+		foreach ($users as $recipient)
+		{
+			foreach ($users as $profile)
+			{
+				$payload = GWS_Message::payload(0x1106) . LUP_Global::fullUserPayload($profile);
+				GWS_Global::sendBinary($recipient, $payload);
+			}
+		}
 	}
 
 }
