@@ -4,7 +4,6 @@ namespace GDO\LinkUUp\Websocket;
 use GDO\File\GDT_ImageFiles;
 use GDO\File\GDO_File;
 use GDO\Gallery\GDO_Gallery;
-use GDO\Gallery\GDO_GalleryImage;
 use GDO\LinkUUp\LUPWS_Command;
 use GDO\LinkUUp\Module_LinkUUp;
 use GDO\User\GDO_User;
@@ -29,13 +28,6 @@ final class LUPWS_GalleryUpload extends LUPWS_Command
 		if (!$files)
 		{
 			$files = GDT_ImageFiles::make('gallery_files')->getFiles();
-		}
-		// HTTP Flow and the websocket can have separate PHP session ids. In
-		// that case the completed file is already persisted but is not visible
-		// in this websocket session's temporary directory yet.
-		if (!$files)
-		{
-			$files = $this->latestUnlinkedImage();
 		}
 		if (!$files)
 		{
@@ -62,18 +54,6 @@ final class LUPWS_GalleryUpload extends LUPWS_Command
 				$file = GDO_File::fromPath(trim((string)file_get_contents($dir . '/name')), $dir . '/0');
 				$file->insert();
 				file_put_contents($dir . '/id', $file->getID());
-				return [$file];
-			}
-		}
-		return [];
-	}
-
-	private function latestUnlinkedImage(): array
-	{
-		foreach (GDO_File::table()->select()->order('file_id DESC')->limit(20)->exec()->fetchAllObjects() as $file)
-		{
-			if ($file->isImageType() && !GDO_GalleryImage::findBy('files_file', $file->getID()))
-			{
 				return [$file];
 			}
 		}
