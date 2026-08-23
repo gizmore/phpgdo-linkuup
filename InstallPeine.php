@@ -23,6 +23,7 @@ final class InstallPeine
 		self::seedMogwai($icons);
 		self::seedStandesamt($icons);
 		self::seedEmploymentAgency($icons);
+		self::seedSkatepark($icons);
 	}
 
 	private static function seedGarage(array $icons): void
@@ -216,6 +217,38 @@ final class InstallPeine
 			'room_radius' => '0.177',
 			'room_www' => 'https://www.arbeitsagentur.de/vor-ort/hildesheim/peine',
 			'room_phone' => '05171 7740-62',
+			'room_address' => $address->getID(),
+			'room_icon' => $image->getID(),
+			'room_image' => $image->getID(),
+			'room_show_distance' => '1',
+		])->softReplace();
+	}
+
+	/** Public skate and inline park at the Unternehmenspark Peine II. */
+	private static function seedSkatepark(array $icons): void
+	{
+		$address = GDO_Address::blank([
+			'address_id' => '300',
+			'address_name' => 'Skatepark Peine',
+			'address_street' => 'Hans-Gallinis-Straße',
+			'address_zip' => '31224',
+			'address_city' => 'Peine',
+			'address_country' => 'DE',
+		])->softReplace();
+
+		$image = $icons[3];
+		LUP_Room::blank([
+			'room_id' => '300',
+			'room_owner' => null,
+			'room_name' => 'Skatepark Peine',
+			'room_info' => 'Öffentliche Skate- und Inlineranlage am Unternehmenspark Peine II.',
+			'room_color' => '#2D946A',
+			'room_category' => '13',
+			'room_active' => '1',
+			'room_pos_lat' => '52.3217000',
+			'room_pos_lng' => '10.2429000',
+			'room_view' => '10.0',
+			'room_radius' => '0.150',
 			'room_address' => $address->getID(),
 			'room_icon' => $image->getID(),
 			'room_image' => $image->getID(),

@@ -254,8 +254,7 @@ final class Module_LinkUUp extends GDO_Module
 		# Redirect to login if not authenticated
 		if (Application::instance()->isWebserver())
 		{
-			global $me;
-			if ( $me && (!GDO_User::current()->isAuthenticated()))
+			if (!GDO_User::current()->isAuthenticated())
 			{
 
 				$allowed = [
@@ -297,7 +296,7 @@ final class Module_LinkUUp extends GDO_Module
 					"GDO\\Maps\\Method\\Record",
 					"GDO\\Core\\Method\\Error",
 				];
-				$class = $me->gdoClassName();
+				$class = $method->gdoClassName();
 				if (!in_array($class, $allowed, true))
 				{
 					throw new GDO_RedirectError('err_members_only', null, href('Login', 'Form'), GDT_Redirect::CODE);
