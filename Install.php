@@ -17,7 +17,6 @@ use GDO\File\Method\CronjobImageVariants;
 use GDO\Favicon\Module_Favicon;
 use GDO\Javascript\Module_Javascript;
 use GDO\Language\Module_Language;
-use GDO\Login\Module_Login;
 use GDO\Maps\Module_Maps;
 use GDO\Register\Module_Register;
 use GDO\User\GDO_Permission;
@@ -162,7 +161,8 @@ final class Install
         Module_Websocket::instance()->saveConfigVar('ws_left_bar', '0');
         Module_Register::instance()->saveConfigVar('captcha', '0');
         Module_Register::instance()->saveConfigVar('email_activation', '0');
-        if (GDO_ENV === 'dev')
+        Module_LinkUUp::instance()->saveConfigVar('lup_only_one_chat', '0');
+        if (GDO_ENV === 'dev' || GDO_ENV === 'tes')
         {
             Module_LinkUUp::instance()->saveConfigVar('lup_app_url', 'app.lup.localhost');
         }

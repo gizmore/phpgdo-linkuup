@@ -108,7 +108,7 @@ final class Module_LinkUUp extends GDO_Module
 			GDT_Url::make('lup_app_url')->initial('https://app.www.linkuup.de/')->allowAll(),
 			GDT_Checkbox::make('lup_guest_query')->initial('0'), # Allow guest querie messages
 			GDT_Checkbox::make('lup_open_query')->initial('1'), # No near check for queries
-			GDT_Checkbox::make('lup_only_one_chat')->initial('1'), # Auto part all channels before join another room?
+			GDT_Checkbox::make('lup_only_one_chat')->initial('0'), # Auto part all channels before join another room?
 			GDT_Checkbox::make('lup_ticket_engine')->initial('0'), # Need to purchase tickets for a room first?
 			GDT_Checkbox::make('lup_profile_likes_guests')->initial('0'), # Guests may not like users
 			GDT_Length::make('lup_cuddle_range')->initial('0.100'), # Cuddle range in km
