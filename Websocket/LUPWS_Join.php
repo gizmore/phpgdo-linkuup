@@ -65,12 +65,14 @@ class LUPWS_Join extends LUPWS_Command
 			}
 		}
 
-		// A physical location presence must be unique. Leaving this to an optional
-		// configuration made it possible for one avatar to remain visible in more
-		// than one venue. Always part every other live room before entering this one.
-		foreach (LUP_Global::getRoomsForUser($user) as $_room)
+		// Some installations want a single current venue; others intentionally
+		// allow parallel room memberships. Apply that policy only when enabled.
+		if ($this->cfgOnlyOneChat())
 		{
-			LUP_Global::part($_room, $user);
+			foreach (LUP_Global::getRoomsForUser($user) as $_room)
+			{
+				LUP_Global::part($_room, $user);
+			}
 		}
 
 		$hasJoinedToday = LUP_RoomVisit::hasJoinedToday($room, $user);
