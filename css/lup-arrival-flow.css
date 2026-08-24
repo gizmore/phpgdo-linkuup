@@ -200,7 +200,7 @@ body.lup-arrival-active #gdo_dsgvo_panel .gdo_dsgvo_info {
 body.lup-arrival-active #gdo_dsgvo_panel .gdo_dsgvo_info p { color:#d6e5f7 !important; font-size:13px !important; line-height:1.45 !important; }
 body.lup-arrival-active #gdo_dsgvo_panel #gdo-dsgvo-accept-button { border-radius:10px !important; background:linear-gradient(135deg,#7aaef0,#7668d7) !important; }
 @media (max-width:760px) {
-  body.lup-arrival-active #gdo_dsgvo_panel .gdo_dsgvo_info { right:14px !important; bottom:14px !important; left:14px !important; width:auto !important; padding:15px !important; border-radius:16px !important; }
+  body.lup-arrival-active #gdo_dsgvo_panel .gdo_dsgvo_info { right:14px !important; bottom:14px !important; left:14px !important; width:auto !important; padding:15px !important; border-radius:16px !important; transform:none !important; }
   body.lup-arrival-active #gdo_dsgvo_panel .gdo_dsgvo_info p { margin:0 0 10px !important; font-size:12px !important; }
   body.lup-arrival-active #gdo_dsgvo_panel #gdo-dsgvo-accept-button { min-height:38px !important; padding:9px 13px !important; }
 }
