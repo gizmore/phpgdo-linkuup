@@ -3654,8 +3654,8 @@ body.lup-arrival-active #gdo-left-bar .gdo-lang-switch img {
   min-width:0 !important;
   height:30px !important;
   padding:0 !important;
-  border:1px solid rgba(191,211,237,.12) !important;
-  border-radius:8px !important;
+  /*border:1px solid rgba(191,211,237,.12) !important;*/
+  /*border-radius:8px !important;*/
   background:rgba(255,255,255,.025) !important;
   box-shadow:none !important;
 }
@@ -3875,7 +3875,8 @@ body.lup-arrival-active #navbarSupportedContent.show .gdt-link > a > .gdo-utf8-i
     width: 100%;
 }
 
-#content-wrap .gdt-form-actions input[type="submit"] {
+#content-wrap .gdt-form-actions input[type="submit"],
+#sidebar-wrapper .gdo-lang-switch a {
     border: none;
     box-shadow: none;
 }
