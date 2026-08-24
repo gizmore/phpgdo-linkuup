@@ -7,9 +7,11 @@ use GDO\Address\GDO_Address;
 use GDO\Avatar\GDO_Avatar;
 use GDO\Avatar\GDO_UserAvatar;
 use GDO\Core\Module_Core;
+use GDO\Core\GDO_Module;
 use GDO\CORS\Module_CORS;
 use GDO\Crypto\BCrypt;
 use GDO\CSS\Module_CSS;
+use GDO\Date\GDO_Timezone;
 use GDO\Date\Time;
 use GDO\DB\Database;
 use GDO\File\GDO_File;
@@ -85,13 +87,7 @@ final class Install
         $gizmore->saveSettingVar('Login', 'password', BCrypt::create($passwords['gizmore'][0])->__toString());
 		$gizmore->saveSettingVar('Mail', 'email', $emails['gizmore']);
 		$gizmore->saveSettingVar('Mail', 'email_confirmed', Time::getDate());
-        $gizmore->saveSettingVar('User', 'gender', 'male');
-        $gizmore->saveSettingVar('Birthday', 'birthday', '1980-11-09');
-        $gizmore->saveSettingVar('Birthday', 'age_visible', 'acl_all');
-        $gizmore->saveSettingVar('Birthday', 'announce_my_birthday', '1');
-        $gizmore->saveSettingVar('Birthday', 'announce_me_birthdays', '1');
-        $gizmore->saveSettingVar('Country', 'country_of_origin', 'DE');
-        $gizmore->saveSettingVar('Country', 'country_of_living', 'DE');
+		self::seedGizmoreSettings($gizmore);
         GDO_UserPermission::grant($gizmore, 'admin');
         GDO_UserPermission::grant($gizmore, 'staff');
 		LUP_Trophy::getOrCreate($gizmore)->saveVar('lt_vip', '1');
@@ -276,6 +272,53 @@ final class Install
 		}
         self::$ICONS = $icons;
 		return $icons;
+	}
+
+	/** Seed the main developer profile with the deliberately public beta data. */
+	private static function seedGizmoreSettings(GDO_User $user): void
+	{
+		$berlin = GDO_Timezone::getByName('Europe/Berlin')->getID();
+		$settings = [
+			['AboutMe', 'about_me', 'Ich bin der Hauptentwickler bei LinkUUp, und interessiere mich für logische Systeme und KI.'],
+			['Birthday', 'birthday', '1980-11-09'],
+			['Birthday', 'age_visible', 'acl_all'],
+			['Birthday', 'announce_my_birthday', '1'],
+			['Birthday', 'announce_me_birthdays', '1'],
+			['Country', 'country_of_living', 'DE'],
+			['Country', 'country_of_origin', 'DE'],
+			['Language', 'language', 'de'],
+			['Date', 'timezone', $berlin],
+			['Date', 'activity_accuracy', '5m'],
+			// Gender was deliberately left blank in the profile questionnaire.
+			['User', 'gender', 'male'],
+			['User', 'color', '#333377'],
+			['User', 'profile_visibility', 'acl_all'],
+			['LinkUUp', 'lup_status', 'Am arbeiten...'],
+			['LinkUUp', 'lup_profile_outside_visible', '1'],
+			['LinkUUp', 'lup_state', 'Niedersachsen'],
+			['LinkUUp', 'lup_city', 'Peine'],
+			['LinkUUp', 'lup_course_visible', 'acl_all'],
+			['LinkUUp', 'lup_cuddles_visible', 'acl_all'],
+			['LinkUUp', 'lup_eyecolor', 'blue_green'],
+			['LinkUUp', 'lup_height', '1.86'],
+			['LinkUUp', 'lup_interest', 'sexi_no_thx'],
+			['LinkUUp', 'lup_sexo', 'women'],
+			['LinkUUp', 'lup_has_pet', 'pet_none'],
+			['LinkUUp', 'lup_drinks', 'lup_drink_yes'],
+			['LinkUUp', 'lup_smokes', 'lup_smokes_yes'],
+			['LinkUUp', 'lup_sporty', 'lup_unsporty'],
+			['LinkUUp', 'lup_religion', 'religion_atheist'],
+		];
+
+		foreach ($settings as [$moduleName, $key, $value])
+		{
+			$user->saveSettingVar($moduleName, $key, (string)$value);
+			$module = GDO_Module::getByName($moduleName);
+			if ($module && $module->setting($key)->isACLCapable())
+			{
+				$user->saveACLSettings($moduleName, $key, 'acl_all');
+			}
+		}
 	}
 
 	/** Install the supplied public profile image for a seeded user once. */
