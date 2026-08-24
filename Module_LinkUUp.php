@@ -53,7 +53,7 @@ final class Module_LinkUUp extends GDO_Module
 			'Account', 'ActivationAlert', 'Address',
 			'Admin', 'Avatar',
 			'Backup', 'Birthday', 'Bootstrap5Theme',
-			'Captcha', 'Classic', 'Comments',
+			'Captcha', 'Classic', 'CLI', 'Comments',
 			'Contact', 'CORS', 'Country',
 			'CSS', 'Currency',
             'DBMS', 'DSGVO',
