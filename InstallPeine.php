@@ -29,7 +29,7 @@ final class InstallPeine
 	private static function seedGarage(array $icons): void
 	{
 		$garage = GDO_Address::blank([
-			'address_id' => '2',
+			'address_id' => '1000',
 			'address_company' => null,
 			'address_vat' => null,
 			'address_name' => 'Garage Peine',
@@ -44,7 +44,7 @@ final class InstallPeine
 		])->softReplace();
 
 		LUP_Room::blank([
-			'room_id' => '2',
+			'room_id' => '1000',
 			'room_owner' => GDO_User::getByName('gizmore')->getID(),
 			'room_name' => 'Garage',
 			'room_info' => 'Die Garage ist der Rock, Metal und Punk Szenetreff in Peine.',
@@ -94,7 +94,7 @@ final class InstallPeine
 	private static function seedTownHall(array $icons): void
 	{
 		$address = GDO_Address::blank([
-			'address_id' => '236',
+			'address_id' => '1001',
 			'address_name' => 'Rathaus & Bürgerbüro Peine',
 			'address_street' => 'Kantstraße 5',
 			'address_zip' => '31224',
@@ -105,7 +105,7 @@ final class InstallPeine
 
 		$image = $icons[3];
 		LUP_Room::blank([
-			'room_id' => '236',
+			'room_id' => '1001',
 			'room_owner' => null,
 			'room_name' => 'Rathaus & Bürgerbüro',
 			'room_info' => 'Stadtverwaltung Peine mit Bürgerbüro.',
@@ -129,7 +129,7 @@ final class InstallPeine
 	{
 		$owner = GDO_User::getByName('gizmore');
 		$address = GDO_Address::blank([
-			'address_id' => '237',
+			'address_id' => '1002',
 			'address_name' => 'LinkUUp Dev-Standort',
 			'address_street' => 'Am Bauhof 15',
 			'address_zip' => '31224',
@@ -139,7 +139,7 @@ final class InstallPeine
 
 		$image = $icons[3];
 		LUP_Room::blank([
-			'room_id' => '237',
+			'room_id' => '1002',
 			'room_owner' => $owner->getID(),
 			'room_name' => 'Mogwai',
 			'room_info' => 'Wohnsitz eines LinkUUp-Programmierers.',
@@ -161,7 +161,7 @@ final class InstallPeine
 	private static function seedStandesamt(array $icons): void
 	{
 		$address = GDO_Address::blank([
-			'address_id' => '238',
+			'address_id' => '1003',
 			'address_name' => 'Standesamt',
 			'address_street' => 'Woltorfer Straße 77 B',
 			'address_zip' => '31224',
@@ -171,7 +171,7 @@ final class InstallPeine
 
 		$image = $icons[3];
 		LUP_Room::blank([
-			'room_id' => '238',
+			'room_id' => '1003',
 			'room_owner' => null,
 			'room_name' => 'Standesamt',
 			'room_info' => 'LinkUUp-Testort an der Woltorfer Straße.',
@@ -193,7 +193,7 @@ final class InstallPeine
 	private static function seedEmploymentAgency(array $icons): void
 	{
 		$address = GDO_Address::blank([
-			'address_id' => '239',
+			'address_id' => '1004',
 			'address_name' => 'Agentur für Arbeit Peine',
 			'address_street' => 'Im Schleusenteich 1',
 			'address_zip' => '31224',
@@ -204,7 +204,7 @@ final class InstallPeine
 
 		$image = $icons[3];
 		LUP_Room::blank([
-			'room_id' => '239',
+			'room_id' => '1004',
 			'room_owner' => null,
 			'room_name' => 'Arbeitsamt Peine',
 			'room_info' => 'Agentur für Arbeit Peine.',
@@ -228,7 +228,7 @@ final class InstallPeine
 	private static function seedSkatepark(array $icons): void
 	{
 		$address = GDO_Address::blank([
-			'address_id' => '300',
+			'address_id' => '1005',
 			'address_name' => 'Skatepark Peine',
 			'address_street' => 'Hans-Gallinis-Straße',
 			'address_zip' => '31224',
@@ -238,7 +238,7 @@ final class InstallPeine
 
 		$image = $icons[3];
 		LUP_Room::blank([
-			'room_id' => '300',
+			'room_id' => '1005',
 			'room_owner' => null,
 			'room_name' => 'Skatepark Peine',
 			'room_info' => 'Öffentliche Skate- und Inlineranlage am Unternehmenspark Peine II.',

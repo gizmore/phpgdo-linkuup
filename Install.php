@@ -11,6 +11,7 @@ use GDO\CORS\Module_CORS;
 use GDO\Crypto\BCrypt;
 use GDO\CSS\Module_CSS;
 use GDO\Date\Time;
+use GDO\DB\Database;
 use GDO\File\GDO_File;
 use GDO\File\ImageResize;
 use GDO\File\Method\CronjobImageVariants;
@@ -197,6 +198,7 @@ final class Install
 		self::createRegionalClubExpansion();
 		self::createRegionalMixedExpansion();
 		LocationRegistry::importApproved();
+		self::reserveUserRoomIds();
 
 		self::createDefaultImageVariants($module);
 	}
@@ -448,7 +450,7 @@ final class Install
         foreach ($places as $index => [$name, $category, $lat, $lng, $street, $zip])
         {
             $address = GDO_Address::blank([
-                'address_id' => (string)(20 + $index),
+				'address_id' => (string)(2000 + $index),
                 'address_name' => $name,
                 'address_street' => $street,
                 'address_zip' => $zip ?: null,
@@ -457,7 +459,7 @@ final class Install
             ])->softReplace();
 
             LUP_Room::blank([
-                'room_id' => (string)(20 + $index),
+				'room_id' => (string)(2000 + $index),
                 'room_owner' => $owner->getID(),
                 'room_name' => $name,
                 'room_info' => 'Braunschweig-Testlokalität. Angaben vor einer öffentlichen Freigabe prüfen.',
@@ -492,7 +494,7 @@ final class Install
 
         foreach ($places as $index => [$name, $category, $lat, $lng, $street, $zip, $website])
         {
-            $id = 42 + $index;
+			$id = 2100 + $index;
             $address = GDO_Address::blank([
                 'address_id' => (string)$id,
                 'address_name' => $name,
@@ -576,7 +578,7 @@ final class Install
 
         foreach ($places as $index => [$name, $category, $lat, $lng, $street, $zip, $radius])
         {
-            $id = 60 + $index;
+			$id = 2200 + $index;
             $address = GDO_Address::blank([
                 'address_id' => (string)$id,
                 'address_name' => $name,
@@ -630,7 +632,7 @@ final class Install
         foreach ($cafes as $index => [$name, $lat, $lng, $street, $zip])
         {
             // Keep these IDs isolated from the original seed catalogue.
-            $id = 160 + $index;
+			$id = 2300 + $index;
             $address = GDO_Address::blank([
                 'address_id' => (string)$id,
                 'address_name' => $name,
@@ -683,7 +685,7 @@ final class Install
 
         foreach ($cafes as $index => [$name, $lat, $lng, $street, $zip, $website])
         {
-            $id = 170 + $index;
+			$id = 2400 + $index;
             $address = GDO_Address::blank([
                 'address_id' => (string)$id,
                 'address_name' => $name,
@@ -738,7 +740,7 @@ final class Install
 
         foreach ($clubs as $index => [$name, $city, $lat, $lng, $street, $zip, $website])
         {
-            $id = 190 + $index;
+            $id = self::regionalVenueId($city, 500, $index);
             $address = GDO_Address::blank([
                 'address_id' => (string)$id,
                 'address_name' => $name,
@@ -792,7 +794,7 @@ final class Install
 
         foreach ($places as $index => [$name, $category, $city, $lat, $lng, $street, $zip, $website])
         {
-            $id = 210 + $index;
+            $id = self::regionalVenueId($city, 600, $index);
             $address = GDO_Address::blank([
                 'address_id' => (string)$id,
                 'address_name' => $name,
@@ -819,6 +821,26 @@ final class Install
                 'room_image' => $image->getID(),
                 'room_show_distance' => '1',
             ])->softReplace();
+        }
+    }
+
+    /** Keep fixed seed areas distinct from user-created rooms. */
+    private static function regionalVenueId(string $city, int $series, int $index): int
+    {
+        return match ($city) {
+            'Peine' => 1000 + $series + $index,
+            'Braunschweig' => 2000 + $series + $index,
+            'Wolfsburg' => 3000 + $series + $index,
+            default => 4000 + $series + $index,
+        };
+    }
+
+    /** Reserve the dynamic ID range for rooms created by users in the app. */
+    private static function reserveUserRoomIds(): void
+    {
+        if (Database::instance()->getLink() instanceof \mysqli)
+        {
+            Database::instance()->queryWrite('ALTER TABLE lup_room AUTO_INCREMENT = 100000');
         }
     }
 
