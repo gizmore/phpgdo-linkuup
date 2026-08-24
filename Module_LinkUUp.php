@@ -60,7 +60,7 @@ final class Module_LinkUUp extends GDO_Module
 			'Facebook', 'Favicon', 'Friends', 'Gallery',
 			'Instagram',
 			'Javascript', 'JPGraph', 'JQueryAutocomplete',
-			'Licenses', 'Login',
+			'Licenses', 'Login', 'Logs',
 			'Maps', 'Markdown',
 			'News', 'OpenTimes', 'Perf',
 			'QRCode', 'Recovery', 'Register',
