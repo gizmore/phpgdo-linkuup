@@ -84,7 +84,7 @@ final class Install
             'user_id' => '2',
             'user_type' => GDT_UserType::MEMBER,
             'user_name' => 'gizmore',
-            'user_level' => '65535',
+            'user_level' => '0',
         ])->softReplace();
         $passwords = require Module_LinkUUp::instance()->filePath('secret.php');
 		$emails = $passwords['emails'];
@@ -101,7 +101,7 @@ final class Install
             'user_id' => '3',
             'user_type' => GDT_UserType::MEMBER,
             'user_name' => 'shqiprim',
-            'user_level' => '65535',
+            'user_level' => '0',
         ])->softReplace();
         $shqiprimPassword = $passwords['shqiprim'][0] ?? $passwords['squiprim'][0];
         $shqiprim->saveSettingVar('Login', 'password', BCrypt::create($shqiprimPassword)->__toString());
@@ -119,7 +119,7 @@ final class Install
             'user_id' => '5',
             'user_type' => GDT_UserType::MEMBER,
             'user_name' => 'mira',
-            'user_level' => '65535',
+            'user_level' => '0',
         ])->softReplace();
         $mira->saveSettingVar('Login', 'password', BCrypt::create($passwords['mira'][0])->__toString());
 		$mira->saveSettingVar('Mail', 'email', $emails['mira']);
@@ -133,16 +133,17 @@ final class Install
 		LUP_Trophy::getOrCreate($mira)->saveVar('lt_vip', '1');
 		self::installAvatar('mira', 'mira.png');
 
-        # Peter is a normal seeded member. His secret deliberately aliases
+        # Peter is a seeded VIP member. His secret deliberately aliases
         # gizmore's installer password without duplicating it in secret.php.
         $peter = GDO_User::blank([
             'user_id' => '6',
             'user_type' => GDT_UserType::MEMBER,
             'user_name' => 'Peter',
-            'user_level' => '1',
+            'user_level' => '0',
         ])->softReplace();
         $peterPasswordKey = $passwords['peter'][0];
         $peter->saveSettingVar('Login', 'password', BCrypt::create($passwords[$peterPasswordKey][0])->__toString());
+		LUP_Trophy::getOrCreate($peter)->saveVar('lt_vip', '1');
 
         # Settings
 		Module_Core::instance()->saveConfigVar('allow_guests', '1');
@@ -344,7 +345,8 @@ final class Install
 			['Birthday', 'announce_my_birthday', '1'],
 			['Birthday', 'announce_me_birthdays', '1'],
 			['Country', 'country_of_living', 'DE'],
-			['Country', 'country_of_origin', 'DE'],
+            ['Country', 'country_of_origin', 'DE'],
+            ['Country', 'city_of_origin', 'Peine'],
 			['Language', 'language', 'de'],
 			['Date', 'timezone', $berlin],
 			['Date', 'activity_accuracy', '5m'],

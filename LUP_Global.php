@@ -103,7 +103,35 @@ final class LUP_Global
 			GWS_Message::wr8(self::friendshipPendingPayload($user)) .
 			GWS_Message::wr8(self::friendshipIncomingPayload($user)) .
 			GWS_Message::wrS(self::countryPayload($user)) .
-			self::trophyDataForUser($user);
+			self::trophyDataForUser($user) .
+			GWS_Message::wrS(self::profileRolePayload($user));
+	}
+
+	/** A compact public role label for the app profile header. */
+	public static function profileRolePayload(GDO_User $user): string
+	{
+		if ($user->isAdmin())
+		{
+			return 'PROFILE_ROLE_ADMIN';
+		}
+		if ($user->isStaff())
+		{
+			return 'PROFILE_ROLE_STAFF';
+		}
+		$userId = (int)$user->getID();
+		if (LUP_Room::table()->select('room_id')->where("room_owner={$userId}")->first()->exec()->fetchVar())
+		{
+			return 'PROFILE_ROLE_BOSS';
+		}
+		if (LUP_RoomWorker::table()->select('lrw_room')->where("lrw_user={$userId}")->first()->exec()->fetchVar())
+		{
+			return 'PROFILE_ROLE_CREW';
+		}
+		if (self::isVIP($user))
+		{
+			return 'PROFILE_ROLE_VIP';
+		}
+		return $user->isGuest() ? 'PROFILE_ROLE_GUEST' : 'PROFILE_ROLE_MEMBER';
 	}
 
     public static function trophyDataForUser(GDO_User $user)
