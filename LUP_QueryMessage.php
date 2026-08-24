@@ -5,7 +5,9 @@ use GDO\Core\GDO;
 use GDO\Core\GDT_AutoInc;
 use GDO\Core\GDT_Checkbox;
 use GDO\Core\GDT_CreatedAt;
+use GDO\Core\GDT_Index;
 use GDO\Core\GDT_String;
+use GDO\Core\GDT_UInt;
 use GDO\Date\GDT_DateTime;
 use GDO\Date\Time;
 use GDO\User\GDO_User;
@@ -25,6 +27,7 @@ final class LUP_QueryMessage extends GDO
 	{
 		return [
 			GDT_AutoInc::make('lupqm_id'),
+			GDT_UInt::make('lupqm_thread')->notNull(),
 			GDT_User::make('lupqm_from')->notNull(),
 			GDT_User::make('lupqm_to')->notNull(),
 			GDT_String::make('lupqm_text')->max(768)->notNull(),
@@ -32,8 +35,7 @@ final class LUP_QueryMessage extends GDO
 			GDT_DateTime::make('lupqm_delivered'),
 			GDT_DateTime::make('lupqm_read'),
 			GDT_Checkbox::make('lupqm_ack')->notNull()->initial('0'),
-			GDT_Checkbox::make('lupqm_from_deleted')->notNull()->initial('0'),
-			GDT_Checkbox::make('lupqm_to_deleted')->notNull()->initial('0'),
+			GDT_Index::make('lupqm_thread_created')->btree()->indexColumns('lupqm_thread', 'lupqm_created'),
 		];
 	}
 
@@ -42,6 +44,7 @@ final class LUP_QueryMessage extends GDO
 	public function getToID() { return $this->gdoVar('lupqm_to'); }
 
 	public function getID(): ?string { return $this->gdoVar('lupqm_id'); }
+	public function getThreadID(): string { return $this->gdoVar('lupqm_thread'); }
 
 	public function isFrom(GDO_User $user) { return $this->getFromID() === $user->getID(); }
 
@@ -114,8 +117,8 @@ final class LUP_QueryMessage extends GDO
 	{
 		return
 			GWS_Message::wr32($this->getID()) .
-			GWS_Message::wr32($this->gdoValue('lupqm_delivered')) .
-			GWS_Message::wr32($this->gdoValue('lupqm_read')) .
+			GWS_Message::wr32(Time::getTimestamp($this->gdoVar('lupqm_delivered')) ?: 0) .
+			GWS_Message::wr32(Time::getTimestamp($this->gdoVar('lupqm_read')) ?: 0) .
 			GWS_Message::wr8($this->gdoVar('lupqm_ack'));
 	}
 

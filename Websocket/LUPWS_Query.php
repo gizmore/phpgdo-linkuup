@@ -3,6 +3,7 @@ namespace GDO\LinkUUp\Websocket;
 
 use GDO\LinkUUp\LUP_Global;
 use GDO\LinkUUp\LUP_QueryMessage;
+use GDO\LinkUUp\LUP_QueryThread;
 use GDO\LinkUUp\LUPWS_Command;
 use GDO\LinkUUp\Module_LinkUUp;
 use GDO\User\GDO_User;
@@ -74,8 +75,10 @@ class LUPWS_Query extends LUPWS_Command
 			}
 		}
 
+		$thread = LUP_QueryThread::forMessage($user, $to);
 		$qmsg = LUP_QueryMessage::blank([
 			'lupqm_id' => '0',
+			'lupqm_thread' => $thread->getID(),
 			'lupqm_from' => $user->getID(),
 			'lupqm_to' => $to->getID(),
 			'lupqm_text' => $text,
@@ -84,6 +87,7 @@ class LUPWS_Query extends LUPWS_Command
 			'lupqm_read' => null,
 			'lupqm_ack' => '0',
 		])->insert();
+		$thread->touch($text);
 
 		if (!$offline)
 		{

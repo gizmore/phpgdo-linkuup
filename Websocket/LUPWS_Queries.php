@@ -1,7 +1,7 @@
 <?php
 namespace GDO\LinkUUp\Websocket;
 
-use GDO\LinkUUp\LUP_QueryMessage;
+use GDO\LinkUUp\LUP_QueryThread;
 use GDO\LinkUUp\LUPWS_Command;
 use GDO\Websocket\Server\GWS_Commands;
 use GDO\Websocket\Server\GWS_Message;
@@ -18,28 +18,19 @@ class LUPWS_Queries extends LUPWS_Command
 	{
 		$uid = $msg->user()->getID();
 
-		$table = LUP_QueryMessage::table();
-
-		$ifquery = "IF(lupqm_from=$uid, lupqm_to, lupqm_from) other_user";
-		$ifquery2 = "IF(lupqm_from=$uid, lupqm_from_deleted, lupqm_to_deleted) me_deleted";
-		$query = $table->select("*, $ifquery, $ifquery2");
-		$query->where("lupqm_from=$uid OR lupqm_to=$uid");
+		$table = LUP_QueryThread::table();
+		$ifquery = "IF(lupqt_user_a=$uid, lupqt_a_deleted, lupqt_b_deleted) me_deleted";
+		$query = $table->select("*, $ifquery");
+		$query->where("lupqt_user_a=$uid OR lupqt_user_b=$uid");
 		$query->having('me_deleted=0');
-		$query->order('lupqm_created DESC');
+		$query->order('lupqt_updated DESC');
 
 		$result = $query->exec();
 
-		$chats = [];
 		$payload = '';
-		while ($message = $result->fetchAssoc())
+		while ($thread = $result->fetchObject())
 		{
-			$other = $message['other_user'];
-			if (!isset($chats[$other]))
-			{
-				$message = LUP_QueryMessage::blank($message);
-				$chats[$other] = $message;
-				$payload .= $this->gdoToBinary($message);
-			}
+			$payload .= $this->gdoToBinary($thread);
 		}
 
 		return $msg->replyBinary($msg->cmd(), $payload);

@@ -3,6 +3,7 @@ namespace GDO\LinkUUp\Websocket;
 
 use GDO\LinkUUp\LUP_Notification;
 use GDO\LinkUUp\LUP_QueryMessage;
+use GDO\LinkUUp\LUP_QueryThread;
 use GDO\LinkUUp\LUPWS_Command;
 use GDO\Websocket\Server\GWS_Commands;
 use GDO\Websocket\Server\GWS_Message;
@@ -23,8 +24,9 @@ class LUPWS_NotificationsCount extends LUPWS_Command
 		$countNotes = LUP_Notification::table()->countWhere("note_user=$userId AND note_read IS NULL");
 
 		$query = LUP_QueryMessage::table()->select('COUNT(*)');
+		$query->join('JOIN lup_querythread ON lupqm_thread=lupqt_id');
 		$query->where("lupqm_to=$userId AND lupqm_read IS NULL");
-		$query->where("IF(lupqm_from=$userId, lupqm_from_deleted, lupqm_to_deleted) = 0");
+		$query->where("IF(lupqt_user_a=$userId, lupqt_a_deleted, lupqt_b_deleted) = 0");
 		$countQueries = (int)$query->exec()->fetchVar();
 
 		$payload = GWS_Message::wr32($countNotes);

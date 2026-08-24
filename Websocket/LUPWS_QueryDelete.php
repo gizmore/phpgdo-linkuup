@@ -1,8 +1,7 @@
 <?php
 namespace GDO\LinkUUp\Websocket;
 
-use GDO\DB\Database;
-use GDO\LinkUUp\LUP_QueryMessage;
+use GDO\LinkUUp\LUP_QueryThread;
 use GDO\LinkUUp\LUPWS_Command;
 use GDO\Websocket\Server\GWS_Commands;
 use GDO\Websocket\Server\GWS_Message;
@@ -19,28 +18,18 @@ class LUPWS_QueryDelete extends LUPWS_Command
 	{
 		# Params
 		$uid = $msg->user()->getID();
-		$oid = $msg->read32u();
-
-		$db = Database::instance();
-		$table = LUP_QueryMessage::table();
-		$numDeleted = 0;
-
-		# Delete sent to oid
-		$query = $table->update()->set('lupqm_from_deleted=1');
-		$query->where("lupqm_from=$uid AND lupqm_to=$oid");
-		$query->exec();
-		$numDeleted += $db->affectedRows();
-
-		# Delete received from oid
-		$query = $table->update()->set('lupqm_to_deleted=1');
-		$query->where("lupqm_from=$oid AND lupqm_to=$uid");
-		$query->exec();
-		$numDeleted += $db->affectedRows();
+		$threadId = $msg->read32u();
+		$thread = LUP_QueryThread::table()->findById($threadId);
+		if ((!$thread) || (($thread->gdoVar('lupqt_user_a') !== $uid) && ($thread->gdoVar('lupqt_user_b') !== $uid)))
+		{
+			return $msg->rplyError('err_not_allowed');
+		}
+		$thread->deleteFor($msg->user());
 
         # TODO: notify both of deletion.
 
 		# Reply how much went deleted
-		$payload = GWS_Message::wr32($numDeleted);
+		$payload = GWS_Message::wr32(1);
 		$msg->replyBinary($msg->cmd(), $payload);
 	}
 

@@ -1,8 +1,8 @@
 <?php
 namespace GDO\LinkUUp\Websocket;
 
-use GDO\Date\Time;
 use GDO\LinkUUp\LUP_QueryMessage;
+use GDO\LinkUUp\LUP_QueryThread;
 use GDO\LinkUUp\LUPWS_Command;
 use GDO\Websocket\Server\GWS_Commands;
 use GDO\Websocket\Server\GWS_Message;
@@ -19,22 +19,17 @@ class LUPWS_QueryMessages extends LUPWS_Command
 	{
 		# Parameters
 		$uid = $msg->user()->getID(); # Me
-		$oid = $msg->read32u(); # Other
-		$time = $msg->read32u(); # Timecut
+		$threadId = $msg->read32u();
 
 		# Build query
 		$table = LUP_QueryMessage::table();
-		$ifquery2 = "IF(lupqm_from=$uid, lupqm_from_deleted, lupqm_to_deleted) me_deleted";
-		$query = $table->select("*, $ifquery2");
-		$query->where("(lupqm_from=$uid AND lupqm_to=$oid) OR (lupqm_to=$uid AND lupqm_from=$oid)");
+		$ifquery = "IF(lupqt_user_a=$uid, lupqt_a_deleted, lupqt_b_deleted) me_deleted";
+		$query = $table->select("lup_querymessage.*, $ifquery");
+		$query->join('JOIN lup_querythread ON lupqm_thread=lupqt_id');
+		$query->where("lupqm_thread=$threadId");
+		$query->where("lupqt_user_a=$uid OR lupqt_user_b=$uid");
 		$query->having('me_deleted=0');
-		if ($time)
-		{
-			$timecut = Time::getDate($time);
-			$query->where("lupqm_created<='$timecut'");
-		}
-		$query->order('lupqm_created DESC');
-		$query->limit(11);
+		$query->order('lupqm_created ASC');
 
 		# Run query
 		$result = $query->exec();

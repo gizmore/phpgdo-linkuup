@@ -8,6 +8,7 @@ use GDO\LinkUUp\LUP_Cuddle;
 use GDO\LinkUUp\LUP_CuddleToken;
 use GDO\LinkUUp\LUP_Room;
 use GDO\LinkUUp\LUP_SignupGPS;
+use GDO\LinkUUp\LUP_QueryThread;
 use GDO\LinkUUp\Method\Cuddle;
 use GDO\LinkUUp\Module_LinkUUp;
 use GDO\Tests\GDT_MethodTest;
@@ -36,6 +37,17 @@ final class LUPTest extends TestCase
 		assertGreaterThanOrEqual(1, LUP_Category::table()->countWhere());
 		assertGreaterThanOrEqual(1, GDO_Address::table()->countWhere());
 		assertGreaterThanOrEqual(1, LUP_Room::table()->countWhere());
+	}
+
+	public function testQueryThreadsSplitAfterAnHour(): void
+	{
+		$gizmore = GDO_User::getByName('gizmore');
+		$peter = GDO_User::getByName('Peter');
+		$thread = LUP_QueryThread::forMessage($gizmore, $peter);
+		assertSame($thread->getID(), LUP_QueryThread::forMessage($peter, $gizmore)->getID());
+		$thread->saveVar('lupqt_updated', \GDO\Date\Time::getDate(time() - 3601));
+		$next = LUP_QueryThread::forMessage($gizmore, $peter);
+		assertFalse($thread->getID() === $next->getID());
 	}
 
 	/** A QR token may be redeemed once, and rewards both participating users. */
