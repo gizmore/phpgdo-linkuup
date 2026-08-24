@@ -6,6 +6,7 @@ use GDO\AboutMe\Module_AboutMe;
 use GDO\Address\GDO_Address;
 use GDO\Avatar\GDO_Avatar;
 use GDO\Avatar\GDO_UserAvatar;
+use GDO\Category\GDO_Category;
 use GDO\Core\Module_Core;
 use GDO\Core\GDO_Module;
 use GDO\CORS\Module_CORS;
@@ -21,6 +22,8 @@ use GDO\Favicon\Module_Favicon;
 use GDO\Javascript\Module_Javascript;
 use GDO\Language\Module_Language;
 use GDO\Maps\Module_Maps;
+use GDO\News\GDO_News;
+use GDO\News\GDO_NewsText;
 use GDO\Register\Module_Register;
 use GDO\User\GDO_Permission;
 use GDO\User\GDO_User;
@@ -181,6 +184,7 @@ final class Install
 		$icons = self::installIcons();
 		# Category
 		$cats = self::installCats($icons);
+		self::seedAlphaNews($gizmore);
         self::createCountries();
         InstallPeine::seed(self::$ICONS);
 		self::createWolfsburg();
@@ -255,6 +259,57 @@ final class Install
 			])->softReplace();
 		}
 		return $cats;
+	}
+
+	/** Seed the public Alpha notice. Re-running the installer updates this one entry. */
+	private static function seedAlphaNews(GDO_User $creator): void
+	{
+		$category = GDO_Category::getBy('cat_name', 'News');
+		if (!$category)
+		{
+			$category = GDO_Category::blank(['cat_name' => 'News'])->insert();
+		}
+
+		$title = 'LinkUUp - Alpha';
+		$english = GDO_NewsText::getBy('newstext_title', $title);
+		$news = $english ? GDO_News::getById($english->gdoVar('newstext_news')) : null;
+		if (!$news)
+		{
+			$news = GDO_News::blank([
+				'news_category' => $category->getID(),
+				'news_visible' => '1',
+				'news_created' => '2026-08-24 00:00:00',
+				'news_creator' => $creator->getID(),
+			])->insert();
+		}
+		else
+		{
+			$news->setVars([
+				'news_category' => $category->getID(),
+				'news_visible' => '1',
+				'news_created' => '2026-08-24 00:00:00',
+				'news_creator' => $creator->getID(),
+			])->save();
+		}
+
+		$texts = [
+			'en' => 'We are now officially in the alpha phase. The server will be completely reset from time to time. This will no longer happen in beta.',
+			'de' => 'Wir sind nun offiziell in der Alpha-Phase. Der Server wird des Öfteren komplett neu aufgesetzt. In der Beta wird das nicht mehr der Fall sein.',
+			'it' => 'Siamo ora ufficialmente nella fase alpha. Il server verrà completamente reimpostato di tanto in tanto. Questo non accadrà più nella beta.',
+			'fr' => 'Nous sommes désormais officiellement en phase alpha. Le serveur sera entièrement réinitialisé de temps à autre. Ce ne sera plus le cas pendant la bêta.',
+			'es' => 'Ya estamos oficialmente en la fase alfa. El servidor se reiniciará completamente de vez en cuando. Esto dejará de ocurrir en la beta.',
+		];
+		foreach (Module_Language::instance()->cfgSupported() as $iso => $language)
+		{
+			GDO_NewsText::blank([
+				'newstext_news' => $news->getID(),
+				'newstext_lang' => $iso,
+				'newstext_title' => $title,
+				'newstext_message' => $texts[$iso] ?? $texts['en'],
+				'newstext_created' => '2026-08-24 00:00:00',
+				'newstext_creator' => $creator->getID(),
+			])->replace();
+		}
 	}
 
 	private static function installIcons(): array
