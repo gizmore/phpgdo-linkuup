@@ -1,8 +1,6 @@
 <?php
 namespace GDO\LinkUUp\Websocket;
 
-use GDO\Core\GDT_Response;
-use GDO\Form\GDT_Form;
 use GDO\Friends\GDO_FriendRequest;
 use GDO\Friends\Method\Request;
 use GDO\LinkUUp\LUP_Notification;
@@ -24,21 +22,6 @@ class LUPWS_FriendsRequest extends GWS_CommandForm
 
 	# Map to form
 	public function getMethod() { return Request::make(); }
-
-	/**
-	 * via ws
-	 * {@inheritDoc}
-	 *
-	 * @see GWS_CommandForm::postExecute
-	 */
-	public function postExecute(GWS_Message $msg, GDT_Form $form, GDT_Response $response)
-	{
-		if (!$response->hasError())
-		{
-			$this->sendNotifications($msg->user()->getID(), $form->getFormVar('frq_friend'));
-		}
-		parent::postExecute($msg, $form, $response);
-	}
 
 	private function sendNotifications($userid, $friendid)
 	{
