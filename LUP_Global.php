@@ -101,6 +101,7 @@ final class LUP_Global
 			GWS_Message::wr16(self::sexualInterestPayload($user)) .
 			GWS_Message::wr16(self::friendshipStatusPayload($user)) .
 			GWS_Message::wr8(self::friendshipPendingPayload($user)) .
+			GWS_Message::wr8(self::friendshipIncomingPayload($user)) .
 			GWS_Message::wrS(self::countryPayload($user)) .
 			self::trophyDataForUser($user);
 	}
@@ -198,6 +199,12 @@ final class LUP_Global
 	private static function friendshipPendingPayload(GDO_User $user)
 	{
 		$pending = GDO_FriendRequest::table()->getPendingFor(GDO_User::current(), $user);
+		return $pending ? 1 : 0;
+	}
+
+	private static function friendshipIncomingPayload(GDO_User $user)
+	{
+		$pending = GDO_FriendRequest::table()->getPendingFor($user, GDO_User::current());
 		return $pending ? 1 : 0;
 	}
 
