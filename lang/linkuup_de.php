@@ -162,6 +162,7 @@ return [
 	'enum_religion_vikings' => 'Wikinger',
 	'enum_religion_buddhism' => 'Buddhismus',
 	'enum_religion_atheist' => 'atheistisch',
+	'enum_religion_chappyology' => 'Chappyology',
 	'enum_religion_other' => 'andere Religion',
 	'enum_pet_cat' => 'Katze',
 	'enum_pet_dog' => 'Hund',

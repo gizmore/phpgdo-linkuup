@@ -18,6 +18,7 @@ final class GDT_Religion extends GDT_Enum
 		'religion_vikings',
 		'religion_buddhism',
 		'religion_atheist',
+		'religion_chappyology',
 		'religion_other',
 	];
 

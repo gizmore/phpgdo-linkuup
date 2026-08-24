@@ -154,6 +154,7 @@ return [
 	'enum_religion_vikings' => 'Vikings',
 	'enum_religion_buddhism' => 'Buddhism',
 	'enum_religion_atheist' => 'Atheist',
+	'enum_religion_chappyology' => 'Chappyology',
 	'enum_religion_other' => 'other religion',
 	'enum_pet_cat' => 'Cat',
 	'enum_pet_dog' => 'Dog',
