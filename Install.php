@@ -25,6 +25,7 @@ use GDO\Maps\Module_Maps;
 use GDO\News\GDO_News;
 use GDO\News\GDO_NewsText;
 use GDO\Register\Module_Register;
+use GDO\UI\Module_UI;
 use GDO\User\GDO_Permission;
 use GDO\User\GDO_User;
 use GDO\User\GDO_UserPermission;
@@ -154,6 +155,8 @@ final class Install
 		Module_User::instance()->saveVar('module_sort', '10');
 		$module->saveVar('module_sort', '20');
 		Module_CORS::instance()->saveConfigVar('cors_allow_any', '1');
+		Module_UI::instance()->saveConfigVar('default_editor', 'Markdown');
+		Module_UI::instance()->saveConfigVar('allow_editor_choice', '0');
 		Module_Language::instance()->saveConfigVar('languages', '["en","de","it","fr","es"]');
 		Module_Maps::instance()->saveConfigVar('maps_record_history', '60s');
         Module_Websocket::instance()->saveConfigVar('ws_processor', GDO_PATH . 'GDO/LinkUUp/LUP_Websocket.php');
@@ -293,11 +296,11 @@ final class Install
 		}
 
 		$texts = [
-			'en' => 'We are now officially in the alpha phase. The server will be completely reset from time to time. This will no longer happen in beta.',
-			'de' => 'Wir sind nun offiziell in der Alpha-Phase. Der Server wird des Öfteren komplett neu aufgesetzt. In der Beta wird das nicht mehr der Fall sein.',
-			'it' => 'Siamo ora ufficialmente nella fase alpha. Il server verrà completamente reimpostato di tanto in tanto. Questo non accadrà più nella beta.',
-			'fr' => 'Nous sommes désormais officiellement en phase alpha. Le serveur sera entièrement réinitialisé de temps à autre. Ce ne sera plus le cas pendant la bêta.',
-			'es' => 'Ya estamos oficialmente en la fase alfa. El servidor se reiniciará completamente de vez en cuando. Esto dejará de ocurrir en la beta.',
+			'en' => "We are now officially in the alpha phase.\n\nThe server will be completely reset from time to time.\n\nThis will no longer happen in beta.",
+			'de' => "Wir sind nun offiziell in der Alpha-Phase.\n\nDer Server wird des Öfteren komplett neu aufgesetzt.\n\nIn der Beta wird das nicht mehr der Fall sein.",
+			'it' => "Siamo ora ufficialmente nella fase alpha.\n\nIl server verrà completamente reimpostato di tanto in tanto.\n\nQuesto non accadrà più nella beta.",
+			'fr' => "Nous sommes désormais officiellement en phase alpha.\n\nLe serveur sera entièrement réinitialisé de temps à autre.\n\nCe ne sera plus le cas pendant la bêta.",
+			'es' => "Ya estamos oficialmente en la fase alfa.\n\nEl servidor se reiniciará completamente de vez en cuando.\n\nEsto dejará de ocurrir en la beta.",
 		];
 		foreach (Module_Language::instance()->cfgSupported() as $iso => $language)
 		{
