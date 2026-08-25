@@ -1858,7 +1858,7 @@ body:has(#content-wrap > #form.gdt-form.gdt-form-compact) #content-wrap {
   box-shadow:0 0 0 3px rgba(99,158,217,.11),inset 0 1px 0 rgba(255,255,255,.04) !important;
 }
 #content-wrap > #form.gdt-form.gdt-form-compact .gdt-form-actions.card-footer { padding:13px 31px 29px !important; background:transparent !important; }
-#content-wrap > #form.gdt-form.gdt-form-compact .gdt-form-actions .gdt-menu { display:grid; grid-template-columns:1fr auto; gap:12px; align-items:center; }
+/*#content-wrap > #form.gdt-form.gdt-form-compact .gdt-form-actions .gdt-menu { display:grid; grid-template-columns:1fr auto; gap:12px; align-items:center; }*/
 #content-wrap > #form.gdt-form.gdt-form-compact .gdt-submit { display:flex; grid-column:1 / -1; grid-row:1; align-items:center; justify-content:center; min-height:48px; border:1px solid rgba(195,222,255,.31) !important; border-radius:11px !important; background:linear-gradient(110deg,rgba(83,141,200,.92),rgba(105,91,188,.92)) !important; box-shadow:inset 0 1px 0 rgba(255,255,255,.24),0 12px 25px rgba(42,72,142,.22) !important; }
 #content-wrap > #form.gdt-form.gdt-form-compact .gdt-submit::after { display:none; }
 #content-wrap > #form.gdt-form.gdt-form-compact .gdt-submit input { min-height:48px; color:#fff !important; font-size:13px; font-weight:780; letter-spacing:.01em; }
