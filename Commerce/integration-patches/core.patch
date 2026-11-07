@@ -1,0 +1,39 @@
+diff --git a/gpt/Simion/2026-11-07.log b/gpt/Simion/2026-11-07.log
+new file mode 100644
+index 0000000..e6558c9
+--- /dev/null
++++ b/gpt/Simion/2026-11-07.log
+@@ -0,0 +1,6 @@
++
++[2026-11-07T01:34:49.558204+01:00] Auftrag6003 – lokaler Integrationscheckpoint, nicht freigegeben
++Dateien: index.php
++Prüfung im zusammengehörigen isolierten Stand: 48 DB-Checks; GDO-Anmeldegeneration/CSRF; Session-Guard mit 9 Zusatzchecks inklusive Commitfehler; 15 WS-Binding/Puffertests; tatsächlicher WS-Dispatch mit synthetischem Transport. Syntax 18 PHP-Dateien und fünf Diffchecks bestanden. Keine laufenden Datenbanken oder Dienste geändert.
++Offen: vollständiger Browser-/Loginablauf, Cookie-Tokenrotation, Schemaübernahme/Restore und Broadcast-Grenzen.
++Nächster Schritt: Simion-Terminal – isolierten vollständigen Login-/Bestellablauf herstellen und prüfen.
+diff --git a/index.php b/index.php
+index a23cfba..2c00553 100644
+--- a/index.php
++++ b/index.php
+@@ -291,7 +291,21 @@ if (isset($session) && $session)
+ {
+ 	if (!Application::isCrash())
+ 	{
+-		GDO_Session::commit(); # setting headers sometimes
++        try
++        {
++            if (!GDO_Session::commit()) throw new \RuntimeException('Session persistence failed');
++        }
++        catch (\Throwable $sessionFailure)
++        {
++            // Rendering has happened, but no response body has been sent yet.
++            $code = $sessionFailure instanceof \GDO\Session\SessionConflict ? 409 : 503;
++            Application::setResponseCode($code);
++            http_response_code($code);
++            header('Content-Type: application/json; charset=utf-8');
++            header('Cache-Control: no-store');
++            // Earlier domain actions may already have committed: never auto-retry.
++            $content = json_encode(['error' => 'Session changed or could not be saved. Reload and check the operation status before retrying.', 'retryAutomatically' => false]);
++        }
+ 	}
+ }
+ # The last thing we do before any output

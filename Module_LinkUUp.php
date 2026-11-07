@@ -84,6 +84,7 @@ final class Module_LinkUUp extends GDO_Module
 			LUP_ProfileLike::class,
 			LUP_Category::class,
 			LUP_Room::class,
+            LUP_OperatorApplication::class,
 			LUP_RoomVisit::class,
 			LUP_RoomComments::class,
 			LUP_RoomVote::class,
@@ -257,6 +258,16 @@ final class Module_LinkUUp extends GDO_Module
 		}
 
 		GDT_Page::instance()->leftBar()->addField(GDT_Link::make('lup_welcome')->href(href('LinkUUp', 'Welcome')));
+		$user = GDO_User::current();
+		if ($user->gdoVar('user_type') === 'member' && $user->gdoVar('user_deleted') === null)
+		{
+			GDT_Page::instance()->leftBar()->addField(GDT_Link::make('operator_apply')->textRaw('Betrieb anmelden / Antragsstatus')->href(href('LinkUUp', 'OperatorApply')));
+			if ($user->isAdmin())
+			{
+				GDT_Page::instance()->leftBar()->addField(GDT_Link::make('operator_review')->textRaw('Betriebsanträge prüfen')->href(href('LinkUUp', 'OperatorReview')));
+			}
+		}
+
 	}
 
 	public function cfgAllowGuestQuery(): bool { return $this->getConfigValue('lup_guest_query'); }

@@ -1,0 +1,58 @@
+--- GDO_Session.php
++++ GDO_Session.php
+@@ -28,6 +28,55 @@
+ class GDO_Session extends GDO
+ {
+ 
++    // RESEARCH ONLY: InnoDB snapshot guard; not a production-ready Core patch.
++    private ?array $qaWriteSnapshot = null;
++    private bool $qaInvalidated = false;
++    public function setVar(string $key, ?string $var, bool $markDirty = true): static
++    {
++        if ($markDirty && $this->isPersisted() && $this->qaWriteSnapshot === null) {
++            $this->qaWriteSnapshot = [];
++            foreach (['sess_token','sess_user','sess_data','sess_ip'] as $field) {
++                $this->qaWriteSnapshot[$field] = $this->gdoVar($field);
++            }
++        }
++        return parent::setVar($key, $var, $markDirty);
++    }
++    public function save(bool $withHooks = true): static
++    {
++        if ($this->qaInvalidated) throw new \RuntimeException('QA invalidated session object',409);
++        if (!$this->isPersisted() || !$this->isDirty()) return parent::save($withHooks);
++        if ($this->qaWriteSnapshot === null) throw new \RuntimeException('QA missing snapshot',409);
++        $db=\GDO\DB\Database::instance()->getLink();
++        if (!($db instanceof \mysqli)) throw new \RuntimeException('QA requires isolated MariaDB',503);
++        if ((int)$db->query('SELECT @@in_transaction')->fetch_row()[0]!==0) throw new \RuntimeException('QA nested transaction',503);
++        $table=$this->gdoTableName();
++        if (!preg_match('/^[a-zA-Z0-9_]+$/D',$table)) throw new \RuntimeException('QA table',503);
++        $q=$db->prepare('SELECT ENGINE FROM information_schema.TABLES WHERE TABLE_SCHEMA=DATABASE() AND TABLE_NAME=?');
++        $q->bind_param('s',$table);$q->execute();
++        if (strtoupper($q->get_result()->fetch_row()[0]??'')!=='INNODB') throw new \RuntimeException('QA requires InnoDB',503);
++        $db->begin_transaction();
++        try {
++            $q=$db->prepare('SELECT sess_token,sess_user,sess_data,sess_ip FROM `'.$table.'` WHERE sess_id=? FOR UPDATE');
++            $id=$this->getID();$q->bind_param('s',$id);$q->execute();$fresh=$q->get_result()->fetch_assoc();
++            if ($fresh) $fresh=array_map(static fn($v)=>$v===null?null:(string)$v,$fresh);
++            if (!$fresh || $fresh !== $this->qaWriteSnapshot) throw new \RuntimeException('QA stale session write rejected',409);
++            parent::save($withHooks);
++            $db->commit();$this->qaWriteSnapshot=null;
++            return $this;
++        } catch (\Throwable $e) {
++            // Research contract: never allow reuse of the stale object after failure.
++            $this->qaInvalidated=true;$this->qaWriteSnapshot=null;
++            $vars=$this->getGDOVars();
++            $vars['sess_user']=null;$vars['sess_data']=null;$vars['sess_token']=null;
++            $this->setGDOVars($vars,false);
++            if (self::$INSTANCE === $this) self::$INSTANCE=null;
++            try {$db->rollback();} catch (\Throwable $rollbackError) {
++                throw new \RuntimeException('QA rollback outcome unknown',503);
++            }
++            throw $e;
++        }
++    }
++
+ 	final public const DUMMY_COOKIE_EXPIRES = 300;
+ 	final public const DUMMY_COOKIE_CONTENT = 'GDO_like_16_byte';
+ 

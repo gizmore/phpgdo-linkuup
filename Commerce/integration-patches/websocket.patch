@@ -1,0 +1,600 @@
+diff --git a/INTEGRATION.md b/INTEGRATION.md
+new file mode 100644
+index 0000000..522c136
+--- /dev/null
++++ b/INTEGRATION.md
+@@ -0,0 +1,26 @@
++# Lokale Session-/WebSocket-Integration – noch kein Live-Release
++
++Abhängigkeit: Session-Branch mit sess_auth, InnoDB, ungecachten Sessions und
++SessionConflict; Login-Branch ruft authenticate bei Login und Logout auf.
++Bindung liegt im WeakMap pro Verbindung statt am gemeinsam gecachten Userobjekt.
++Vor Dispatch und nach Sessioncommit werden Session, Authgeneration, Ablauf und
++Benutzerlöschung frisch geprüft. Explizite Login-/Logout-/Gastantworten aktualisieren
++die Bindung. Direkte GWS_Message-Antworten werden bis nach commit gepuffert (64KiB),
++bei Fehler verworfen und die Verbindung geschlossen. Eingangsframes maximal128KiB.
++Payload-/Hexdump-Ausgaben sind aus den angepassten Pfaden entfernt.
++
++Nachweise:15 isolierte Binding-/Antwortpuffertests. Zusätzlich echter
++GWS_Server::onBinaryMessage mit realer Sessionklasse und Testdatenbank, synthetischem
++Transport/Handler und vereinfachtem UI-reset: gültige Antwort nachcommit,
++Widerruf während Dispatch verwirft Erfolgsantwort und schließt Verbindung.
++Kein echter TCP-/Browser-Anmeldeablauf oder vollständiger Fremdmodultest.
++
++Grenzen: GWS_Global-Broadcasts/seitliche Sends anderer Module werden nicht durch
++GWS_Message gepuffert. Vorher ausgeführte Fachaktionen sind nicht pauschal rückrollbar.
++GWS_Global erlaubt bislang nur eine aktive Verbindung je Nutzer; die neue
++Verbindungsbindung macht daraus noch keinen Mehrgerätebetrieb. Authgeneration
++behebt nicht allein Sessionfixation durch wiederverwendete Cookie-Tokens.
++Bestehende Tabellen wurden nicht migriert; keine Dienste gestartet/neugestartet.
++
++## Aktualisierung 07.11.2026, Abschlussprüfung6014
++Tatsächliche App-Auth-/WS-Services im Chromium-Testadapter mit echter GDO-HTTP- und TCP-WS-Laufzeit bestehen nun: Mitgliedsanmeldung, Cookie-Rotation, Socketauthentifizierung, HTTP-Logout, Ablehnung des alten offenen Sockets, Wiederanmeldung und AuthSrvc-Logout. Kein vollständiger Angular-SPA-/OAuth-/Registrierungstest. Migration/Wiederholung/Restore auf synthetischem Altschema bestanden; kein Produktionsrestore. Details und Grenzen im Backend Commerce/INTEGRATION-REVIEW.md.
+diff --git a/Server/GWS_Global.php b/Server/GWS_Global.php
+index 44f700a..429fe50 100644
+--- a/Server/GWS_Global.php
++++ b/Server/GWS_Global.php
+@@ -1,143 +1,71 @@
+ <?php
+ namespace GDO\Websocket\Server;
+-
+-use GDO\Core\Logger;
+ use GDO\User\GDO_User;
+ 
++/** Multiple independent sockets per user; each send revalidates its session. */
+ final class GWS_Global
+ {
++    public static $USERS = [];
++    // Compatibility view for existing modules: most recently registered socket.
++    public static $CONNECTIONS = [];
++    private static array $sockets = [];
++    private const MAX_SOCKETS = 5;
+ 
+-	/**
+-	 * @var GDO_User[]
+-	 */
+-	public static $USERS = [];
+-	public static $CONNECTIONS = [];
+-
+-	##################
+-	### GDO_User cache ###
+-	##################
+-	public static function addUser(GDO_User $user, $conn)
+-	{
+-// 		Logger::logWebsocket("GWS_Global.addUser({$user->getID()})");
+-		if ($user->isPersisted())
+-		{
+-			if (isset(self::$CONNECTIONS[$user->getID()]))
+-			{
+-				if ($conn !== self::$CONNECTIONS[$user->getID()])
+-				{
+-					GWS_Global::disconnect($user, t('err_was_already_connected'));
+-				}
+-			}
+-			self::$USERS[$user->getID()] = $user;
+-			self::$CONNECTIONS[$user->getID()] = $conn;
+-			GWS_Server::instance()->getHandler()->connect($user);
+-		}
+-	}
+-
+-	public static function disconnect(GDO_User $user, $reason = 'no_reason')
+-	{
+-		if ($conn = @self::$CONNECTIONS[$user->getID()])
+-		{
+-			GWS_Server::instance()->getHandler()->disconnect($user);
+-			$conn->send('CLOSE:' . $reason);
+-			unset(self::$USERS[$user->getID()]);
+-			unset(self::$CONNECTIONS[$user->getID()]);
+-			$conn->close();
+-		}
+-	}
+-
+-	public static function send(GDO_User $user, $payload)
+-	{
+-		if ($conn = @self::$CONNECTIONS[$user->getID()])
+-		{
+-			Logger::logWebsocket(sprintf('%s << %s', $user->renderUserName(), $payload));
+-			$conn->send($payload);
+-			return true;
+-		}
+-		else
+-		{
+-			Logger::logError(sprintf('GDO_User %s not connected.', $user->renderUserName()));
+-			return false;
+-		}
+-	}
+-
+-	public static function removeUser(GDO_User $user, $reason = 'NO_REASON')
+-	{
+-		$key = $user->getID();
+-		if (isset(self::$USERS[$key]))
+-		{
+-			unset(self::$USERS[$key]);
+-			unset(self::$CONNECTIONS[$key]);
+-// 			GWS_Global::disconnect($user, $reason);
+-		}
+-	}
+-
+-	public static function getOrLoadUserById($id)
+-	{
+-		if ($user = self::getUserByID($id))
+-		{
+-			return $user;
+-		}
+-		return self::loadUserById($id);
+-	}
+-
+-	/**
+-	 * @param int $id
+-	 *
+-	 * @return GDO_User
+-	 */
+-	public static function getUserByID($id)
+-	{
+-		return @self::$USERS[$id];
+-	}
+-
+-	public static function loadUserById($id)
+-	{
+-		if ($user = GDO_User::getById($id))
+-		{
+-			self::$USERS[$id] = $user;
+-		}
+-		return $user;
+-	}
+-
+-	public static function broadcast($payload)
+-	{
+-		Logger::logWebsocket(sprintf('!BROADCAST! << %s', $payload));
+-		foreach (self::$USERS as $user)
+-		{
+-			self::send($user, $payload);
+-		}
+-		return true;
+-	}
+-
+-	public static function broadcastBinary($payload)
+-	{
+-		Logger::logWebsocket(sprintf('Broadcast to %d users.', count(self::$USERS)));
+-		GWS_Message::hexdump($payload);
+-		foreach (self::$USERS as $user)
+-		{
+-			self::sendBinary($user, $payload);
+-		}
+-		return true;
+-	}
+-	##################
+-	### Connection ###
+-	##################
+-
+-	public static function sendBinary(GDO_User $user, $payload)
+-	{
+-		if ($conn = @self::$CONNECTIONS[$user->getID()])
+-		{
+-			Logger::logWebsocket(sprintf('%s << BIN', $user->renderUserName()));
+-			GWS_Message::hexdump($payload);
+-			$conn->sendBinary($payload);
+-			return true;
+-		}
+-		else
+-		{
+-			Logger::logWebsocket(sprintf('GDO_User %s not connected.', $user->renderUserName()));
+-			return false;
+-		}
+-	}
+-
++    public static function addUser(GDO_User $user, $conn)
++    {
++        if (!$user->isPersisted()) return;
++        $id=$user->getID(); $key=spl_object_id($conn);
++        if (count(self::$sockets[$id]??[])>=self::MAX_SOCKETS && !isset(self::$sockets[$id][$key])) {
++            throw new \RuntimeException('Too many connections',429);
++        }
++        $first=empty(self::$sockets[$id]);
++        self::$sockets[$id][$key]=$conn; self::$USERS[$id]=$user; self::$CONNECTIONS[$id]=$conn;
++        if ($first) GWS_Server::instance()->getHandler()->connect($user);
++    }
++    /** Returns true only when the last registered socket was removed. */
++    public static function removeConnection(GDO_User $user, $conn): bool
++    {
++        $id=$user->getID(); $key=spl_object_id($conn);
++        $known=isset(self::$sockets[$id][$key]);
++        if (!$known && (self::$CONNECTIONS[$id]??null)!==$conn) return false;
++        unset(self::$sockets[$id][$key]);
++        if (!empty(self::$sockets[$id])) {
++            self::$CONNECTIONS[$id]=end(self::$sockets[$id]); return false;
++        }
++        unset(self::$sockets[$id],self::$CONNECTIONS[$id],self::$USERS[$id]);return true;
++    }
++    public static function disconnect(GDO_User $user, $reason='no_reason')
++    {
++        $id=$user->getID();$connections=self::$sockets[$id]??[];
++        if (!$connections && isset(self::$CONNECTIONS[$id])) $connections=[self::$CONNECTIONS[$id]];
++        if (!$connections) return;
++        self::removeUser($user);GWS_Server::instance()->getHandler()->disconnect($user);
++        foreach($connections as $conn){$conn->setUser(false);$conn->close();}
++    }
++    public static function removeUser(GDO_User $user, $reason='NO_REASON')
++    {
++        $id=$user->getID();unset(self::$USERS[$id],self::$CONNECTIONS[$id],self::$sockets[$id]);
++    }
++    private static function deliver(GDO_User $user,$payload,bool $binary): bool
++    {
++        $id=$user->getID();$sent=false;
++        $connections=self::$sockets[$id]??[];
++        if (!$connections && isset(self::$CONNECTIONS[$id])) $connections=[self::$CONNECTIONS[$id]];
++        foreach($connections as $conn){
++            if (!GWS_Server::instance()->connectionAuthorized($conn)) {
++                if(self::removeConnection($user,$conn))GWS_Server::instance()->getHandler()->disconnect($user);
++                $conn->setUser(false);$conn->close();continue;
++            }
++            if($binary)$conn->sendBinary($payload);else $conn->send($payload);
++            $sent=true;
++        }
++        return $sent;
++    }
++    public static function send(GDO_User $user,$payload){return self::deliver($user,$payload,false);}
++    public static function sendBinary(GDO_User $user,$payload){return self::deliver($user,$payload,true);}
++    public static function broadcast($payload){foreach(self::$USERS as $user)self::send($user,$payload);return true;}
++    public static function broadcastBinary($payload){foreach(self::$USERS as $user)self::sendBinary($user,$payload);return true;}
++    public static function getOrLoadUserById($id){return self::getUserByID($id)?:self::loadUserById($id);}
++    public static function getUserByID($id){return self::$USERS[$id]??null;}
++    public static function loadUserById($id){if($u=GDO_User::getById($id))self::$USERS[$id]=$u;return $u;}
+ }
+diff --git a/Server/GWS_Message.php b/Server/GWS_Message.php
+index 798cb77..093cc42 100644
+--- a/Server/GWS_Message.php
++++ b/Server/GWS_Message.php
+@@ -15,6 +15,20 @@ final class GWS_Message
+ 	private $mid = 0;
+ 	private $data;
+ 	private $index = 0;
++    private bool $deferred = false;
++    private array $pendingReplies = [];
++    private int $pendingBytes = 0;
++    public function deferReplies(): void { $this->deferred=true; }
++    public function discardReplies(): void { $this->pendingReplies=[];$this->pendingBytes=0;$this->deferred=false; }
++    public function flushReplies(): void {
++        $replies=$this->pendingReplies;$this->discardReplies();
++        foreach($replies as [$binary,$payload]) $binary?$this->from->sendBinary($payload):$this->from->send($payload);
++    }
++    private function deliver(bool $binary,string $payload) {
++        if(!$this->deferred) return $binary?$this->from->sendBinary($payload):$this->from->send($payload);
++        if($this->pendingBytes+strlen($payload)>65536) throw new \RuntimeException('Reply buffer exceeded',503);
++        $this->pendingReplies[]=[$binary,$payload];$this->pendingBytes+=strlen($payload);return true;
++    }
+ 
+ 	public function __construct($binary, $from)
+ 	{
+@@ -69,8 +83,7 @@ final class GWS_Message
+ 	public function replyText($command, string $data = '')
+ 	{
+ 		$payload = $this->isSync() > 0 ? "$command:MID:$this->mid:$data" : "$command:$data";
+-		Logger::logWebsocket(sprintf('%s << %s', $this->user() ? $this->user()->renderUserName() : '???', $payload));
+-		return $this->from->send($payload);
++		return $this->deliver(false,$payload);
+ 	}
+ 
+ 	##############
+@@ -89,7 +102,6 @@ final class GWS_Message
+ 
+ 	public function replyErrorMessage($code, $message)
+ 	{
+-		Logger::logWebsocket(sprintf('%s: ERROR - %s', ($this->user() ? $this->user()->renderUserName() : '???'), $message));
+ 		return $this->replyBinary(0x0000, WS::wr16($code) . WS::wrString($message));
+ 	}
+ 
+@@ -104,13 +116,11 @@ final class GWS_Message
+ 	 */
+ 	public function replyBinary($command, $data = '')
+ 	{
+-		Logger::logWebsocket(sprintf('%s << BIN', $this->user() ? $this->user()->renderUserName() : '???'));
+ 		$command |= $this->mid > 0 ? 0x8000 : 0; # Set LSB to mark MID reply sync msg mode.
+ 		$payload = $this->write16($command);
+ 		$payload .= $this->mid > 0 ? $this->write24($this->mid) : '';
+ 		$payload .= $data;
+-		GWS_Message::hexdump($payload);
+-		return $this->from->sendBinary($payload);
++		return $this->deliver(true,$payload);
+ 	}
+ 
+ 	public function write16($value) { return self::wrN(2, $value); }
+diff --git a/Server/GWS_Server.php b/Server/GWS_Server.php
+index 987734c..c8f5552 100644
+--- a/Server/GWS_Server.php
++++ b/Server/GWS_Server.php
+@@ -171,48 +171,78 @@ final class GWS_Server implements MessageComponentInterface
+ 
+ 	public function onMessage(ConnectionInterface $from, $data)
+ 	{
+-		die('NON BINARY MESSAGE NOT SUPPORTED ANYMORE');
++		// Unsupported input must not terminate the shared server process.
++		$from->close();
+ 	}
+ 
+-	public function onBinaryMessage(ConnectionInterface $from, string $data)
+-	{
+-		printf("%s >> BIN (%d bytes)\n", $from->user() ? $from->user()->renderUserName() : '???', strlen($data));
+-		GDT_IP::$CURRENT = $from->getRemoteAddress();
+-		Application::updateTime();
+-		echo GWS_Message::hexdump($data);
+-		$message = new GWS_Message($data, $from);
+-		$message->readCmd();
+-		if (!$from->user())
+-		{
+-			$this->onAuthBinary($message);
+-			GDO_Session::commit();
+-		}
+-		else
+-		{
+-			try
+-			{
+-				$app = Application::$INSTANCE;
+-				$app->reset();
+-				$_REQUEST = [];
+-				$_FILES = [];
+-				/**
+-				 * @var GDO_User $user
+-				 */
+-				$user = $from->user();
+-				GDO_User::setCurrent($user);
+-				$sessid = $user->tempGet('sess_id');
+-				GDO_Session::reloadID($sessid);
+-				Logger::init($user->renderUserName(), Logger::ALL & ~Logger::BUFFERED);
+-				$this->handler->executeMessage($message);
+-				GDO_Session::commit();
+-			}
+-			catch (Throwable $ex)
+-			{
+-				Logger::logWebsocket(Debug::backtraceException($ex, false));
+-				$message->replyErrorMessage($message->cmd(), $ex->getMessage());
+-			}
+-		}
+-	}
++    private ?\WeakMap $sessionBindings = null;
++    public function bindSession($conn, GDO_Session $session): void {
++        $this->sessionBindings ??= new \WeakMap();
++        $this->sessionBindings[$conn]=GWS_SessionBinding::snapshot($session->getGDOVars());
++    }
++    /** Read-only check for broadcasts; never replace the current dispatch identity. */
++    public function connectionAuthorized($conn): bool {
++        try {
++            $binding=$this->sessionBindings[$conn]??null;
++            if(!$binding)return false;
++            $db=Database::instance()->getLink();if(!($db instanceof \mysqli))return false;
++            $q=$db->prepare('SELECT * FROM gdo_session WHERE sess_id=?');
++            $id=$binding['sess_id'];$q->bind_param('s',$id);$q->execute();$row=$q->get_result()->fetch_assoc();$q->close();
++            if($row)$row=array_map(static fn($v)=>$v===null?null:(string)$v,$row);
++            $user=null;
++            if($row && $row['sess_user']!==null){
++                $q=$db->prepare('SELECT user_id,user_type,user_deleted FROM gdo_user WHERE user_id=?');
++                $uid=$row['sess_user'];$q->bind_param('s',$uid);$q->execute();$user=$q->get_result()->fetch_assoc();$q->close();
++            }
++            GWS_SessionBinding::verify($binding,$row,$user,GDO_SESS_TIME);return true;
++        }catch(Throwable $e){return false;}
++    }
++    private function verifiedSession($conn): GDO_Session {
++        $binding=$this->sessionBindings[$conn]??null;
++        if(!$binding)throw new \RuntimeException('Session unavailable',403);
++        $session=GDO_Session::reloadID($binding['sess_id']);
++        $row=$session?->getGDOVars();$user=null;
++        if($row && $row['sess_user']!==null){
++            $db=Database::instance()->getLink();
++            if(!($db instanceof \mysqli))throw new \RuntimeException('Database unavailable',503);
++            $q=$db->prepare('SELECT * FROM gdo_user WHERE user_id=?');$uid=$row['sess_user'];$q->bind_param('s',$uid);$q->execute();$user=$q->get_result()->fetch_assoc();
++        }
++        GWS_SessionBinding::verify($binding,$row,$user,GDO_SESS_TIME);
++        // Prepared mysqli results use native numbers; GDO variables are nullable strings.
++        if ($user) $user=array_map(static fn($value)=>$value===null?null:(string)$value,$user);
++        $freshUser=$user?GDO_User::entity($user)->setPersisted():GDO_User::ghost();
++        GDO_User::setCurrent($freshUser);$conn->setUser($freshUser);
++        return $session;
++    }
++    public function onBinaryMessage(ConnectionInterface $from, string $data)
++    {
++        GDT_IP::$CURRENT=$from->getRemoteAddress();Application::updateTime();
++        $message=new GWS_Message($data,$from);$message->deferReplies();
++        try {
++            if(strlen($data)>131072)throw new \RuntimeException('Frame too large',413);
++            $message->readCmd();
++            if(!$from->user()) {$this->onAuthBinary($message);}
++            else {
++                Application::$INSTANCE->reset();$_REQUEST=[];$_FILES=[];
++                $this->verifiedSession($from);
++                $this->handler->executeMessage($message);
++            }
++            if(!GDO_Session::commit())throw new \RuntimeException('Session persistence failed',503);
++            $this->verifiedSession($from);
++            $message->flushReplies();
++        } catch(Throwable $error) {
++            $message->discardReplies();
++            // No payload, cookie, password or exception details in replies/logs.
++            try {$message->replyErrorMessage(0x0003,'Session changed or unavailable; reconnect and check operation status.');} finally {
++                if($user=$from->user()) {
++                    if(GWS_Global::removeConnection($user,$from))$this->handler->disconnect($user);
++                }
++                if($this->sessionBindings)unset($this->sessionBindings[$from]);
++                GDO_Session::$INSTANCE=null;GDO_User::setCurrent(GDO_User::ghost());
++                $from->setUser(false);$from->close();
++            }
++        }
++    }
+ 
+ 	public function onAuthBinary(GWS_Message $message)
+ 	{
+@@ -238,7 +268,7 @@ final class GWS_Server implements MessageComponentInterface
+ 			# Connect user
+ 			$conn = $message->conn();
+ 			$conn->setUser($user);
+-			$user->tempSet('sess_id', GDO_Session::instance()->getID());
++			$this->bindSession($conn, GDO_Session::instance());
+ 			$message->replyText('AUTH', json_encode(Module_Core::instance()->gdoUserJSON()));
+ 			# Add with event
+ 			GWS_Global::addUser($user, $conn);
+@@ -247,12 +277,16 @@ final class GWS_Server implements MessageComponentInterface
+ 
+ 	public function onClose(ConnectionInterface $conn)
+ 	{
++        if($this->sessionBindings)unset($this->sessionBindings[$conn]);
+ 		Logger::logCron(sprintf('GWS_Server::onClose()'));
+ 		if ($user = $conn->user())
+ 		{
+-			$this->handler->disconnect($user);
++			// A delayed close from a replaced socket must not disconnect its successor.
++			if (GWS_Global::removeConnection($user, $conn))
++			{
++				$this->handler->disconnect($user);
++			}
+ 			$conn->setUser(false);
+-			GWS_Global::removeUser($user);
+ 		}
+ 	}
+ 
+diff --git a/Server/GWS_SessionBinding.php b/Server/GWS_SessionBinding.php
+new file mode 100644
+index 0000000..7ab340b
+--- /dev/null
++++ b/Server/GWS_SessionBinding.php
+@@ -0,0 +1,19 @@
++<?php
++declare(strict_types=1);
++namespace GDO\Websocket\Server;
++/** Per-connection immutable authentication snapshot, never stored on a user. */
++final class GWS_SessionBinding
++{
++    public static function snapshot(array $row): array {
++        foreach(['sess_id','sess_token','sess_auth'] as $key)if(!is_string($row[$key]??null)||$row[$key]==='')throw new \RuntimeException('Session unavailable',403);
++        return array_intersect_key($row,array_flip(['sess_id','sess_token','sess_auth','sess_user']));
++    }
++    public static function verify(array $binding,?array $session,?array $user,int $maxAge=0): void {
++        if(!$session)throw new \RuntimeException('Session revoked',403);
++        foreach(['sess_id','sess_token','sess_auth','sess_user'] as $key){
++            if(!array_key_exists($key,$session)||!array_key_exists($key,$binding)||$binding[$key]!==$session[$key])throw new \RuntimeException('Session revoked',403);
++        }
++        if($maxAge>0){$time=strtotime(($session['sess_time']??'').' UTC');if($time===false||$time<time()-$maxAge)throw new \RuntimeException('Session expired',403);}
++        if($session['sess_user']!==null && (!$user||!array_key_exists('user_deleted',$user)||(string)$user['user_id']!==$session['sess_user']||($user['user_deleted']??null)!==null))throw new \RuntimeException('Account unavailable',403);
++    }
++}
+diff --git a/Websocket/GWS_AsGuest.php b/Websocket/GWS_AsGuest.php
+index 55250ee..2adcb70 100644
+--- a/Websocket/GWS_AsGuest.php
++++ b/Websocket/GWS_AsGuest.php
+@@ -22,7 +22,7 @@ final class GWS_AsGuest extends GWS_CommandForm
+ 		$user = GDO_Session::instance()->getUser();
+ 		GDO_User::setCurrent($user);
+ 		GWS_Global::addUser($user, $msg->conn());
+-		$user->tempSet('sess_id', GDO_Session::instance()->getID());
++		\GDO\Websocket\Server\GWS_Server::instance()->bindSession($msg->conn(), GDO_Session::instance());
+ 		$msg->conn()->setUser($user);
+ 		$msg->replyText($msg->cmd(), json_encode(Module_Core::instance()->gdoUserJSON()));
+ 	}
+diff --git a/Websocket/GWS_Login.php b/Websocket/GWS_Login.php
+index 1e255b2..21bd462 100644
+--- a/Websocket/GWS_Login.php
++++ b/Websocket/GWS_Login.php
+@@ -21,7 +21,7 @@ final class GWS_Login extends GWS_CommandForm
+ 	{
+ 		$user = GDO_Session::user();
+ 		GDO_User::setCurrent($user);
+-		$user->tempSet('sess_id', GDO_Session::instance()->getID());
++		\GDO\Websocket\Server\GWS_Server::instance()->bindSession($msg->conn(), GDO_Session::instance());
+ 		$user->recache();
+ 		$msg->conn()->setUser($user);
+ 		GWS_Global::addUser($user, $msg->conn());
+diff --git a/Websocket/GWS_Logout.php b/Websocket/GWS_Logout.php
+index 7161c12..852fafb 100644
+--- a/Websocket/GWS_Logout.php
++++ b/Websocket/GWS_Logout.php
+@@ -18,14 +18,16 @@ final class GWS_Logout extends GWS_Command
+ 	{
+ 		$sessid = GDO_Session::instance()->getID();
+ 
+-		GWS_Server::instance()->onLogout($msg->user());
+-		GWS_Global::removeUser($msg->user());
++		if (GWS_Global::removeConnection($msg->user(), $msg->conn()))
++		{
++			GWS_Server::instance()->onLogout($msg->user());
++		}
+ 		Logout::make()->execute();
+ 
+ 		$user = GDO_User::current();
+ 		$msg->conn()->setUser($user);
+ 
+-		$user->tempSet('sess_id', $sessid);
++		GWS_Server::instance()->bindSession($msg->conn(), GDO_Session::instance());
+ // 		$user->recache();
+ 
+ 		$msg->replyText($msg->cmd(), json_encode(Module_Core::instance()->gdoUserJSON()));
+diff --git a/Websocket/GWS_Profile.php b/Websocket/GWS_Profile.php
+index 6e97746..1d05956 100644
+--- a/Websocket/GWS_Profile.php
++++ b/Websocket/GWS_Profile.php
+@@ -78,7 +78,6 @@ final class GWS_Profile extends GWS_Command
+ 		{
+ 			return WS::wr8(0) . WS::wrString($reason);
+ 		}
+-        GWS_Message::hexdump($gdt->renderBinary());
+ 		return WS::wr8(1) . $gdt->renderBinary();
+ 	}
+ 
+diff --git a/Websocket/GWS_Register.php b/Websocket/GWS_Register.php
+index 14366f4..f0146d5 100644
+--- a/Websocket/GWS_Register.php
++++ b/Websocket/GWS_Register.php
+@@ -26,7 +26,7 @@ final class GWS_Register extends GWS_CommandForm
+ 		if (!Module_Register::instance()->cfgEmailActivation())
+ 		{
+ 			$user = GDO_User::current();
+-			$user->tempSet('sess_id', GDO_Session::instance()->getID());
++			\GDO\Websocket\Server\GWS_Server::instance()->bindSession($msg->conn(), GDO_Session::instance());
+ 			$msg->conn()->setUser($user);
+ 			GWS_Global::addUser($user, $msg->conn());
+ 		}
+diff --git a/gpt/Simion/2026-11-07.log b/gpt/Simion/2026-11-07.log
+new file mode 100644
+index 0000000..be432e4
+--- /dev/null
++++ b/gpt/Simion/2026-11-07.log
+@@ -0,0 +1,6 @@
++
++[2026-11-07T01:35:10.438114+01:00] Auftrag6003 – lokale Integration, nicht freigegeben. Geprüft:48DB,15WS-Binding/Puffer,9Sessionguard-Zusatzfälle, echter GDO-CSRF/Authwechsel und WS-Dispatch mit synthetischem Transport; Syntax/Diff bestanden. Dateien: geänderter Modulcode und Tests im zugehörigen Commit. Kein Push/Deploy. Offen: kompletter Browser-/Loginflow, Cookie-Rotation, Schemaübernahme/Restore, Broadcast-Grenzen. Nächster Schritt Simion-Terminal – isolierter kompletter App-Aufbau.
++
++[2026-11-07T02:12:43.476773+01:00] Auftrag6014 lokal geprüft, Review vorbereitet
++HTTP-Mitgliedsanmeldung/Cookie-Rotation und echter TCP-WebSocket mit tatsächlichen App-Services im Chromium-Testadapter: Login, Logout-Widerruf, Relogin bestanden. Zwei getrennte Browserkontexte: Bestellung750Cent, automatisches Betreiberpolling, Lieferung,Rest500Cent/Reservierung0. Migration zweimal plus Restore synthetischer Daten bestanden. 11App-/48DB-/15WS-Bindingtests sowie Guard/CSRF und Rechte-/Domänentests bestanden. WS: frische SQL-Werte GDO-konform, alter Socket entfernt Nachfolger nicht; Textframe beendet nicht Prozess. Reproduzierbare Modulpatches gegen exakte Basen geprüft. Details Backend Commerce/INTEGRATION-REVIEW.md. Kein kompletter SPA/OAuth/Registrierungs-, öffentlicher Proxy-, Echtgeld- oder Produktionsinstallationsnachweis.
++Nächster Schritt: Simion-Terminal – Draft-PRs mit geprüften Commits aktualisieren; kein Merge/Deploy.
+diff --git a/tests/session-boundary.php b/tests/session-boundary.php
+new file mode 100644
+index 0000000..221a1ca
+--- /dev/null
++++ b/tests/session-boundary.php
+@@ -0,0 +1,30 @@
++<?php
++declare(strict_types=1);
++if(PHP_SAPI!=='cli')exit(1);
++require __DIR__.'/../Server/GWS_SessionBinding.php';
++require __DIR__.'/../Server/GWS_Message.php';
++use GDO\Websocket\Server\GWS_SessionBinding as Binding;
++use GDO\Websocket\Server\GWS_Message as Message;
++$checks=0;
++function check($v){global $checks;if(!$v)throw new RuntimeException('Assertion failed');$checks++;}
++function denied(callable $f){try{$f();throw new LogicException('Unexpected acceptance');}catch(RuntimeException $e){check(in_array($e->getCode(),[403,503],true));}}
++$session=['sess_id'=>'1','sess_user'=>'7','sess_token'=>'synthetic-A','sess_auth'=>str_repeat('a',32),'sess_time'=>gmdate('Y-m-d H:i:s')];
++$user=['user_id'=>'7','user_deleted'=>null];
++$a=Binding::snapshot($session);Binding::verify($a,$session,$user,3600);check(true);
++$b=$session;$b['sess_id']='2';$b['sess_token']='synthetic-B';$boundB=Binding::snapshot($b);
++$revoked=$session;$revoked['sess_user']=null;$revoked['sess_auth']=str_repeat('b',32);
++denied(fn()=>Binding::verify($a,$revoked,$user));
++Binding::verify($boundB,$b,$user);check(true);
++$relogin=$session;$relogin['sess_auth']=str_repeat('c',32);denied(fn()=>Binding::verify($a,$relogin,$user));
++$deleted=$user;$deleted['user_deleted']='2026-01-01';denied(fn()=>Binding::verify($a,$session,$deleted));
++denied(fn()=>Binding::verify($a,null,$user));
++$expired=$session;$expired['sess_time']='2000-01-01';denied(fn()=>Binding::verify($a,$expired,$user,3600));
++$foreign=$user;$foreign['user_id']='8';denied(fn()=>Binding::verify($a,$session,$foreign));
++$guest=$session;$guest['sess_user']=null;Binding::verify(Binding::snapshot($guest),$guest,null);check(true);
++$conn=new class {public array $sent=[];public function send($p){$this->sent[]=['text',$p];return true;}public function sendBinary($p){$this->sent[]=['binary',$p];return true;}public function user(){return false;}};
++$m=new Message("\x01\x05",$conn);$m->readCmd();$m->deferReplies();$m->replyText(261,'first');$m->replyBinary(261,'second');check($conn->sent===[]);
++$m->discardReplies();$m->flushReplies();check($conn->sent===[]);
++$m->deferReplies();$m->replyText(261,'first');$m->replyBinary(261,'second');$m->flushReplies();check(count($conn->sent)===2&&$conn->sent[0][0]==='text'&&$conn->sent[1][0]==='binary');
++$m->flushReplies();check(count($conn->sent)===2);
++$m->deferReplies();denied(fn()=>$m->replyText(261,str_repeat('x',65537)));$m->discardReplies();check(count($conn->sent)===2);
++echo json_encode(['checks'=>$checks,'scope'=>'Binding comparisons and actual message buffering with synthetic transport; no live socket, full login or atomic domain-dispatch proof.']),"\n";

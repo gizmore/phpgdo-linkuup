@@ -1,0 +1,57 @@
+<?php
+require __DIR__.'/../Commerce/Ordering.php';
+use GDO\LinkUUp\Commerce\Ordering as O;
+$n=0;
+function check($v,$m){global $n;if(!$v)throw new RuntimeException($m);$n++;}
+function rejects($f){try{$f();}catch(Throwable $e){check(true,'reject');return;}throw new RuntimeException('Expected rejection');}
+check(O::cents('20')===2000,'euros');check(O::cents('0,01')===1,'cent');check(O::cents('9.5')===950,'decimal');
+foreach(['-1','1e2','1.001','NaN','1,2.3','9999999',''] as $v)rejects(fn()=>O::cents($v));
+$row=['id'=>'food','name'=>'Food','category'=>'Food','description'=>'Test','allergens'=>'Milk','price'=>'6.50','available'=>true];
+$s=['orderingEnabled'=>true,'tableCount'=>20,'venue'=>['owner'=>'owner','id'=>'venue'],'menu'=>O::menu([$row]),'orders'=>[]];
+$r=['key'=>'unique-order-123','table'=>'12','lines'=>[['id'=>'food','qty'=>2,'priceCents'=>1]],'expectedTotal'=>1300];
+$o=O::place($s,'guest',$r);check($o['totalCents']===1300,'server prices');check($o['payment']==='simulated_reserved','reserved');
+check(O::place($s,'guest',$r)['id']===$o['id']&&count($s['orders'])===1,'idempotent');
+rejects(function()use(&$s,$r){$r['table']='13';O::place($s,'guest',$r);});
+rejects(function()use(&$s,$o){O::transition($s,'other',$o['id'],'accepted');});
+rejects(function()use(&$s,$o){O::transition($s,'owner',$o['id'],'delivered');});
+foreach(['accepted','preparing','delivered'] as $t)O::transition($s,'owner',$o['id'],$t);
+check($s['orders'][0]['payment']==='simulated_captured','capture');O::transition($s,'owner',$o['id'],'delivered');check(count($s['orders'])===1,'repeat delivery');
+O::transition($s,'owner',$o['id'],'refunded');check($s['orders'][0]['payment']==='simulated_refunded','refund');
+rejects(function()use(&$s,$o){O::message($s,'intruder',$o['id'],'hello');});
+O::message($s,'guest',$o['id'],'hello');check(count($s['orders'][0]['messages'])===1,'message');
+foreach([0,-1,21,1.5,'2'] as $q)rejects(function()use(&$s,$r,$q){$r['key']=bin2hex(random_bytes(10));$r['lines'][0]['qty']=$q;O::place($s,'guest',$r);});
+rejects(fn()=>O::menu([$row,$row]));
+rejects(function()use(&$s,$r){$r['key']='another-order-123';$r['expectedTotal']=1;O::place($s,'guest',$r);});
+$r['key']='cancellation-123';$o=O::place($s,'guest',$r);O::transition($s,'owner',$o['id'],'cancelled');check($s['orders'][1]['payment']==='simulated_released','release');
+rejects(function()use(&$s){O::tables($s,'guest',10);});
+rejects(function()use(&$s){O::tables($s,'other-owner',10);});
+rejects(function()use(&$s){O::tables($s,'owner',0);});
+O::tables($s,'owner',5);check($s['tableCount']===5,'count saved');
+rejects(function()use(&$s,$r){$r['key']='inactive-table-123';O::place($s,'guest',$r);});
+$r['key']='active-table-123';$r['table']='5';$active=O::place($s,'guest',$r);
+rejects(function()use(&$s){O::tables($s,'owner',4);});
+check($s['tableCount']===5,'failed reduction atomic');
+O::transition($s,'owner',$active['id'],'cancelled');O::tables($s,'owner',4);
+check($s['orders'][2]['table']==='5','history preserved');
+$foreign=$s;$foreign['venue']=['id'=>'foreign','owner'=>'other-owner'];
+rejects(function()use(&$foreign,$o){O::transition($foreign,'other-owner',$o['id'],'accepted');});
+rejects(function()use(&$foreign,$o){O::message($foreign,'other-owner',$o['id'],'hello');});
+$s['menuReady']=false;$s['tablesReady']=false;O::publication($s,'owner',false);
+rejects(function()use(&$s){O::publication($s,'guest',true);});
+rejects(function()use(&$s){O::publication($s,'owner',true);});
+rejects(function()use(&$s,$r){$r['key']='paused-order-123';$r['table']='1';O::place($s,'guest',$r);});
+$s['menuReady']=true;O::tables($s,'owner',20);O::publication($s,'owner',true);check($s['orderingEnabled'],'explicit publish');
+$r['key']='published-order-123';$r['table']='1';$o=O::place($s,'guest',$r);O::publication($s,'owner',false);
+check(O::place($s,'guest',$r)['id']===$o['id'],'retry of existing order while paused');
+O::transition($s,'owner',$o['id'],'accepted');check(end($s['orders'])['status']==='accepted','existing order handled while paused');
+echo "$n assertions passed\n";
+
+$h=['orderingEnabled'=>true,'tableCount'=>20,'venue'=>['owner'=>'owner','id'=>'audit'],'menu'=>O::menu([$row]),'orders'=>[]];
+$r['key']='history-order-123';$r['table']='1';$r['expectedTotal']=1300;
+$a=O::place($h,'guest',$r);
+check(count($a['history'])===1 && $a['history'][0]['actor']==='guest','initial actor');
+foreach(['accepted','preparing','delivered'] as $t)O::transition($h,'owner',$a['id'],$t);
+$before=$h;O::transition($h,'owner',$a['id'],'delivered');check($h===$before,'retry no extra history');
+rejects(function()use(&$h,$a){O::transition($h,'owner',$a['id'],'cancelled');});check($h===$before,'failed transition unchanged');
+check(count($h['orders'][0]['history'])===4 && $h['orders'][0]['history'][3]['actor']==='owner','history attributed');
+echo "Total including history: $n assertions passed\n";

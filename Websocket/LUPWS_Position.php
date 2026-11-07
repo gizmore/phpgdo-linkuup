@@ -24,7 +24,9 @@ final class LUPWS_Position extends LUPWS_Command
 		$keypresses = $message->hasMore(2) ? $message->read16u() : 0;
 
 		LUP_Global::updateGPS($user, $lat, $lng);
-		\GDO\Maps\Module_Maps::instance()->recordKeypress($user, $keypresses);
+		$maps = \GDO\Maps\Module_Maps::instance();
+		// Optional analytics must not break position delivery on older Maps modules.
+		if (method_exists($maps, 'recordKeypress')) $maps->recordKeypress($user, $keypresses);
 		LUP_SignupGPS::updateGPS($user, $lat, $lng);
 
 		# Make user part rooms when not in range anymore

@@ -1,0 +1,36 @@
+diff --git a/Method/Form.php b/Method/Form.php
+index 7ccae1f..1106848 100644
+--- a/Method/Form.php
++++ b/Method/Form.php
+@@ -186,7 +186,7 @@ final class Form extends MethodForm
+ 			{
+ 				return $this->error('err_session_required');
+ 			}
+-			$session->saveVar('sess_user', $user->getID());
++			$session->authenticate($user->getID());
+ 			GDO_User::setCurrent($user);
+ 			if ($bindIP)
+ 			{
+diff --git a/Method/Logout.php b/Method/Logout.php
+index 9213cb2..aa38a5f 100644
+--- a/Method/Logout.php
++++ b/Method/Logout.php
+@@ -33,9 +33,7 @@ final class Logout extends Method
+ 		GDT_Hook::callHook('BeforeLogout', $user);
+ 		if ($session = GDO_Session::instance())
+ 		{
+-			$session->setVar('sess_user', null);
+-			$session->setVar('sess_data', null);
+-			$session->save();
++			$session->authenticate(null);
+ 		}
+ 		GDO_User::setCurrent(GDO_User::ghost());
+ 		GDT_Hook::callWithIPC('UserLoggedOut', $user);
+diff --git a/gpt/Simion/2026-11-07.log b/gpt/Simion/2026-11-07.log
+new file mode 100644
+index 0000000..f137168
+--- /dev/null
++++ b/gpt/Simion/2026-11-07.log
+@@ -0,0 +1,2 @@
++
++[2026-11-07T01:35:10.438114+01:00] Auftrag6003 – lokale Integration, nicht freigegeben. Geprüft:48DB,15WS-Binding/Puffer,9Sessionguard-Zusatzfälle, echter GDO-CSRF/Authwechsel und WS-Dispatch mit synthetischem Transport; Syntax/Diff bestanden. Dateien: geänderter Modulcode und Tests im zugehörigen Commit. Kein Push/Deploy. Offen: kompletter Browser-/Loginflow, Cookie-Rotation, Schemaübernahme/Restore, Broadcast-Grenzen. Nächster Schritt Simion-Terminal – isolierter kompletter App-Aufbau.

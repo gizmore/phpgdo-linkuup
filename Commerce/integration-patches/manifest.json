@@ -1,0 +1,33 @@
+{
+  "scope": "Review-only dependency patches; no automatic module installation",
+  "patches": [
+    {
+      "module": "core",
+      "base": "369144fe9547a467c5416c2a2cc9b16d5eabd78d",
+      "patch": "core.patch",
+      "sha256": "49b0e975332947292c2cf3020a919e298d0feb2d7292ff6e596b7305f7a1baad",
+      "apply_check_on_base": true
+    },
+    {
+      "module": "session",
+      "base": "cd048c8279ebef1fff5646f264ce9d584ab262f5",
+      "patch": "session.patch",
+      "sha256": "d70f5a909661a6b941b88504edf1239198cc711aa8f7e8c5429c992e7c8e0211",
+      "apply_check_on_base": true
+    },
+    {
+      "module": "login",
+      "base": "2667c7f19f5c5b448d37b9fe5a0c92766181c421",
+      "patch": "login.patch",
+      "sha256": "31efc43182796186fde45f0fd9dbf154c48e4ad8c57323b293ae0279b3edb84f",
+      "apply_check_on_base": true
+    },
+    {
+      "module": "websocket",
+      "base": "2f57ca5cb2134e2c89bba1e09dc6e66b0603dda2",
+      "patch": "websocket.patch",
+      "sha256": "932ab2b9a828eff50009b778ed796a456dca96045354476000e51eb5262f3937",
+      "apply_check_on_base": true
+    }
+  ]
+}

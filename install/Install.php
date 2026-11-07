@@ -95,6 +95,11 @@ final class Install
 
 	public static function onInstall(Module_LinkUUp $module): void
 	{
+        // Personal demo accounts/locations are an explicit, separate seed operation.
+        // A normal install must not require private credentials or reset users.
+        $demo = defined('GDO_LINKUUP_INSTALL_DEMO') && GDO_LINKUUP_INSTALL_DEMO === true;
+        if ($demo) {
+            if (!is_file($module->filePath('secret.php'))) throw new \RuntimeException('Demo seed requires private account configuration');
 		# The lame drunktard who cannot code well.
         $gizmore = GDO_User::blank([
             'user_id' => '2',
@@ -179,6 +184,8 @@ final class Install
 		GDO_UserPermission::grant($rayaseiren, 'admin');
 		GDO_UserPermission::grant($rayaseiren, 'staff');
 
+        }
+
         # Settings
 		Module_Core::instance()->saveConfigVar('allow_guests', '1');
 		# Let every ACL-capable user setting retain its own relation visibility.
@@ -191,9 +198,9 @@ final class Install
 		$module->saveVar('module_sort', '20');
 		Module_CORS::instance()->saveConfigVar('cors_allow_any', '1');
 		Module_Captcha::instance()->saveConfigVar('captcha_bg', '#111625');
-		Module_Captcha::instance()->saveConfigVar('captcha_fg', '#b9d8fa');
 		Module_Perf::instance()->saveConfigVar('hook_sidebar', 'staff');
-		Module_Payment::instance()->saveConfigVar('right_bar_your_orders', '0');
+		// PaymentCredits attaches its link to this menu; keep the parent available.
+		Module_Payment::instance()->saveConfigVar('right_bar_your_orders', '1');
 		Module_Payment::instance()->saveConfigVar('right_bar_orders', '0');
 		Module_UI::instance()->saveConfigVar('default_editor', 'Text');
 		Module_UI::instance()->saveConfigVar('allow_editor_choice', '0');
@@ -244,6 +251,7 @@ final class Install
 		$icons = self::installIcons();
 		# Category
 		$cats = self::installCats($icons);
+        if ($demo) {
 		self::seedAlphaNews($gizmore);
 		self::seedAlmostBetaNews($gizmore);
         self::createCountries();
@@ -262,6 +270,7 @@ final class Install
 		LocationRegistry::importApproved();
 		LocationExpansion::import();
 		InstallPeine::normalizeVisibility();
+        }
 		self::reserveUserRoomIds();
 
 		self::createDefaultImageVariants($module);
@@ -457,7 +466,6 @@ final class Install
 			['Birthday', 'announce_me_birthdays', '1'],
 			['Country', 'country_of_living', 'DE'],
             ['Country', 'country_of_origin', 'DE'],
-            ['Country', 'city_of_origin', 'Peine'],
 			['Language', 'language', 'de'],
 			['Date', 'timezone', $berlin],
 			['Date', 'activity_accuracy', '5m'],

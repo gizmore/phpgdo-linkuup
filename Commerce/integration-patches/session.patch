@@ -1,0 +1,178 @@
+diff --git a/GDO_Session.php b/GDO_Session.php
+index 6e77f94..39be828 100644
+--- a/GDO_Session.php
++++ b/GDO_Session.php
+@@ -28,6 +28,57 @@ use GDO\Util\Math;
+ class GDO_Session extends GDO
+ {
+ 
++    // Isolated integration branch: InnoDB optimistic concurrency guard.
++    private ?array $writeSnapshot = null;
++    private bool $writeInvalidated = false;
++    public function setVar(string $key, ?string $var, bool $markDirty = true): static
++    {
++        if ($markDirty && $this->isPersisted() && $this->writeSnapshot === null) {
++            $this->writeSnapshot = [];
++            foreach (['sess_token','sess_user','sess_data','sess_ip','sess_auth'] as $field) {
++                $this->writeSnapshot[$field] = $this->gdoVar($field);
++            }
++        }
++        return parent::setVar($key, $var, $markDirty);
++    }
++    public function save(bool $withHooks = true): static
++    {
++        if ($this->writeInvalidated) throw new SessionConflict('Session must be reloaded');
++        if (!$this->isPersisted() || !$this->isDirty()) return parent::save($withHooks);
++        if ($this->writeSnapshot === null) throw new SessionConflict('Session must be reloaded');
++        $db=\GDO\DB\Database::instance()->getLink();
++        if (!($db instanceof \mysqli)) throw new \RuntimeException('Session writes require MariaDB',503);
++        if ((int)$db->query('SELECT @@in_transaction')->fetch_row()[0]!==0) throw new \RuntimeException('Nested session transaction unsupported',503);
++        $table=$this->gdoTableName();
++        if (!preg_match('/^[a-zA-Z0-9_]+$/D',$table)) throw new \RuntimeException('Invalid session table',503);
++        $q=$db->prepare('SELECT ENGINE FROM information_schema.TABLES WHERE TABLE_SCHEMA=DATABASE() AND TABLE_NAME=?');
++        $q->bind_param('s',$table);$q->execute();
++        if (strtoupper($q->get_result()->fetch_row()[0]??'')!=='INNODB') throw new \RuntimeException('Session writes require InnoDB',503);
++        $db->begin_transaction();
++        try {
++            $q=$db->prepare('SELECT sess_token,sess_user,sess_data,sess_ip,sess_auth FROM `'.$table.'` WHERE sess_id=? FOR UPDATE');
++            $id=$this->getID();$q->bind_param('s',$id);$q->execute();$fresh=$q->get_result()->fetch_assoc();
++            if ($fresh) $fresh=array_map(static fn($v)=>$v===null?null:(string)$v,$fresh);
++            if (!$fresh || $fresh !== $this->writeSnapshot) throw new SessionConflict('Session changed during request');
++            parent::save($withHooks);
++            if (!$db->commit()) throw new \RuntimeException('Session persistence not confirmed',503);
++            $this->writeSnapshot=null;
++            return $this;
++        } catch (\Throwable $e) {
++            // Never reuse a stale object after persistence failure.
++            $this->writeInvalidated=true;$this->writeSnapshot=null;
++            $vars=$this->getGDOVars();
++            $vars['sess_user']=null;$vars['sess_data']=null;$vars['sess_token']=null;$vars['sess_auth']=null;
++            $this->setGDOVars($vars,false);
++            if (self::$INSTANCE === $this) self::$INSTANCE=null;
++            GDO_User::setCurrent(GDO_User::ghost());
++            try {$db->rollback();} catch (\Throwable $rollbackError) {
++                throw new \RuntimeException('Session persistence outcome unknown',503);
++            }
++            throw $e;
++        }
++    }
++
+ 	final public const DUMMY_COOKIE_EXPIRES = 300;
+ 	final public const DUMMY_COOKIE_CONTENT = 'GDO_like_16_byte';
+ 
+@@ -187,6 +238,25 @@ class GDO_Session extends GDO
+ 
+ 	public function getID(): ?string { return $this->gdoVar('sess_id'); }
+ 
++    /** Change authentication even when the same account logs in again. */
++    public function authenticate(?string $userId): void
++    {
++        $app = Application::$INSTANCE ?? null;
++        $http = $app && $app->isWebserver() && !$app->isWebsocket();
++        if ($http && (headers_sent() || ($_SERVER['REQUEST_METHOD'] ?? '') === 'OPTIONS')) {
++            throw new \RuntimeException('Cannot update authentication cookie',503);
++        }
++        $this->setVar('sess_user',$userId);
++        $this->setVar('sess_auth',bin2hex(random_bytes(16)));
++        $this->setVar('sess_data',null);
++        // HTTP can deliver a new cookie. WS requires a separate transport handshake.
++        if ($http) $this->setVar('sess_token',bin2hex(random_bytes(16)));
++        $this->save();
++        if ($http) $this->setCookie();
++    }
++
++    public function getAuthGeneration(): ?string { return $this->gdoVar('sess_auth'); }
++
+ 	public function getToken(): ?string { return $this->gdoVar('sess_token'); }
+ 
+ 	private static function cookieSecure(): bool
+@@ -283,15 +353,18 @@ class GDO_Session extends GDO
+ 	}
+ 
+ 
+-	public function gdoEngine(): string { return self::MYISAM; }
++	public function gdoEngine(): string { return self::INNODB; }
++
++    public function gdoCached(): bool { return false; }
+ 
+ 
+ 	public function gdoColumns(): array
+ 	{
+ 		return [
+ 			GDT_AutoInc::make('sess_id'),
+-			GDT_Token::make('sess_token')->notNull(),
++			GDT_Token::make('sess_token')->length(32)->notNull(),
+ 			GDT_User::make('sess_user'),
++            GDT_Token::make('sess_auth')->length(32)->notNull(),
+ 			GDT_IP::make('sess_ip'),
+ 			GDT_CreatedAt::make('sess_created'),
+ 			GDT_EditedAt::make('sess_time'),
+diff --git a/INTEGRATION.md b/INTEGRATION.md
+new file mode 100644
+index 0000000..d2128e2
+--- /dev/null
++++ b/INTEGRATION.md
+@@ -0,0 +1,25 @@
++# Isolierter Integrationsstand – nicht freigegeben
++
++Schemaänderung erforderlich: gdo_session muss InnoDB verwenden und sess_auth als
++NOT NULL CHAR(32) besitzen; sess_token benötigt ebenfalls CHAR(32). Neue Testtabellen werden ausschließlich in der
++isolierten QA-Datenbank erstellt. Bestehende Tabellen werden durch diesen Branch
++nicht automatisch verändert. Vor Übernahme sind Backup/Restore, Last/Lockzeit,
++Migration der bestehenden Sessions und abgestimmter Neustart zu planen.
++
++Der Sessionguard vergleicht Token/User/Daten/IP/Authgeneration unter Zeilensperre;
++Konflikte werfen SessionConflict. Cache ist für Sessionobjekte deaktiviert.
++Nach Fehler wird das konkrete Objekt invalidiert. Reauthentication setzt immer
++eine neue zufällige Authgeneration und leert Sessiondaten, auch beim selben Nutzer.
++Login/Logout-Modul und Gastro-CSRF-Bindung müssen gemeinsam übernommen werden.
++
++HTTP-Authentifizierung rotiert zusätzlich sess_token (32 Hexzeichen) und setzt
++den neuen Cookie nach erfolgreichem Commit. Reale Chromium-Teilprüfung: Cookie
++ändert sich, HttpOnly/Lax, alter Cookie 403, nicht in document.cookie sichtbar.
++Test nutzt synthetische Gastsession und eigene HTTP-Route, nicht die Login-Form.
++CLI-/WS-Pfade rotieren weiterhin nur die Authgeneration: Die WS-/HttpOnly-
++Cookie-Übergabe ist weiterhin offen und verhindert eine Gesamtfreigabe. HTTP-Finalisierung ist im separaten Core-Branch verändert.
++Die lokale HTTP-Teilprüfung führt den realen Abschlussblock mit synthetischer
++Session aus; kein vollständiger HTTP-/WS-Anmeldeablauf oder Produktionsnachweis.
++
++## Aktualisierung 07.11.2026, Abschlussprüfung6014
++Tatsächliche App-Auth-/WS-Services im Chromium-Testadapter mit echter GDO-HTTP- und TCP-WS-Laufzeit bestehen nun: Mitgliedsanmeldung, Cookie-Rotation, Socketauthentifizierung, HTTP-Logout, Ablehnung des alten offenen Sockets, Wiederanmeldung und AuthSrvc-Logout. Kein vollständiger Angular-SPA-/OAuth-/Registrierungstest. Migration/Wiederholung/Restore auf synthetischem Altschema bestanden; kein Produktionsrestore. Details und Grenzen im Backend Commerce/INTEGRATION-REVIEW.md.
+diff --git a/SessionConflict.php b/SessionConflict.php
+new file mode 100644
+index 0000000..c54364e
+--- /dev/null
++++ b/SessionConflict.php
+@@ -0,0 +1,10 @@
++<?php
++declare(strict_types=1);
++namespace GDO\Session;
++final class SessionConflict extends \RuntimeException
++{
++    public function __construct(string $message = 'Session changed during request')
++    {
++        parent::__construct($message, 409);
++    }
++}
+diff --git a/gpt/Simion/2026-11-07.log b/gpt/Simion/2026-11-07.log
+new file mode 100644
+index 0000000..0d2b66b
+--- /dev/null
++++ b/gpt/Simion/2026-11-07.log
+@@ -0,0 +1,16 @@
++
++[2026-11-07T01:34:49.558204+01:00] Auftrag6003 – lokaler Integrationscheckpoint, nicht freigegeben
++Dateien: GDO_Session.php, SessionConflict.php, INTEGRATION.md
++Prüfung im zusammengehörigen isolierten Stand: 48 DB-Checks; GDO-Anmeldegeneration/CSRF; Session-Guard mit 9 Zusatzchecks inklusive Commitfehler; 15 WS-Binding/Puffertests; tatsächlicher WS-Dispatch mit synthetischem Transport. Syntax 18 PHP-Dateien und fünf Diffchecks bestanden. Keine laufenden Datenbanken oder Dienste geändert.
++Offen: vollständiger Browser-/Loginablauf, Cookie-Tokenrotation, Schemaübernahme/Restore und Broadcast-Grenzen.
++Nächster Schritt: Simion-Terminal – isolierten vollständigen Login-/Bestellablauf herstellen und prüfen.
++
++[2026-11-07T01:40:32.928583+01:00] Auftrag6007 – HTTP-Rotation lokal geprüft, Gesamtintegration offen
++Dateien: GDO_Session.php, INTEGRATION.md
++Echter Chromium-Test mit isolierter GDO-Gastsession: Rotation gespeichert, neuer HttpOnly/Lax-Cookie, alter Cookie403; Testserver/Browser danach beendet. GDO-CSRF-Test nach korrekter CLI-Initialisierung erneut bestanden; WS-Dispatchregression bestanden. JS/PHP-Syntax und Diffcheck bestanden. Cookie-/Authantwort-Debugausgaben in App entfernt.
++Offen: App nutzt WS-Login; sichere HTTP-Cookie-Übergabe nicht implementiert. Keine vollständige Login-/Bestellablaufprüfung, kein Push/Live. Schema benötigt sess_token CHAR(32).
++Nächster Schritt Simion-Terminal – HTTP-/WS-Authentifizierung gemeinsam integrieren und vollständigen App-Ablauf prüfen.
++
++[2026-11-07T02:12:43.476773+01:00] Auftrag6014 lokal geprüft, Review vorbereitet
++HTTP-Mitgliedsanmeldung/Cookie-Rotation und echter TCP-WebSocket mit tatsächlichen App-Services im Chromium-Testadapter: Login, Logout-Widerruf, Relogin bestanden. Zwei getrennte Browserkontexte: Bestellung750Cent, automatisches Betreiberpolling, Lieferung,Rest500Cent/Reservierung0. Migration zweimal plus Restore synthetischer Daten bestanden. 11App-/48DB-/15WS-Bindingtests sowie Guard/CSRF und Rechte-/Domänentests bestanden. WS: frische SQL-Werte GDO-konform, alter Socket entfernt Nachfolger nicht; Textframe beendet nicht Prozess. Reproduzierbare Modulpatches gegen exakte Basen geprüft. Details Backend Commerce/INTEGRATION-REVIEW.md. Kein kompletter SPA/OAuth/Registrierungs-, öffentlicher Proxy-, Echtgeld- oder Produktionsinstallationsnachweis.
++Nächster Schritt: Simion-Terminal – Draft-PRs mit geprüften Commits aktualisieren; kein Merge/Deploy.
