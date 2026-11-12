@@ -8,6 +8,7 @@ use GDO\Core\GDT_Object;
 use GDO\Core\MethodAjax;
 use GDO\LinkUUp\LUP_Room;
 use GDO\LinkUUp\Commerce\Ordering;
+use GDO\LinkUUp\Commerce\MenuModeration;
 use GDO\LinkUUp\Commerce\OperatorMfa;
 use GDO\LinkUUp\Commerce\Access;
 use GDO\LinkUUp\Commerce\TransactionStore;
@@ -84,19 +85,22 @@ final class GastroLocal extends MethodAjax
             if (GDO_DB_READONLY) throw new \RuntimeException('Speicher ist schreibgeschützt',503);
             $db=Database::instance();$db->queryRead('SELECT 1');
             if (!($db->link instanceof \mysqli)) throw new \RuntimeException('MariaDB-Pilot erforderlich',503);
+            $moderation=($_GET['moderation']??'')==='1';
             $tables=['session'=>GDO_Session::table()->gdoTableName(),'user'=>GDO_User::table()->gdoTableName(),'room'=>LUP_Room::table()->gdoTableName(),'store'=>'lup_gastro_store'];
-            $identity=['session'=>$session->getID(),'token'=>$session->getToken(),'user'=>$uid,'room'=>$rid,'csrf'=>(string)($_SERVER['HTTP_X_GASTRO_CSRF']??''),'maxAge'=>GDO_SESS_TIME,'requireCsrf'=>$action!=='state','allowCsrfInit'=>$action==='state'];
-            $result=TransactionStore::run($db->link,$tables,$identity,$action!=='state',function(array &$store,array $authority) use($rid,$action,$r,$uid): array {
+            if($moderation){$tables['permission']=\GDO\User\GDO_Permission::table()->gdoTableName();$tables['userPermission']=\GDO\User\GDO_UserPermission::table()->gdoTableName();}
+            $identity=['checkAdmin'=>$moderation,'session'=>$session->getID(),'token'=>$session->getToken(),'user'=>$uid,'room'=>$rid,'csrf'=>(string)($_SERVER['HTTP_X_GASTRO_CSRF']??''),'maxAge'=>GDO_SESS_TIME,'requireCsrf'=>$action!=='state','allowCsrfInit'=>$action==='state'];
+            $result=TransactionStore::run($db->link,$tables,$identity,$action!=='state',function(array &$store,array $authority) use($rid,$action,$r,$uid,$moderation): array {
                 // These rows stay locked through the order/ledger commit.
                 $freshUser=GDO_User::blank($authority['user'])->setPersisted(true);
                 $room=LUP_Room::blank($authority['room']);
                 $token=$authority['csrf'];
                 $owner=(string)$room->getOwnerID();$approved=OperatorApplications::approvalFor($owner,$rid);$manage=$room->isOwner($freshUser) && $approved;
                 $inactive=$room->isDisabled() || $room->gdoValue('room_deleted')!==null;
-                Access::check($freshUser->isMember() && $freshUser->gdoVar('user_deleted')===null, $manage, $inactive, $action, $_SERVER['REQUEST_METHOD']??'GET', $_SERVER['HTTP_ORIGIN']??'', $token, (string)($_SERVER['HTTP_X_GASTRO_CSRF']??''));
+                if($moderation)MenuModeration::check($authority['admin']===true,(bool)$approved,$inactive,$action);
+                Access::check($freshUser->isMember() && $freshUser->gdoVar('user_deleted')===null, $manage||$moderation, $inactive, $action, $_SERVER['REQUEST_METHOD']??'GET', $_SERVER['HTTP_ORIGIN']??'', $token, (string)($_SERVER['HTTP_X_GASTRO_CSRF']??''));
                 $mfa=OperatorMfa::status($store,$uid,$authority['binding'],time());
                 if (str_starts_with($action,'mfa-')) {
-                    if(!$manage)throw new \RuntimeException('Keine Betreiberberechtigung',403);
+                    if(!$manage&&!$moderation)throw new \RuntimeException('Keine Betreiberberechtigung',403);
                     $passwordOK=false;
                     if(in_array($action,['mfa-begin','mfa-recover'],true)) {
                         $hash=\GDO\Login\Module_Login::instance()->userSettingVar($freshUser,'password');
@@ -105,7 +109,7 @@ final class GastroLocal extends MethodAjax
                     }
                     return OperatorMfa::handle($store,$uid,$authority['binding'],$action,$r,$passwordOK,time());
                 }
-                if($manage && !$mfa['verified'] && $action!=='state')throw new \RuntimeException('Betreiberzugriff bitte mit Authenticator bestätigen',403);
+                if(($manage||$moderation) && !$mfa['verified'] && $action!=='state')throw new \RuntimeException('Betreiberzugriff bitte mit Authenticator bestätigen',403);
                 $store['rooms'][$rid] ??= ['venue'=>['id'=>$rid,'name'=>$room->getName(),'owner'=>$owner],'revision'=>1,'menu'=>[],'orders'=>[],'tableCount'=>20,'menuReady'=>false,'tablesReady'=>false,'menuPublished'=>false,'orderingEnabled'=>false];
                 $s=&$store['rooms'][$rid];
                 // Legacy enabled menus were already published. A never-published
@@ -116,13 +120,22 @@ final class GastroLocal extends MethodAjax
                 $presence = Presence::status(!$inactive && $approved && $s['orderingEnabled'] === true, $r['position'] ?? null,
                     (int)floor(microtime(true) * 1000),
                     static fn(float $lat, float $lng): bool => $room->isInChatRange($lat, $lng, null));
-                if(in_array($action,['save-menu','save-tables','publication'],true)&&($r['revision']??null)!==$s['revision'])throw new \RuntimeException('Stand geändert. Bitte aktualisieren.');
+                if(in_array($action,['save-menu','save-tables','publication','menu-publication'],true)&&($r['revision']??null)!==$s['revision'])throw new \RuntimeException('Stand geändert. Bitte aktualisieren.');
+                if($moderation) {
+                    if($action==='state') {
+                        $result=$mfa['verified']?MenuModeration::projection($s):['venue'=>['id'=>$rid,'name'=>$room->getName()],'canManage'=>false,'canModerate'=>true,'menu'=>[]];
+                        return $result+['csrf'=>$token,'mfa'=>$mfa,'localPilot'=>true];
+                    }
+                    MenuModeration::save($s,$uid,$r['rows']??[],is_string($r['reason']??null)?$r['reason']:'');
+                    return [];
+                }
                 $result=[];
                 switch($action) {
-                    case 'state':if($manage&&!$mfa['verified'])return ['venue'=>['id'=>$rid,'name'=>$room->getName()],'canManage'=>true,'csrf'=>$token,'mfa'=>$mfa,'orders'=>[],'menu'=>[],'canOrder'=>false,'orderBlockedReason'=>'operator_verification_required','localPilot'=>true];$result=$s;$result['wallet']=TestWallet::summary($store['ledger'],$uid);$result['orders']=array_values(array_filter($s['orders'],fn($o)=>$o['venue']===$rid&&($manage||$o['guest']===$uid)));unset($result['venue']['owner']);$result['canManage']=$manage;if($manage)$result['mfa']=$mfa;$result['csrf']=$token;$result['localPilot']=true;$result['canOrder']=$presence['canOrder'];$result['orderBlockedReason']=$presence['orderBlockedReason'];if($inactive||!$approved){$result['orderingEnabled']=false;$result['menuPublished']=false;}if(!$manage&&($inactive||!$approved||!$result['menuPublished']))$result['menu']=[];break;
+                    case 'state':if($manage&&!$mfa['verified'])return ['venue'=>['id'=>$rid,'name'=>$room->getName()],'canManage'=>true,'csrf'=>$token,'mfa'=>$mfa,'orders'=>[],'menu'=>[],'canOrder'=>false,'orderBlockedReason'=>'operator_verification_required','localPilot'=>true];$result=$s;$result['wallet']=TestWallet::summary($store['ledger'],$uid);$result['orders']=array_values(array_filter($s['orders'],fn($o)=>$o['venue']===$rid&&($manage||$o['guest']===$uid)));unset($result['venue']['owner']);if(!$manage)unset($result['menuReviewHistory']);$result['canManage']=$manage;if($manage)$result['mfa']=$mfa;$result['csrf']=$token;$result['localPilot']=true;$result['canOrder']=$presence['canOrder'];$result['orderBlockedReason']=$presence['orderBlockedReason'];if($inactive||!$approved){$result['orderingEnabled']=false;$result['menuPublished']=false;}if(!$manage&&($inactive||!$approved||!$result['menuPublished']))$result['menu']=[];break;
                     case 'preview-import':if(!is_string($r['csv']??null))throw new \InvalidArgumentException('CSV erforderlich');$result=['rows'=>\GDO\LinkUUp\Commerce\MenuImport::parse($r['csv'])];break;
                     case 'save-menu':$s['menu']=Ordering::menu($r['rows']??[]);$s['menuReady']=true;if(!array_filter($s['menu'],fn($i)=>$i['available']))$s['orderingEnabled']=false;$s['revision']++;break;
                     case 'save-tables':if(!is_int($r['count']??null))throw new \RuntimeException('Ganzzahl erforderlich');Ordering::tables($s,$uid,$r['count']);$s['revision']++;break;
+                    case 'menu-publication':if(!is_bool($r['enabled']??null))throw new \RuntimeException('Freigabe fehlt');Ordering::menuPublication($s,$uid,$r['enabled']);$s['revision']++;break;
                     case 'publication':if(!is_bool($r['enabled']??null))throw new \RuntimeException('Freigabe fehlt');Ordering::publication($s,$uid,$r['enabled']);$s['revision']++;break;
                     case 'topup-test':if(!is_int($r['cents']??null))throw new \RuntimeException('Betrag erforderlich');$result=TestWallet::topup($store['ledger'],$uid,$r['cents'],(string)($r['key']??''));break;
                     case 'place':$before=count($s['orders']);$result=Ordering::place($s,$uid,$r);$new=count($s['orders'])>$before;if($new)Presence::requireOrder($presence);if($new||($result['walletFunded']??false)){TestWallet::reserve($store['ledger'],$uid,$rid.':'.$result['id'],$result['totalCents']);if($new){$s['orders'][$before]['walletFunded']=true;$result['walletFunded']=true;}}break;

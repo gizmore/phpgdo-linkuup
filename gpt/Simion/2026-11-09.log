@@ -1,0 +1,2 @@
+
+[2026-11-09T17:03:54.478532+01:00] Auftrag6501: Upstream integriert, lokaler mobiler Lesedurchlauf; App-Zahlenrenderer und ungültige Standortdistanz korrigiert.146 AppTests, ausgewählte Backendtests, Syntax/Diff bestanden. Grenzen in Docs/REVIEW-20261109.md; keine Gesamtfreigabe. Nächster Schritt: Simion – gepaarte Draft-PRs veröffentlichen und Mira/Gizmore informieren.

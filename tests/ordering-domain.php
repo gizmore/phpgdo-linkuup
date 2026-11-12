@@ -55,3 +55,17 @@ $before=$h;O::transition($h,'owner',$a['id'],'delivered');check($h===$before,'re
 rejects(function()use(&$h,$a){O::transition($h,'owner',$a['id'],'cancelled');});check($h===$before,'failed transition unchanged');
 check(count($h['orders'][0]['history'])===4 && $h['orders'][0]['history'][3]['actor']==='owner','history attributed');
 echo "Total including history: $n assertions passed\n";
+
+// A saved menu is readable before tables/ordering are enabled.
+$m=['venue'=>['id'=>'venue','owner'=>'owner'],'menu'=>O::menu([$row]),'menuReady'=>true,'tablesReady'=>false,'orderingEnabled'=>false,'orders'=>$s['orders']];
+$orders=$m['orders'];
+O::menuPublication($m,'owner',true);
+check($m['menuPublished'] && !$m['orderingEnabled'] && !$m['tablesReady'],'menu alone published');
+rejects(function()use(&$m){O::menuPublication($m,'guest',false);});
+check($m['menuPublished'],'foreign user cannot hide menu');
+$m['orderingEnabled']=true;O::menuPublication($m,'owner',false);
+check(!$m['menuPublished']&&!$m['orderingEnabled']&&$m['orders']===$orders,'hide pauses new orders and preserves existing');
+$empty=$m;$empty['menu']=[];
+rejects(function()use(&$empty){O::menuPublication($empty,'owner',true);});
+check(!$empty['menuPublished'],'empty publish rejected without mutation');
+echo "Total including independent menu publication: $n assertions passed\n";

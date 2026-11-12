@@ -57,6 +57,7 @@ final class GastroVenues extends MethodAjax
             // LEFT JOIN retains the session row for a valid member with no venues.
             // No browser-selected owner and no staff override are accepted.
             $sql = 'SELECT s.sess_token,s.sess_auth,s.sess_time,u.user_type,u.user_deleted,'
+                . "EXISTS(SELECT 1 FROM gdo_userpermission up JOIN gdo_permission p ON p.perm_id=up.perm_perm_id WHERE up.perm_user_id=u.user_id AND p.perm_name='admin') AS can_review,"
                 . 'r.room_id,r.room_name,r.room_enabled FROM `'.$tables[0].'` s '
                 . 'JOIN `'.$tables[1].'` u ON u.user_id=s.sess_user '
                 . 'LEFT JOIN `'.$tables[2].'` r ON r.room_owner=u.user_id AND r.room_deleted IS NULL '
@@ -76,6 +77,7 @@ final class GastroVenues extends MethodAjax
             if ($last === false || (GDO_SESS_TIME > 0 && $last < time() - GDO_SESS_TIME)) {
                 throw new \RuntimeException('Sitzung abgelaufen', 403);
             }
+            $canReview=(string)$first['can_review']==='1';
             $venues = [];
             do {
                 if ($first['room_id'] !== null && \GDO\LinkUUp\Commerce\OperatorApplications::approvalFor($uid,(string)$first['room_id'])) {
@@ -84,7 +86,7 @@ final class GastroVenues extends MethodAjax
                 }
             } while ($first = $rows->fetch_assoc());
             $stmt->close();
-            return GDT_JSON::make()->value(['venues' => $venues]);
+            return GDT_JSON::make()->value(['venues' => $venues, 'canReviewMenus'=>$canReview]);
         } catch (\Throwable $e) {
             $code = in_array($e->getCode(), [403, 405, 503], true) ? $e->getCode() : 503;
             Application::setResponseCode($code);

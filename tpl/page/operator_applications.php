@@ -32,15 +32,23 @@ $status=['pending'=>'In Prüfung','approved'=>'Freigeschaltet','rejected'=>'Abge
 </dialog>
 <?php endif; ?>
 <h2 id="operator-application-form"><?= $review?'Betriebsanträge':($rows?'Mein Betrieb':'Erzähl uns von deiner Location') ?></h2>
-<?php if($review): ?><p>Nur nach geprüfter Zuständigkeit und abgeschlossener Vertragsklärung freischalten. Die Bestätigung dokumentiert die manuelle Prüfung; sie ist kein juristischer Nachweis. Neue Einrichtungen müssen zuerst durch das Team regulär angelegt und zugeordnet werden; danach ist ein Antrag für diese eigene Location nötig.</p><?php endif; ?>
+<?php if($review): ?><p>Nur nach geprüfter Zuständigkeit und abgeschlossener Vertragsklärung freischalten. Die Bestätigung dokumentiert die manuelle Prüfung; sie ist kein juristischer Nachweis. Neue Einrichtungen müssen zuerst durch das Team regulär angelegt und zugeordnet werden; danach ordnest du die Location-ID dem bestehenden offenen Antrag mit „Location zuordnen“ zu. Diese Aktion erteilt keine Freigabe. Anschließend die neue Version aus der Übersicht verwenden und gesondert prüfen. Eigene Anträge dürfen nicht selbst zugeordnet oder freigeschaltet werden.</p><?php endif; ?>
 <?php if(!$review): ?><p class="operator-entry-intro"><?= $rows?'Hier findest du den aktuellen Stand deiner Anträge.':'Nenne uns deine Einrichtung und eine Kontaktperson. Wir melden uns zur weiteren Abstimmung.' ?></p><?php elseif(!$rows): ?><p>Noch keine Anträge.</p><?php endif; ?>
 <?php foreach($rows as $row): ?>
 <article><h3><?= $escape($row['oa_business']) ?></h3>
 <p>Antrag #<?= $escape($row['oa_id']) ?> · <?= $escape($status[$row['oa_status']]??'Unbekannt') ?> · <?= $escape($row['oa_created']) ?></p>
+<?php if(!$review): ?>
+<p><?= $escape(match($row['oa_status']) {
+ 'pending' => $row['oa_room']===null ? 'Das Team prüft deine Angaben und ordnet deine Location zu. Für diesen Antrag brauchst du keinen zweiten Antrag.' : 'Deine Location ist zugeordnet. Die Prüfung ist noch offen.',
+ 'approved' => 'Dein Betrieb ist freigeschaltet. Öffne in der App „Mein Betrieb“ und bestätige dort deine sichere Anmeldung.',
+ 'revoked' => 'Die Betreiberfreigabe wurde widerrufen. Bitte kläre den nächsten Schritt mit dem Team.',
+ default => 'Dein Antrag wurde abgelehnt. Bitte kläre offene Angaben mit dem Team, bevor du einen neuen Antrag stellst.'
+}) ?></p>
+<?php endif; ?>
 <?php if($review): ?>
 <dl><?php foreach(['oa_version'=>'Version','oa_user'=>'Antragsteller-ID','oa_room'=>'Location-ID','oa_kind'=>'Einrichtung','oa_address'=>'Anschrift','oa_contact'=>'Kontaktperson','oa_email'=>'E-Mail','oa_phone'=>'Telefon','oa_details'=>'Rolle und Nutzung','oa_review_note'=>'Letzter Prüfvermerk'] as $key=>$label): ?><dt><?= $escape($label) ?></dt><dd><?= nl2br($escape($row[$key])) ?></dd><?php endforeach; ?></dl>
 <?php endif; ?>
 </article>
 <?php endforeach; ?>
-<?= $form->render() ?>
+<?php if(!$review && $rows): ?><details><summary>Weitere Location anmelden</summary><?= $form->render() ?></details><?php else: ?><?= $form->render() ?><?php endif; ?>
 </section>

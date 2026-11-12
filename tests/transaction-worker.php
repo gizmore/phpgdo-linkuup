@@ -9,6 +9,7 @@ echo "READY\n";flush();
 if($r['mode']==='logout')$c->query('UPDATE sessions SET sess_user=NULL WHERE sess_id=1');
 elseif($r['mode']==='deactivate')$c->query('UPDATE users SET user_deleted=NOW() WHERE user_id=1');
 elseif($r['mode']==='room')$c->query('UPDATE rooms SET room_enabled=0 WHERE room_id=1');
+elseif($r['mode']==='permission')$c->query('DELETE FROM user_permissions WHERE perm_user_id=1');
 elseif($r['mode']==='topup')\GDO\LinkUUp\Commerce\TransactionStore::run($c,$r['tables'],$r['identity'],true,static function(array &$s):array{return \GDO\LinkUUp\Commerce\TestWallet::topup($s['ledger'],'1',100,'parallel-same-key');});
 else exit(4);
 echo "DONE\n";

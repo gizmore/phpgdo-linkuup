@@ -9,8 +9,8 @@ function test($active,$owner,$inactive,$action,$method,$origin,$sent,$allowed){
 }
 foreach(['guest','foreign-guest','owner','foreign-owner'] as $role){
  $own=$role==='owner';
- foreach(['state','save-menu','save-tables','publication','transition','topup-test','place','message'] as $action){
-  $allowed=!in_array($action,['save-menu','save-tables','publication','transition'])||$own;
+ foreach(['state','save-menu','save-tables','publication','menu-publication','transition','topup-test','place','message'] as $action){
+  $allowed=!in_array($action,['save-menu','save-tables','publication','menu-publication','transition'])||$own;
   test(true,$own,false,$action,'POST','http://app.localhost',$token,$allowed);
   test(false,$own,false,$action,'POST','http://app.localhost',$token,false);
   if($action!=='state'){
@@ -20,7 +20,7 @@ foreach(['guest','foreign-guest','owner','foreign-owner'] as $role){
   }
  }
 }
-foreach(['save-menu','save-tables','publication','place','topup-test'] as $a)test(true,true,true,$a,'POST','http://app.localhost',$token,false);
+foreach(['save-menu','save-tables','publication','menu-publication','place','topup-test'] as $a)test(true,true,true,$a,'POST','http://app.localhost',$token,false);
 foreach(['state','transition','message'] as $a)test(true,true,true,$a,'POST','http://app.localhost',$token,true);
 test(true,true,false,'grant-owner','POST','http://app.localhost',$token,false);
 test(true,true,false,'state','DELETE','http://app.localhost',$token,false);

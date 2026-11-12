@@ -122,4 +122,24 @@ check(strlen($clean['csrf'])===64);
 $state=$read();$state['csrf'][$key]='legacy-token';$persist($state);
 $legacy=TransactionStore::run($c,$tables,$rotated,false,static fn(array &$s,array $a):array=>['csrf'=>$a['csrf']]);
 check(is_array($read()['csrf'][$key])&&$legacy['csrf']!==$clean['csrf']);
+// Admin checks use freshly locked permission rows; never a browser role.
+$c->query('CREATE TABLE permissions(perm_id INT PRIMARY KEY,perm_name VARCHAR(32)) ENGINE=InnoDB');
+$c->query('CREATE TABLE user_permissions(perm_user_id INT,perm_perm_id INT,PRIMARY KEY(perm_user_id,perm_perm_id)) ENGINE=InnoDB');
+$c->query("INSERT INTO permissions VALUES(1,'admin')");
+$moderator=$rotated;$moderator['checkAdmin']=true;
+$mt=$tables+['permission'=>'permissions','userPermission'=>'user_permissions'];
+$readAdmin=static fn(array &$s,array $a):array=>['admin'=>$a['admin']];
+denied(fn()=>TransactionStore::run($c,$mt,$moderator,false,$readAdmin),403);
+$c->query('INSERT INTO user_permissions VALUES(1,1)');
+check(TransactionStore::run($c,$mt,$moderator,false,$readAdmin)['admin']===true);
+$permissionWorker=null;
+TransactionStore::run($c,$mt,$moderator,false,function(array &$s,array $a)use(&$permissionWorker):array {
+ $permissionWorker=worker('permission');stream_set_blocking($permissionWorker[1][1],false);usleep(150000);
+ check(stream_get_contents($permissionWorker[1][1])==='');return [];
+});
+finish($permissionWorker);
+denied(fn()=>TransactionStore::run($c,$mt,$moderator,false,$readAdmin),403);
+$c->query('INSERT INTO user_permissions VALUES(1,1)');
+$c->query('ALTER TABLE permissions ENGINE=MyISAM');
+denied(fn()=>TransactionStore::run($c,$mt,$moderator,false,$readAdmin),503);
 echo json_encode(['checks'=>$checks,'schema'=>$schema,'note'=>'isolated DB retained for race tests; no existing tables changed']),"\n";

@@ -376,6 +376,7 @@ final class Module_LinkUUp extends GDO_Module
 					"GDO\\Register\\Method\\Guest",
 					"GDO\\Sitemap\\Method\\Show",
 					"GDO\\LinkUUp\\Method\\CategoryJSON",
+					"GDO\\LinkUUp\\Method\\GastroMenu",
 					"GDO\\LinkUUp\\Method\\FromDog",
 					"GDO\\LinkUUp\\Method\\Main",
 					"GDO\\LinkUUp\\Method\\QRForRoom",

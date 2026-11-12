@@ -11,7 +11,7 @@ final class TransactionStore
     {
         $begun=false;
         try {
-            foreach (['session','user','room','store'] as $name) {
+            foreach (array_merge(['session','user','room','store'],!empty($identity['checkAdmin'])?['permission','userPermission']:[]) as $name) {
                 if (!preg_match('/^[a-zA-Z0-9_]+$/D', $tables[$name]??'')) throw new \RuntimeException('Ungültiges Speicherschema');
                 $stmt=$db->prepare('SELECT ENGINE FROM information_schema.TABLES WHERE TABLE_SCHEMA=DATABASE() AND TABLE_NAME=?');
                 $stmt->bind_param('s',$tables[$name]);$stmt->execute();$row=$stmt->get_result()->fetch_assoc();$stmt->close();
@@ -46,6 +46,14 @@ final class TransactionStore
             $lockedUsers=[];
             foreach($userIds as $userId)$lockedUsers[$userId]=self::row($db,$tables['user'],'user_id',$userId);
             $user=$lockedUsers[(string)$identity['user']];
+            $admin=false;
+            // Same order as application review: users -> permission -> room.
+            if (!empty($identity['checkAdmin'])) {
+                $stmt=$db->prepare('SELECT up.perm_user_id FROM `'.$tables['userPermission'].'` up JOIN `'.$tables['permission'].'` p ON p.perm_id=up.perm_perm_id WHERE up.perm_user_id=? AND p.perm_name=\'admin\' FOR UPDATE');
+                $actor=(string)$identity['user'];$stmt->bind_param('s',$actor);$stmt->execute();
+                $admin=$stmt->get_result()->fetch_assoc()!==null;$stmt->close();
+                if (!$admin) throw new \RuntimeException('Adminberechtigung erforderlich',403);
+            }
             $room=self::row($db,$tables['room'],'room_id',(string)$identity['room']);
             if ($room && (isset($room['room_owner'])?(string)$room['room_owner']:null)!==$ownerHint)
                 throw new \RuntimeException('Locationzuordnung geändert. Bitte erneut öffnen.',409);
@@ -76,7 +84,7 @@ final class TransactionStore
                 $csrf=bin2hex(random_bytes(32));$store['csrf'][$csrfKey]=['token'=>$csrf,'expires'=>$now+$ttl];$csrfChanged=true;
             }
             if (!empty($identity['requireCsrf']) && !hash_equals($csrf,(string)($identity['csrf']??''))) throw new \RuntimeException('Sitzung geändert',403);
-            $result=$operation($store,['user'=>$user,'room'=>$room,'csrf'=>$csrf,'binding'=>$csrfKey]);
+            $result=$operation($store,['user'=>$user,'room'=>$room,'csrf'=>$csrf,'binding'=>$csrfKey,'admin'=>$admin]);
             if ($write || $csrfChanged) {
                 $json=json_encode($store,JSON_THROW_ON_ERROR|JSON_UNESCAPED_UNICODE);
                 if (strlen($json)>16000000) throw new \RuntimeException('Pilot-Speichergrenze erreicht',503);

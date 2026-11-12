@@ -75,6 +75,16 @@ final class Ordering
         if ($enabled) $state['menuPublished'] = true;
     }
 
+    /** Menu visibility does not require tables and never starts ordering. */
+    public static function menuPublication(array &$state, string $user, bool $enabled): void
+    {
+        self::operator($state, $user);
+        if ($enabled && (!(($state['menuReady'] ?? false)) || empty($state['menu'])))
+            throw new \RuntimeException('Erst eine Karte speichern');
+        $state['menuPublished'] = $enabled;
+        if (!$enabled) $state['orderingEnabled'] = false;
+    }
+
     public static function tables(array &$state, string $user, int $count): void
     {
         self::operator($state, $user);

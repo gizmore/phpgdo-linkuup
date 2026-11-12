@@ -52,6 +52,32 @@ final class OperatorApplications
             $id=(string)$db->insert_id;$db->commit();return $id;
         }catch(\Throwable $e){$db->rollback();throw $e;}
     }
+    /** Attach an already created, applicant-owned location. Never grants approval. */
+    public static function assignLocation(string $actor,string $id,int $version,string $rid,string $note): void
+    {
+        if(!ctype_digit($actor)||!ctype_digit($id)||!ctype_digit($rid)||(int)$rid<1||$version<1||trim($note)===''||mb_strlen($note)>2000)throw new \RuntimeException('Ungültige Zuordnung',400);
+        $db=self::db();self::begin($db,true);
+        try{
+            $initial=self::row($db,'SELECT oa_user FROM lup_operatorapplication WHERE oa_id=?',[$id]);
+            if(!$initial)throw new \RuntimeException('Antrag nicht gefunden',404);
+            if((string)$initial['oa_user']===$actor)throw new \RuntimeException('Eigene Anträge dürfen nicht selbst zugeordnet werden',403);
+            $uids=[$actor,(string)$initial['oa_user']];usort($uids,fn($a,$b)=>(int)$a<=>(int)$b);
+            foreach($uids as $uid)self::member(self::row($db,'SELECT user_type,user_deleted FROM gdo_user WHERE user_id=? FOR UPDATE',[$uid]));
+            $admin=self::row($db,"SELECT up.perm_user_id FROM gdo_userpermission up JOIN gdo_permission p ON p.perm_id=up.perm_perm_id WHERE up.perm_user_id=? AND p.perm_name='admin' FOR UPDATE",[$actor]);
+            if(!$admin)throw new \RuntimeException('Administratorrecht erforderlich',403);
+            $room=self::row($db,'SELECT room_owner,room_deleted FROM lup_room WHERE room_id=? FOR UPDATE',[$rid]);
+            if(!$room||(string)$room['room_owner']!==(string)$initial['oa_user']||$room['room_deleted']!==null)throw new \RuntimeException('Nur eine eigene, nicht gelöschte Location des Antragstellers zuordnen',409);
+            $app=self::row($db,'SELECT * FROM lup_operatorapplication WHERE oa_id=? FOR UPDATE',[$id]);
+            if((int)$app['oa_version']!==$version||$app['oa_status']!=='pending'||$app['oa_room']!==null||(string)$app['oa_user']!==(string)$initial['oa_user'])throw new \RuntimeException('Antrag geändert oder bereits zugeordnet. Neu laden.',409);
+            $duplicate=self::row($db,"SELECT oa_id FROM lup_operatorapplication WHERE oa_user=? AND oa_room=? AND oa_status IN ('pending','approved') AND oa_id<>? FOR UPDATE",[(string)$app['oa_user'],$rid,$id]);
+            if($duplicate)throw new \RuntimeException('Für diese Location besteht bereits ein Antrag',409);
+            $history=json_decode($app['oa_history'],true,flags:JSON_THROW_ON_ERROR);
+            $history[]=['event'=>'location_assigned','from_room'=>null,'to_room'=>$rid,'actor'=>$actor,'at'=>gmdate('c'),'note'=>$note,'approval_granted'=>false];
+            $encoded=json_encode($history,JSON_THROW_ON_ERROR);if(strlen($encoded)>60000)throw new \RuntimeException('Prüfhistorie zu groß',409);
+            self::run($db,'UPDATE lup_operatorapplication SET oa_room=?,oa_version=oa_version+1,oa_review_note=?,oa_history=? WHERE oa_id=?',[$rid,$note,$encoded,$id])->close();
+            $db->commit();
+        }catch(\Throwable $e){$db->rollback();throw $e;}
+    }
     public static function decision(string $actor,string $id,int $version,string $target,string $note,bool $confirmed): void
     {
         if(!ctype_digit($actor)||!ctype_digit($id)||!in_array($target,['approved','rejected','revoked'],true)||$version<1||trim($note)===''||mb_strlen($note)>2000)throw new \RuntimeException('Ungültige Prüfentscheidung',400);
