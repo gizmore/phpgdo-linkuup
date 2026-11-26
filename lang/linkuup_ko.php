@@ -81,6 +81,8 @@ return [
 	'err_lup_shout_text' => '1~512자 사이의 외침을 입력하세요.',
 	'err_lup_shout_radius' => '최소 1km의 외침 반경을 선택하십시오.',
 	'err_lup_shout_position' => '지역 소리를 들으려면 현재 GPS 위치가 필요합니다.',
+	'cfg_lup_shout_center_fee' => '중심을 변경한 외침당 추가 요금',
+	'err_lup_shout_refresh' => '앱을 새로 고친 후 중심 위치와 가격을 다시 확인하세요.',
 	'err_lup_shout_credits' => '이 외침에는 %s 크레딧이 필요합니다. 현재 %s 크레딧이 있습니다.',
 	'err_lup_tolerance_meters' => '허용 오차 증가 폭은 1~1000미터 사이여야 합니다.',
 	'err_lup_tolerance_limit' => '개인 관용 증가량은 10km를 초과할 수 없습니다.',

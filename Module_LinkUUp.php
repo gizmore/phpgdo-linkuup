@@ -125,6 +125,7 @@ final class Module_LinkUUp extends GDO_Module
 			GDT_Credits::make('room_cost_view')->initial('0'), # Cost per additional visibility unit
 			GDT_Length::make('room_cost_view_unit')->initial('0.500'), # Visibility billing unit in km
 			GDT_Credits::make('lup_credits_view_km')->initial('250'), # Credits per added km of room visibility
+			GDT_Credits::make('lup_shout_center_fee')->initial('500'),
 			GDT_Credits::make('lup_shout_cost_per_km')->initial('150'), # Credits for each kilometre of shout radius
 			GDT_Length::make('room_tolerance')->initial('0.064'), # GPS tolerance around room polygons in km
 			GDT_Length::make('room_leave_tolerance')->initial('0.640'), # GPS tolerance before automatically leaving a room in km
@@ -295,6 +296,7 @@ final class Module_LinkUUp extends GDO_Module
 	public function cfgRoomCostView(): int { return (int)$this->getConfigValue('room_cost_view'); }
 	public function cfgRoomCostViewUnit(): float { return (float)$this->getConfigValue('room_cost_view_unit'); }
 	public function cfgCreditsViewKM(): int { return (int)$this->getConfigValue('lup_credits_view_km'); }
+	public function cfgShoutCenterFee(): int { return (int)$this->getConfigValue('lup_shout_center_fee'); }
 	public function cfgShoutCostPerKM(): int { return (int)$this->getConfigValue('lup_shout_cost_per_km'); }
 	public function cfgRoomTolerance(): float { return (float)$this->getConfigValue('room_tolerance'); }
 	public function cfgRoomLeaveTolerance(): float { return (float)$this->getConfigValue('room_leave_tolerance'); }

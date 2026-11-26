@@ -86,6 +86,8 @@ return [
 	'err_lup_shout_text' => 'Please enter a shout between 1 and 512 characters.',
 	'err_lup_shout_radius' => 'Choose a shout radius of at least 1 km.',
 	'err_lup_shout_position' => 'A current GPS position is required for a local shout.',
+	'cfg_lup_shout_center_fee' => 'Fee per shout with a custom centre',
+	'err_lup_shout_refresh' => 'Refresh the app and check the centre and price again.',
 	'err_lup_shout_credits' => 'This shout requires %s Credits; you currently have %s Credits.',
 	'err_lup_tolerance_meters' => 'The tolerance boost must be between 1 and 1000 metres.',
 	'err_lup_tolerance_limit' => 'Your personal tolerance boost may not exceed 10 km.',
