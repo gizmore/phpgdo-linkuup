@@ -45,12 +45,31 @@ final class LUPWS_Shout extends LUPWS_Command
 		{
 			return $msg->rplyError('err_lup_shout_radius');
 		}
-		if (!LUP_Global::lastPositionFor($user))
+		$gps = LUP_Global::lastPositionFor($user);
+		if (!$gps)
 		{
 			return $msg->rplyError('err_lup_shout_position');
 		}
 
 		$cost = (int)ceil($radius * Module_LinkUUp::instance()->cfgShoutCostPerKM());
+		if ($lat !== null && $msg->hasMore(4))
+		{
+			// A custom centre requires explicit agreement to this shout's current total.
+			$cost += Module_LinkUUp::instance()->cfgShoutCenterFee();
+			if ($msg->read32u() !== $cost)
+			{
+				return $msg->rplyError('err_lup_shout_refresh');
+			}
+		}
+		elseif ($lat !== null)
+		{
+			// Older clients sent float32 coordinates even for GPS shouts.
+			if (abs($lat - $gps[0]) > 0.00001 || abs($lng - $gps[1]) > 0.00001)
+			{
+				return $msg->rplyError('err_lup_shout_refresh');
+			}
+			$lat = $lng = null;
+		}
 		if (!$this->chargeCredits($user, $cost))
 		{
 			return $msg->rplyError('err_lup_shout_credits', [$cost, $this->creditBalance($user)]);

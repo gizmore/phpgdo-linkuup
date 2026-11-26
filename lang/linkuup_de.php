@@ -86,6 +86,8 @@ return [
 	'err_lup_shout_text' => 'Bitte gib einen Shout mit 1 bis 512 Zeichen ein.',
 	'err_lup_shout_radius' => 'Wähle einen Shout-Radius von mindestens 1 km.',
 	'err_lup_shout_position' => 'Für einen lokalen Shout wird eine aktuelle GPS-Position benötigt.',
+	'cfg_lup_shout_center_fee' => 'Aufpreis pro Shout mit frei gewähltem Mittelpunkt',
+	'err_lup_shout_refresh' => 'Bitte aktualisiere die App und prüfe Mittelpunkt und Preis erneut.',
 	'err_lup_shout_credits' => 'Für diesen Shout werden %s Credits benötigt; Du hast aktuell %s Credits.',
 	'err_lup_tolerance_meters' => 'Der Toleranz-Boost muss zwischen 1 und 1000 Metern liegen.',
 	'err_lup_tolerance_limit' => 'Dein persönlicher Toleranz-Boost kann höchstens 10 km betragen.',
